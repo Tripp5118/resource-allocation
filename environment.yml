@@ -1,0 +1,19 @@
+name: hea-bo-comparison
+channels:
+  - conda-forge
+  - pytorch
+dependencies:
+  - python=3.10
+  - pytorch
+  - numpy
+  - pandas
+  - matplotlib
+  - pip
+  - pip:
+      - botorch
+      - gpytorch
+      - imageio
+      - pyyaml
+      - openai
+      - langgraph
+      - tc-python
