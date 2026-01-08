@@ -67,6 +67,7 @@ class TruthModelEvaluator:
             preds_raw = preds_scaled
 
         y = self.postprocess_outputs(preds_raw)
+        # add a noise term to make problem harder
         return EvaluationResult(y=y)
 
     def cleanup(self):
