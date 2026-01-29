@@ -77,7 +77,7 @@ class DesignSpace:
         d = self.n_components
         step = self.step
         tol = step / 2.0
-
+        
         # Precompute discrete values per component
         value_lists = []
         for lo, hi in zip(self.mins, self.maxs):

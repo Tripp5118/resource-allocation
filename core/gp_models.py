@@ -6,21 +6,17 @@ from botorch.fit import fit_gpytorch_mll
 from botorch.utils.transforms import normalize
 from gpytorch.mlls import ExactMarginalLogLikelihood
 from typing import Optional
-from core.priors import EnsemblePrior
 
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 DTYPE = torch.double
 
 class GPModelManager:
-    def __init__(self, bounds: torch.Tensor, use_priors: bool = False):
+    def __init__(self, bounds: torch.Tensor):
         """
         Args:
             bounds: (2, d) tensor of [lower, upper] for each dimension.
-            use_priors: Whether to use EnsemblePrior for mean.
         """
         self.bounds = bounds.to(dtype=DTYPE, device=DEVICE)
-        self.use_priors = use_priors
-        self.prior_model = EnsemblePrior() if use_priors else None
 
     def fit_model(self, X: torch.Tensor, Y: torch.Tensor) -> MultiTaskGP:
         """
@@ -44,7 +40,6 @@ class GPModelManager:
 
         train_Y = torch.cat([Y[:, 0:1], Y[:, 1:2]], dim=0)      # (2n, 1)
 
-        # Optional prior mean can be added later; omitted for generality for now
         model = MultiTaskGP(
             train_X,
             train_Y,

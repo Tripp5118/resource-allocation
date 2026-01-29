@@ -1,3 +1,4 @@
+# core/acquisition_functions.py
 """Acquisition function computation for 2-objective BO with MultiTaskGP.
 
 - Continuous optimization with qEHVI and MO-MESMO via optimize_acqf.
@@ -45,6 +46,7 @@ class QEHVIBatch:
     explore_points: np.ndarray   # MO-MESMO points (5-batch_size, d)
     full_entropy: float          # Combined entropy of all points
     full_qehvi: float            # Combined EHVI of all points
+    total_batch_size: int = 5    # Total batch size (default 5)
 
     def __repr__(self):
         return (
@@ -94,16 +96,32 @@ class AcquisitionFunctionManager:
     - Assumes bounds is (2, d) with per-dimension [min_i, max_i].
     - Enforces simplex constraint sum_i x_i = 1 via equality_constraints in normalized space.
     - Total batch size per iteration is fixed at 5 (5/0, 4/1, ..., 0/5).
+
+    Example:
+        >>> bounds = torch.tensor([[0.0, 0.0, 0.0], [0.5, 0.5, 1.0]])
+        >>> acq_mgr = AcquisitionFunctionManager(bounds, num_restarts=5)
+        >>> pareto_Y, ref_point = acq_mgr.compute_pareto_front(Y_observed)
+        >>> options = acq_mgr.compute_all_allocation_options(model, X_pool, pareto_Y, ref_point)
     """
 
-    def __init__(self, bounds: torch.Tensor):
+    def __init__(self, bounds: torch.Tensor, num_restarts: int = 3, raw_samples: int = 128):
         """
         Args:
-            bounds: (2, d) tensor of lower/upper bounds per input dimension:
-                    bounds[0, i] = min_i, bounds[1, i] = max_i.
+            bounds: (2, d) tensor of lower/upper bounds per input dimension
+            num_restarts: Number of restarts for acquisition optimization
+            raw_samples: Number of raw samples for initialization
         """
+        if bounds.shape[0] != 2:
+            raise ValueError(f"bounds must have shape (2, d), got {bounds.shape}")
+        if bounds.shape[1] < 1 or bounds.shape[1] > 10:
+            raise ValueError(f"Input dimension must be between 1 and 10, got {bounds.shape[1]}")
+        if torch.any(bounds[0] >= bounds[1]):
+            raise ValueError("Lower bounds must be strictly less than upper bounds")
+        
         self.bounds = bounds.to(dtype=DTYPE, device=DEVICE)
-        self.d = self.bounds.shape[1]  # input dimension
+        self.d = self.bounds.shape[1]
+        self.num_restarts = num_restarts
+        self.raw_samples = raw_samples
 
     # ========================================================================
     #  MAIN INTERFACE
@@ -122,8 +140,12 @@ class AcquisitionFunctionManager:
             pareto_Y: Pareto front points (m, 2)
             ref_point: Reference point for hypervolume (2,)
         """
+        if Y_mo.shape[0] == 0:
+            raise ValueError("Cannot compute Pareto front from empty objective values")
         mask = is_non_dominated(Y_mo)
         pareto = Y_mo[mask]
+        if len(pareto) == 0:
+            raise ValueError("No non-dominated points found after filtering")
         # Simple heuristic: reference point slightly below the min of Pareto set
         ref_point = pareto.min(dim=0).values - 0.1 * torch.ones(
             2, dtype=DTYPE, device=DEVICE
@@ -256,6 +278,7 @@ class AcquisitionFunctionManager:
                 explore_points=explore_points,
                 full_entropy=float(combined_entropy),
                 full_qehvi=float(combined_qehvi),
+                total_batch_size=total_batch_size,
             )
             qehvi_batches.append(batch)
 
@@ -308,8 +331,8 @@ class AcquisitionFunctionManager:
                 ]
             ),
             q=q,
-            num_restarts=3,
-            raw_samples=128,
+            num_restarts=self.num_restarts,
+            raw_samples=self.raw_samples,
             equality_constraints=eq_constraints,
             options={"batch_limit": 5, "maxiter": 200},
         )
@@ -360,15 +383,21 @@ class AcquisitionFunctionManager:
     ) -> np.ndarray:
         """Optimize using MO-MESMO, with simplex constraint."""
 
-        partitioning = DominatedPartitioning(ref_point=ref_point, Y=pareto_Y)
-        hypercell_bounds = partitioning.hypercell_bounds.unsqueeze(0)
-
-        acq = qLowerBoundMultiObjectiveMaxValueEntropySearch(
-            model=model,
-            hypercell_bounds=hypercell_bounds,
-            estimation_type="LB",
-            num_samples=mc_samples,
-        )
+        try:
+            partitioning = DominatedPartitioning(ref_point=ref_point, Y=pareto_Y)
+            hypercell_bounds = partitioning.hypercell_bounds.unsqueeze(0)
+        except Exception as e:
+            raise RuntimeError(f"Failed to create DominatedPartitioning: {e}")
+        
+        try:
+            acq = qLowerBoundMultiObjectiveMaxValueEntropySearch(
+                model=model,
+                hypercell_bounds=hypercell_bounds,
+                estimation_type="LB",
+                num_samples=mc_samples,
+            )
+        except Exception as e:
+            raise RuntimeError(f"Failed to create MO-MESMO acquisition: {e}")
 
         # Wrap to catch NaN/Inf during optimization
         class SafeAcqWrapper:
@@ -395,8 +424,8 @@ class AcquisitionFunctionManager:
                 ]
             ),
             q=q,
-            num_restarts=3,
-            raw_samples=128,
+            num_restarts=self.num_restarts,
+            raw_samples=self.raw_samples,
             equality_constraints=eq_constraints,
             options={"batch_limit": 5, "maxiter": 200},
         )
@@ -406,33 +435,43 @@ class AcquisitionFunctionManager:
 
     def _fallback_entropy_sampling(self, model: MultiTaskGP, q: int) -> np.ndarray:
         """
-        Fallback: sample points with highest GP uncertainty over the box defined by bounds.
-
-        Note: this does NOT enforce sum(x_i) = 1, but respects bounds (non-negative).
-        If you want strict simplex, you could:
-          - generate continuous simplex samples satisfying sum(x)=1 and min/max,
-          - then take top-q by variance.
+        Fallback: sample points with highest GP uncertainty satisfying simplex constraint.
         """
-        print("  [Fallback] Entropy-based sampling in box defined by bounds")
+        print("  [Fallback] Entropy-based sampling satisfying simplex constraint")
 
         d = self.d
         n_candidates = 2000
 
-        # Sample candidates uniformly in [0,1]^d then denormalize
-        unit_bounds = torch.tensor(
-            [[0.0] * d, [1.0] * d], dtype=DTYPE, device=DEVICE
-        )
-        from botorch.utils.sampling import draw_sobol_samples
-        sobol = draw_sobol_samples(
-            bounds=unit_bounds, n=n_candidates, q=1, seed=0
-        ).squeeze(1)  # (n_candidates, d)
-
-        candidates = self._denormalize(sobol, self.bounds)
-        candidates_torch = candidates.to(device=DEVICE)
+        # Generate simplex-constrained candidates
+        from botorch.utils.sampling import sample_simplex
+        
+        # Sample on unit simplex
+        simplex_samples = sample_simplex(n=n_candidates, d=d, dtype=DTYPE, device=DEVICE)
+        
+        # Scale to bounds while maintaining simplex constraint
+        mins = self.bounds[0, :]
+        maxs = self.bounds[1, :]
+        ranges = maxs - mins
+        
+        # Transform: x_i = min_i + alpha_i * (max_i - min_i)
+        # where alpha_i are the simplex samples
+        candidates = mins.unsqueeze(0) + simplex_samples * ranges.unsqueeze(0)
+        
+        # Renormalize to ensure sum = 1 (due to floating point errors)
+        candidates = candidates / candidates.sum(dim=1, keepdim=True)
+        
+        # Filter to valid range
+        valid_mask = torch.all((candidates >= mins - 1e-6) & (candidates <= maxs + 1e-6), dim=1)
+        candidates = candidates[valid_mask]
+        
+        if len(candidates) < q:
+            raise RuntimeError(
+                f"Fallback sampling produced only {len(candidates)} valid points, need {q}"
+            )
 
         # Compute uncertainty (sum of log variances for both tasks)
-        n = candidates_torch.shape[0]
-        X_norm = normalize(candidates_torch, self.bounds)
+        n = candidates.shape[0]
+        X_norm = normalize(candidates, self.bounds)
 
         task_0 = torch.zeros(n, 1, dtype=DTYPE, device=DEVICE)
         task_1 = torch.ones(n, 1, dtype=DTYPE, device=DEVICE)

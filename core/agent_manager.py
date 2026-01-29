@@ -97,7 +97,30 @@ class EventManager:
 # ============================================================================
 
 class BOAgent:
-    """LangChain-based Agent for generic 2-objective Bayesian Optimization."""
+    """LangChain-based Agent for generic 2-objective Bayesian Optimization.
+    
+    
+    Example:
+        >>> agent = BOAgent(
+        ...     model="gpt-4o",
+        ...     log_dir="./logs",
+        ...     problem_description="Optimize material properties",
+        ...     obj1_name="Strength",
+        ...     obj2_name="Toughness"
+        ... )
+        >>> 
+        >>> # Add resource events
+        >>> agent.add_budget_cut(iteration=5, percentage=0.3)
+        >>> 
+        >>> # Make decision
+        >>> selected_idx, reasoning, points = agent.select_resource_allocation(
+        ...     iteration=1,
+        ...     budget_remaining=5000,
+        ...     time_remaining=10.0,
+        ...     X_history=X,
+        ...     Y_history=Y,
+        ...     allocation_options=acq_data
+        ... )"""
 
     def __init__(
         self,
@@ -144,6 +167,10 @@ class BOAgent:
         self.log_dir = log_dir
         if log_dir:
             os.makedirs(log_dir, exist_ok=True)
+    
+    def _log (self, level: str, message: str):
+        """Structured logging helper."""
+        print(f"[Agent:{level}] {message}")
 
     # -------------------------- Event Management --------------------------- #
 
@@ -201,13 +228,6 @@ class BOAgent:
             return "This is the first decision in the optimization campaign."
 
         context = "## Optimization History\n\n"
-        # GP configuration
-        gp_config = next(
-            (m for m in self.global_memory if m.get("step") == "gp_configuration"),
-            None,
-        )
-        if gp_config:
-            context += f"**GP Kernel**: {gp_config.get('kernel_decision', 'default')}\n\n"
 
         # Recent iterations
         summaries = [m for m in self.global_memory if m.get("step") == "iteration_summary"]
@@ -230,110 +250,8 @@ class BOAgent:
 
         return context
 
-    # -------------------- GP Kernel Configuration Prompt ------------------ #
-
-    def configure_gp_kernel(self, use_priors: bool) -> Tuple[Optional[str], str]:
-        """Ask agent whether to use default kernel or custom kernel code."""
-        print("\n" + "=" * 80)
-        print("[Agent] Configuring GP Kernel")
-        print("=" * 80)
-
-        system_prompt = f"""You are an expert in Bayesian Optimization and Gaussian Processes.
-
-You are configuring a GP model for a 2-objective optimization problem.
-
-Problem description:
-{self.problem_description or '(no additional description provided)'}
-
-The model uses a MultiTaskGP to jointly model both objectives."""
-
-        user_prompt = f"""Starting new optimization run.
-
-- Objective 1: {self.obj1_name}
-- Objective 2: {self.obj2_name}
-- Prior data available: {"Yes" if use_priors else "No"}
-
-Consider:
-1. What kernel properties matter for this input space?
-2. Is the default (e.g., RBF/Matern) kernel sufficient?
-3. Would a custom kernel provide meaningful benefits?
-4. Trade-offs between custom and default.
-
-You have up to {self.max_reasoning_steps} reasoning steps.
-
-When ready, respond:
-REASONING: <your analysis>
-KERNEL: <USE_DEFAULT or Python code>"""
-
-        messages = [SystemMessage(content=system_prompt), HumanMessage(content=user_prompt)]
-        reasoning_steps = []
-        final_response = ""
-
-        for step in range(1, self.max_reasoning_steps + 1):
-            print(f"\n[Agent] Reasoning step {step}/{self.max_reasoning_steps}...")
-            response = self.llm.invoke(messages)
-            text = response.content
-            print(f"\n{text}\n")
-
-            reasoning_steps.append((f"Step {step}", text))
-            messages.append(AIMessage(content=text))
-
-            if "KERNEL:" in text.upper():
-                final_response = text
-                print(f"[Agent] Decision reached at step {step}")
-                break
-
-            if step < self.max_reasoning_steps:
-                messages.append(HumanMessage(content="Continue reasoning or make final decision."))
-            else:
-                messages.append(
-                    HumanMessage(
-                        content="Make final decision now:\nREASONING: <analysis>\nKERNEL: <USE_DEFAULT or code>"
-                    )
-                )
-                response = self.llm.invoke(messages)
-                final_response = response.content
-                reasoning_steps.append(("Final Decision", final_response))
-
-        reasoning, kernel_code = self._parse_kernel_decision(final_response)
-        full_reasoning = "\n\n".join([f"**{t}**\n{c}" for t, c in reasoning_steps])
-
-        config_summary = {
-            "step": "gp_configuration",
-            "use_priors": use_priors,
-            "kernel_decision": "custom" if kernel_code else "default",
-            "reasoning": reasoning,
-            "reasoning_steps": len(reasoning_steps),
-            "full_reasoning": full_reasoning,
-        }
-        self.global_memory.append(config_summary)
-
-        if self.log_dir:
-            path = os.path.join(self.log_dir, "agent_gp_configuration.json")
-            with open(path, "w") as f:
-                json.dump(config_summary, f, indent=2)
-
-        return kernel_code, full_reasoning
-
-    def _parse_kernel_decision(self, response: str) -> Tuple[str, Optional[str]]:
-        reasoning = ""
-        kernel_code = None
-        if "REASONING:" in response:
-            parts = response.split("KERNEL:")
-            reasoning = parts[0].replace("REASONING:", "").strip()
-            if len(parts) > 1:
-                kernel_part = parts[1].strip()
-                if "USE_DEFAULT" not in kernel_part.upper():
-                    if "```python" in kernel_part:
-                        kernel_code = kernel_part.split("```python")[1].split("```")[0].strip()
-                    elif "```" in kernel_part:
-                        kernel_code = kernel_part.split("```")[0].strip()
-                    else:
-                        kernel_code = kernel_part
-        return reasoning, kernel_code
-
     # ---------------- Resource Allocation (Main Decision) ----------------- #
-
+    from acquisition_functions import AcquisitionData
     def select_resource_allocation(
         self,
         iteration: int,
@@ -343,7 +261,7 @@ KERNEL: <USE_DEFAULT or Python code>"""
         time_per_point: float,
         X_history: np.ndarray,
         Y_history: np.ndarray,
-        allocation_options: Any,
+        allocation_options: AcquisitionData,
         max_batch_size: int = 5,
         score_fn: Optional[Callable[[np.ndarray], np.ndarray]] = None,
     ) -> Tuple[int, str, List[np.ndarray]]:
@@ -366,9 +284,7 @@ KERNEL: <USE_DEFAULT or Python code>"""
             reasoning: full reasoning text
             selected_points: [exploit_points, explore_points] list for evaluation
         """
-        print("\n" + "=" * 80)
-        print(f"[Agent] Iteration {iteration}: Resource Allocation Decision")
-        print("=" * 80)
+        self._log("INFO", f"\n{'='*80}\nIteration {iteration}: Resource Allocation Decision\n{'='*80}")
 
         if score_fn is None:
             def score_fn_default(Y: np.ndarray) -> np.ndarray:
@@ -382,7 +298,7 @@ KERNEL: <USE_DEFAULT or Python code>"""
             X_history, Y_history, budget_remaining, time_remaining,
             cost_per_point, time_per_point, score_fn
         )
-        print(f"\n[Agent Analysis]:\n{analysis}\n")
+        self._log("INFO", f"\nAnalysis:\n{analysis}\n")
 
         options_desc = self._describe_allocation_options(
             allocation_options, cost_per_point, time_per_point,
@@ -444,10 +360,22 @@ Begin analysis."""
         final_response = ""
 
         for step in range(1, self.max_reasoning_steps + 1):
-            print(f"\n[Agent] Reasoning step {step}/{self.max_reasoning_steps}...")
-            response = self.llm.invoke(messages)
-            text = response.content
-            print(f"\n{text}\n")
+            self._log("INFO", f"\nReasoning step {step}/{self.max_reasoning_steps}...")
+            try:
+                response = self.llm.invoke(messages)
+                text = response.content
+            except Exception as e:
+                self._log("ERROR", f"Error in LLM call at step {step}: {e}")
+                if step == 1:
+                    # First step failure - use default
+                    self._log("INFO", "Using default option 2 due to LLM failure")
+                    return 2, "LLM error: using default balanced allocation", []
+                else:
+                    # Use last valid response
+                    self._log("INFO", "Using last valid reasoning step")
+                    break
+            
+            self._log("INFO", f"\n{text}\n")
 
             reasoning_steps.append((f"Step {step}", text))
             messages.append(AIMessage(content=text))
@@ -455,7 +383,7 @@ Begin analysis."""
 
             if "SELECTED_OPTION:" in text.upper():
                 final_response = text
-                print(f"[Agent] Decision reached at step {step}")
+                self._log("INFO", f"Decision reached at step {step}")
                 break
 
             if step < self.max_reasoning_steps:
@@ -513,8 +441,9 @@ Begin analysis."""
         }
         self._save_iteration_log(iteration, iteration_log)
 
-        print(
-            f"\n[Agent] ✓ Selected Option {selected_idx}: "
+        self._log(
+            "INFO",
+            f"✓ Selected Option {selected_idx}: "
             f"{selected_batch.batch_size} exploit + {max_batch_size - selected_batch.batch_size} explore"
         )
 
@@ -534,7 +463,7 @@ Begin analysis."""
                             return opt
             except Exception:
                 pass
-        print("[Agent] Warning: Could not parse selection, defaulting to option 2 (balanced)")
+        self._log("WARNING", "Could not parse selection, defaulting to option 2 (balanced)")
         return 2
 
     def _validate_feasibility(
@@ -553,15 +482,15 @@ Begin analysis."""
         if cost <= budget and time_per_point <= time and total_points <= max_batch:
             return selected_idx
 
-        print(f"[Agent] Warning: Option {selected_idx} infeasible, searching alternatives...")
+        self._log("WARNING", f"Option {selected_idx} infeasible, searching alternatives...")
         for i in range(5, -1, -1):
             b = allocation_data.qehvi_batches[i]
             total = b.batch_size + (max_batch - b.batch_size)
             if total * cost_per_point <= budget and time_per_point <= time and total <= max_batch:
-                print(f"[Agent] Using feasible alternative: Option {i}")
+                self._log("INFO", f"Using feasible alternative: Option {i}")
                 return i
 
-        print("[Agent] Warning: No feasible options, defaulting to Option 0")
+        self._log("WARNING", "No feasible options, defaulting to Option 0")
         return 0
 
     def _analyze_current_state_distilled(
@@ -575,6 +504,11 @@ Begin analysis."""
         score_fn: Callable[[np.ndarray], np.ndarray],
     ) -> str:
         n = len(X)
+        if n == 0:
+            return """## Key Decision Criteria
+**Status**: No evaluation history available yet.
+This is the initial exploration phase."""
+
         scores = score_fn(Y)
         best_idx = int(np.argmax(scores))
 
@@ -586,7 +520,7 @@ Begin analysis."""
         if n >= 6:
             recent_best = np.max(scores[-3:])
             earlier_best = np.max(scores[-6:-3])
-            if earlier_best > 0:
+            if earlier_best > 1e-10:
                 improvement_pct = (recent_best - earlier_best) / earlier_best * 100
                 if improvement_pct > 5:
                     improvement_status = f"Accelerating (+{improvement_pct:.1f}%)"
@@ -631,7 +565,7 @@ Begin analysis."""
         desc = "## Allocation Options\n\n"
         for i, batch in enumerate(allocation_data.qehvi_batches):
             n_exploit = batch.batch_size
-            n_explore = max_batch - n_exploit
+            n_explore = batch.total_batch_size - n_exploit if hasattr(batch, 'total_batch_size') else (max_batch - n_exploit)
             total_points = n_exploit + n_explore
             cost = total_points * cost_per_point
             feasible = cost <= budget and time_per_point <= time and total_points <= max_batch
@@ -684,3 +618,8 @@ Begin analysis."""
             "decision_summary": f"{selected_batch.batch_size} exploit + {5 - selected_batch.batch_size} explore",
             "reasoning_summary": reasoning[:500] + "..." if len(reasoning) > 500 else reasoning,
         }
+    
+    def cleanup(self):
+        """Cleanup resources at end of optimization."""
+        self.save_global_memory()
+        self._log("INFO", "Agent cleanup completed")
