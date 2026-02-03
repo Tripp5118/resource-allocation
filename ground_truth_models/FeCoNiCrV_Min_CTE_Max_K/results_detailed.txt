@@ -1,0 +1,73 @@
+DETAILED RESULTS WITH PER-OUTPUT METRICS
+================================================================================
+
+Model: Linear
+Optimization Time: 0.0 seconds
+Retraining Time: 0.002 seconds
+Best Params: {}
+
+TRAINING METRICS:
+  Mean R²: 0.5276
+  Mean MSE: 30.680968
+  Mean MAE: 3.178001
+  Per-Output Metrics:
+    CTE (x 10^(-6) 1/K):
+      R²: 0.5423
+      MSE: 2.405218
+      MAE: 0.929491
+    K (W/(m K)):
+      R²: 0.5130
+      MSE: 58.956718
+      MAE: 5.426511
+
+TEST METRICS:
+  Mean R²: 0.5245
+  Mean MSE: 30.742221
+  Mean MAE: 3.178834
+  Per-Output Metrics:
+    CTE (x 10^(-6) 1/K):
+      R²: 0.5560
+      MSE: 2.249023
+      MAE: 0.909255
+    K (W/(m K)):
+      R²: 0.4930
+      MSE: 59.235418
+      MAE: 5.448413
+
+--------------------------------------------------------------------------------
+
+Model: RFR
+Optimization Time: 80.322 seconds
+Retraining Time: 2.049 seconds
+Best Params: {'n_estimators': 87, 'max_depth': 32, 'min_samples_split': 3, 'min_samples_leaf': 1}
+
+TRAINING METRICS:
+  Mean R²: 0.9924
+  Mean MSE: 0.150926
+  Mean MAE: 0.170538
+  Per-Output Metrics:
+    CTE (x 10^(-6) 1/K):
+      R²: 0.9867
+      MSE: 0.069933
+      MAE: 0.101774
+    K (W/(m K)):
+      R²: 0.9981
+      MSE: 0.231919
+      MAE: 0.239303
+
+TEST METRICS:
+  Mean R²: 0.9615
+  Mean MSE: 0.647587
+  Mean MAE: 0.349691
+  Per-Output Metrics:
+    CTE (x 10^(-6) 1/K):
+      R²: 0.9311
+      MSE: 0.348915
+      MAE: 0.216597
+    K (W/(m K)):
+      R²: 0.9919
+      MSE: 0.946258
+      MAE: 0.482786
+
+--------------------------------------------------------------------------------
+

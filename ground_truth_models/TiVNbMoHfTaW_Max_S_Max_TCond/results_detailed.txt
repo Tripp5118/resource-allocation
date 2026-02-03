@@ -1,0 +1,73 @@
+DETAILED RESULTS WITH PER-OUTPUT METRICS
+================================================================================
+
+Model: Linear
+Optimization Time: 0.0 seconds
+Retraining Time: 0.001 seconds
+Best Params: {}
+
+TRAINING METRICS:
+  Mean R²: 0.6208
+  Mean MSE: 5.002877
+  Mean MAE: 1.148513
+  Per-Output Metrics:
+    K (W/(m·K)):
+      R²: 0.7096
+      MSE: 10.000240
+      MAE: 2.237580
+    ΔSᶜᵒⁿᶠⁱᵍ (R):
+      R²: 0.5319
+      MSE: 0.005514
+      MAE: 0.059447
+
+TEST METRICS:
+  Mean R²: 0.6253
+  Mean MSE: 6.852121
+  Mean MAE: 1.328114
+  Per-Output Metrics:
+    K (W/(m·K)):
+      R²: 0.6969
+      MSE: 13.698718
+      MAE: 2.594429
+    ΔSᶜᵒⁿᶠⁱᵍ (R):
+      R²: 0.5537
+      MSE: 0.005524
+      MAE: 0.061800
+
+--------------------------------------------------------------------------------
+
+Model: RFR
+Optimization Time: 13.896 seconds
+Retraining Time: 0.275 seconds
+Best Params: {'n_estimators': 84, 'max_depth': 31, 'min_samples_split': 4, 'min_samples_leaf': 2}
+
+TRAINING METRICS:
+  Mean R²: 0.9736
+  Mean MSE: 0.139597
+  Mean MAE: 0.212601
+  Per-Output Metrics:
+    K (W/(m·K)):
+      R²: 0.9919
+      MSE: 0.278666
+      MAE: 0.406600
+    ΔSᶜᵒⁿᶠⁱᵍ (R):
+      R²: 0.9552
+      MSE: 0.000527
+      MAE: 0.018603
+
+TEST METRICS:
+  Mean R²: 0.9166
+  Mean MSE: 0.372134
+  Mean MAE: 0.341681
+  Per-Output Metrics:
+    K (W/(m·K)):
+      R²: 0.9836
+      MSE: 0.742405
+      MAE: 0.648493
+    ΔSᶜᵒⁿᶠⁱᵍ (R):
+      R²: 0.8496
+      MSE: 0.001862
+      MAE: 0.034869
+
+--------------------------------------------------------------------------------
+
