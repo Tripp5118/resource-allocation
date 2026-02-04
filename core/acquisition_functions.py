@@ -151,7 +151,109 @@ class AcquisitionFunctionManager:
             2, dtype=DTYPE, device=DEVICE
         )
         return pareto, ref_point
-
+    
+    def compute_single_allocation_option(
+        self,
+        model: MultiTaskGP,
+        X_pool: torch.Tensor,
+        pareto_Y: torch.Tensor,
+        ref_point: torch.Tensor,
+        mc_samples: int = 128,
+        n_optimization: int = 5,
+        n_exploration: int = 0,
+    ) -> AcquisitionData:
+        """
+        Compute a SINGLE allocation option (for fixed policies like Pure QEHVI/MESMO).
+        
+        This is more efficient than compute_all_allocation_options when you only need
+        one specific split.
+        
+        Args:
+            model: Fitted MultiTaskGP model.
+            X_pool: Candidate pool (n_pool, d) for entropy ranking.
+            pareto_Y: Current Pareto front (m, 2) in "maximize" space.
+            ref_point: Reference point for hypervolume (2,).
+            mc_samples: Monte Carlo samples for acquisition.
+            n_optimization: Number of qEHVI (exploitation) points.
+            n_exploration: Number of MO-MESMO (exploration) points.
+            
+        Returns:
+            AcquisitionData with a single allocation option.
+        """
+        total_batch_size = n_optimization + n_exploration
+        
+        if total_batch_size != 5:
+            raise ValueError(f"Total batch size must be 5, got {total_batch_size}")
+        
+        print(f"[AcqFn] Computing single allocation: {n_optimization} exploit + {n_exploration} explore")
+        
+        # Reduce samples for MO-MESMO
+        mc_samples_entropy = min(mc_samples // 2, 64)
+        
+        # Shared qEHVI acquisition for evaluation
+        sampler = SobolQMCNormalSampler(sample_shape=torch.Size([mc_samples]))
+        partitioning = NondominatedPartitioning(ref_point=ref_point, Y=pareto_Y)
+        qehvi_acq = qLogExpectedHypervolumeImprovement(
+            model=model,
+            ref_point=ref_point.tolist(),
+            partitioning=partitioning,
+            sampler=sampler,
+        )
+        
+        # Optimize the single option
+        if n_optimization == total_batch_size:
+            print(f"  Optimizing qEHVI with q={n_optimization}...")
+            qehvi_points = self._get_qehvi_points(
+                    model=model,
+                    pareto_Y=pareto_Y,
+                    ref_point=ref_point,
+                    q=n_optimization,
+                    mc_samples=mc_samples,
+                )
+        else:
+            qehvi_points = np.zeros((0, self.d))
+        
+        if n_exploration == total_batch_size:
+            print(f"  Optimizing MO-MESMO with q={n_exploration}...")
+            entropy_points = self._get_entropy_points(
+                model=model,
+                pareto_Y=pareto_Y,
+                ref_point=ref_point,
+                q=n_exploration,
+                mc_samples=mc_samples_entropy,
+            )
+        else:
+            entropy_points = np.zeros((0, self.d))
+        
+        # Combine points
+        all_points = np.vstack([qehvi_points, entropy_points]) if (qehvi_points.size > 0 or entropy_points.size > 0) else np.zeros((0, self.d))
+        
+        # Evaluate combined acquisition values
+        X_combined = torch.tensor(all_points, dtype=DTYPE, device=DEVICE)
+        
+        qehvi_val = self._evaluate_qehvi(qehvi_acq, X_combined)
+        entropy_val = self._compute_joint_entropy(model, X_combined)
+        
+        print(f"  → Entropy: {entropy_val:.4f}, QEHVI: {qehvi_val:.4f}")
+        
+        # Create batch object
+        batch = QEHVIBatch(
+            batch_size=n_optimization,
+            points=qehvi_points,
+            explore_points=entropy_points,
+            full_entropy=entropy_val,
+            full_qehvi=qehvi_val,
+            total_batch_size=total_batch_size,
+        )
+        
+        # Create dummy entropy points for reporting (empty list is fine)
+        entropy_top_points = []
+        
+        return AcquisitionData(
+            qehvi_batches=[batch],
+            entropy_points=entropy_top_points,
+        )
+    
     def compute_all_allocation_options(
         self,
         model: MultiTaskGP,
@@ -186,7 +288,7 @@ class AcquisitionFunctionManager:
         total_batch_size = 5
 
         # Reduce samples for MO-MESMO (it's more expensive)
-        mc_samples_entropy = min(mc_samples // 2, 64)
+        mc_samples_entropy = mc_samples
         print(
             f"[AcqFn] Using {mc_samples} samples for qEHVI, "
             f"{mc_samples_entropy} for MO-MESMO"

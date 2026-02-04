@@ -251,7 +251,7 @@ class BOAgent:
         return context
 
     # ---------------- Resource Allocation (Main Decision) ----------------- #
-    from acquisition_functions import AcquisitionData
+    from core.acquisition_functions import AcquisitionData
     def select_resource_allocation(
         self,
         iteration: int,

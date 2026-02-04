@@ -60,7 +60,7 @@ class PureMESMO:
             reasoning: Explanation string
         """
         # Option 5 is always pure exploration (0 points from qEHVI, 5 from MESMO)
-        batch = allocation_options.qehvi_batches[5]
+        batch = allocation_options.qehvi_batches[0]
         
         # Get all exploration points
         points = batch.explore_points
