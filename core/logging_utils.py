@@ -10,11 +10,18 @@ from typing import Optional, Dict, Any, Callable
 class LoggingManager:
     """Manages CSV logging and metadata for BO experiments."""
 
-    def __init__(self, log_dir: str, experiment_name: str):
+    def __init__(
+        self, 
+        log_dir: str, 
+        experiment_name: str,
+        clear_existing: bool = True,
+    ):
         """
         Args:
             log_dir: Directory for logs
             experiment_name: Name of this experiment
+            clear_existing: If True, delete existing CSV files before starting.
+                           If False, append to existing files (can cause duplicates).
         """
         self.log_dir = log_dir
         self.experiment_name = experiment_name
@@ -25,6 +32,13 @@ class LoggingManager:
         self.options_path = os.path.join(log_dir, f"{experiment_name}_options.csv")
         self.evaluations_path = os.path.join(log_dir, f"{experiment_name}_evaluations.csv")
         self.metadata_path = os.path.join(log_dir, f"{experiment_name}_metadata.json")
+
+        # Clear existing files if requested
+        if clear_existing:
+            for path in [self.convergence_path, self.options_path, self.evaluations_path, self.metadata_path]:
+                if os.path.exists(path):
+                    os.remove(path)
+                    print(f"[Logger] Cleared existing file: {path}")
 
         # Initialize metadata
         self.metadata = {
@@ -151,9 +165,11 @@ class LoggingManager:
 
         df = pd.DataFrame(rows)
         if not os.path.exists(self.evaluations_path):
-            df.to_csv(self.evaluations_path, index=False)
+            # First write - create file with header
+            df.to_csv(self.evaluations_path, index=False, mode='w')
         else:
-            df.to_csv(self.evaluations_path, mode="a", header=False, index=False)
+            # Subsequent writes - append without header
+            df.to_csv(self.evaluations_path, index=False, mode='a', header=False)
 
         print(f"[Logger] Logged {len(rows)} evaluations for iteration {iteration}")
 
@@ -264,9 +280,11 @@ class LoggingManager:
 
         df_row = pd.DataFrame([row_data])
         if not os.path.exists(self.convergence_path):
-            df_row.to_csv(self.convergence_path, index=False)
+            # First write - create file with header
+            df_row.to_csv(self.convergence_path, index=False, mode='w')
         else:
-            df_row.to_csv(self.convergence_path, mode="a", header=False, index=False)
+            # Subsequent writes - append without header
+            df_row.to_csv(self.convergence_path, index=False, mode='a', header=False)
 
         print(f"[Logger] Logged convergence for iteration {iteration}")
 
@@ -312,9 +330,11 @@ class LoggingManager:
         if rows:
             df = pd.DataFrame(rows)
             if not os.path.exists(self.options_path):
-                df.to_csv(self.options_path, index=False)
+                # First write - create file with header
+                df.to_csv(self.options_path, index=False, mode='w')
             else:
-                df.to_csv(self.options_path, mode="a", header=False, index=False)
+                # Subsequent writes - append without header
+                df.to_csv(self.options_path, index=False, mode='a', header=False)
             print(
                 f"[Logger] Logged {len(acquisition_data.qehvi_batches)} options "
                 f"with {len(rows)} total points for iteration {iteration}"

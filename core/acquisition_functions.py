@@ -104,7 +104,7 @@ class AcquisitionFunctionManager:
         >>> options = acq_mgr.compute_all_allocation_options(model, X_pool, pareto_Y, ref_point)
     """
 
-    def __init__(self, bounds: torch.Tensor, num_restarts: int = 3, raw_samples: int = 128):
+    def __init__(self, bounds: torch.Tensor, num_restarts: int = 3, raw_samples: int = 256):
         """
         Args:
             bounds: (2, d) tensor of lower/upper bounds per input dimension
@@ -158,7 +158,7 @@ class AcquisitionFunctionManager:
         X_pool: torch.Tensor,
         pareto_Y: torch.Tensor,
         ref_point: torch.Tensor,
-        mc_samples: int = 128,
+        mc_samples: int = 256,
         n_optimization: int = 5,
         n_exploration: int = 0,
     ) -> AcquisitionData:
@@ -188,7 +188,7 @@ class AcquisitionFunctionManager:
         print(f"[AcqFn] Computing single allocation: {n_optimization} exploit + {n_exploration} explore")
         
         # Reduce samples for MO-MESMO
-        mc_samples_entropy = min(mc_samples // 2, 64)
+        mc_samples_entropy = min(mc_samples // 2, 128)
         
         # Shared qEHVI acquisition for evaluation
         sampler = SobolQMCNormalSampler(sample_shape=torch.Size([mc_samples]))
@@ -260,7 +260,7 @@ class AcquisitionFunctionManager:
         X_pool: torch.Tensor,
         pareto_Y: torch.Tensor,
         ref_point: torch.Tensor,
-        mc_samples: int = 128,
+        mc_samples: int = 256,
     ) -> AcquisitionData:
         """
         Compute all 6 allocation options for a total batch size of 5.
@@ -288,7 +288,7 @@ class AcquisitionFunctionManager:
         total_batch_size = 5
 
         # Reduce samples for MO-MESMO (it's more expensive)
-        mc_samples_entropy = mc_samples
+        mc_samples_entropy = min(mc_samples // 2, 128)
         print(
             f"[AcqFn] Using {mc_samples} samples for qEHVI, "
             f"{mc_samples_entropy} for MO-MESMO"
