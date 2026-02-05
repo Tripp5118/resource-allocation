@@ -21,7 +21,7 @@ from botorch.utils.multi_objective.box_decompositions.non_dominated import (
 from botorch.utils.multi_objective.box_decompositions.dominated import (
     DominatedPartitioning,
 )
-from botorch.acquisition.multi_objective.logei import qLogExpectedHypervolumeImprovement
+from botorch.acquisition.multi_objective.monte_carlo import qExpectedHypervolumeImprovement
 from botorch.acquisition.multi_objective.max_value_entropy_search import (
     qLowerBoundMultiObjectiveMaxValueEntropySearch,
 )
@@ -193,7 +193,7 @@ class AcquisitionFunctionManager:
         # Shared qEHVI acquisition for evaluation
         sampler = SobolQMCNormalSampler(sample_shape=torch.Size([mc_samples]))
         partitioning = NondominatedPartitioning(ref_point=ref_point, Y=pareto_Y)
-        qehvi_acq = qLogExpectedHypervolumeImprovement(
+        qehvi_acq = qExpectedHypervolumeImprovement(
             model=model,
             ref_point=ref_point.tolist(),
             partitioning=partitioning,
@@ -210,49 +210,71 @@ class AcquisitionFunctionManager:
                     q=n_optimization,
                     mc_samples=mc_samples,
                 )
-        else:
-            qehvi_points = np.zeros((0, self.d))
-        
-        if n_exploration == total_batch_size:
+            explore_points = np.empty((0, self.d))
+            
+        elif n_exploration == total_batch_size:
             print(f"  Optimizing MO-MESMO with q={n_exploration}...")
-            entropy_points = self._get_entropy_points(
+            qehvi_points = np.empty((0, self.d))
+            explore_points = self._get_entropy_points(
                 model=model,
                 pareto_Y=pareto_Y,
                 ref_point=ref_point,
                 q=n_exploration,
                 mc_samples=mc_samples_entropy,
             )
+            
         else:
-            entropy_points = np.zeros((0, self.d))
+            # Mixed allocation
+            print(f"  Mixed: {n_optimization} qEHVI + {n_exploration} MESMO...")
+            qehvi_points = self._get_qehvi_points(
+                model=model,
+                pareto_Y=pareto_Y,
+                ref_point=ref_point,
+                q=n_optimization,
+                mc_samples=mc_samples,
+            )
+            explore_points = self._get_entropy_points(
+                model=model,
+                pareto_Y=pareto_Y,
+                ref_point=ref_point,
+                q=n_exploration,
+                mc_samples=mc_samples_entropy,
+            )
         
-        # Combine points
-        all_points = np.vstack([qehvi_points, entropy_points]) if (qehvi_points.size > 0 or entropy_points.size > 0) else np.zeros((0, self.d))
+        # Evaluate combined batch
+        all_points_torch = torch.cat(
+            [
+                torch.tensor(qehvi_points, dtype=DTYPE, device=DEVICE),
+                torch.tensor(explore_points, dtype=DTYPE, device=DEVICE),
+            ],
+            dim=0,
+        )
         
-        # Evaluate combined acquisition values
-        X_combined = torch.tensor(all_points, dtype=DTYPE, device=DEVICE)
+        full_qehvi = self._evaluate_qehvi(qehvi_acq, all_points_torch)
+        full_entropy = self._compute_joint_entropy(model, all_points_torch)
         
-        qehvi_val = self._evaluate_qehvi(qehvi_acq, X_combined)
-        entropy_val = self._compute_joint_entropy(model, X_combined)
+        print(f"  → Entropy: {full_entropy:.4f}, QEHVI: {full_qehvi:.4f}")
         
-        print(f"  → Entropy: {entropy_val:.4f}, QEHVI: {qehvi_val:.4f}")
-        
-        # Create batch object
         batch = QEHVIBatch(
             batch_size=n_optimization,
             points=qehvi_points,
-            explore_points=entropy_points,
-            full_entropy=entropy_val,
-            full_qehvi=qehvi_val,
+            explore_points=explore_points,
+            full_qehvi=full_qehvi,
+            full_entropy=full_entropy,
             total_batch_size=total_batch_size,
         )
         
-        # Create dummy entropy points for reporting (empty list is fine)
-        entropy_top_points = []
-        
-        return AcquisitionData(
-            qehvi_batches=[batch],
-            entropy_points=entropy_top_points,
+        # Compute entropy points for reference
+        entropy_points = self._compute_top_entropy_points(
+            model=model,
+            X_pool=X_pool,
+            pareto_Y=pareto_Y,
+            ref_point=ref_point,
+            n_points=min(10, len(X_pool)),
+            mc_samples=mc_samples,
         )
+        
+        return AcquisitionData(qehvi_batches=[batch], entropy_points=entropy_points)
     
     def compute_all_allocation_options(
         self,
@@ -308,7 +330,7 @@ class AcquisitionFunctionManager:
         # Step 2: Shared qEHVI acquisition for evaluation
         sampler = SobolQMCNormalSampler(sample_shape=torch.Size([mc_samples]))
         partitioning = NondominatedPartitioning(ref_point=ref_point, Y=pareto_Y)
-        qehvi_acq = qLogExpectedHypervolumeImprovement(
+        qehvi_acq = qExpectedHypervolumeImprovement(
             model=model,
             ref_point=ref_point.tolist(),
             partitioning=partitioning,
@@ -414,7 +436,7 @@ class AcquisitionFunctionManager:
         sampler = SobolQMCNormalSampler(sample_shape=torch.Size([mc_samples]))
         partitioning = NondominatedPartitioning(ref_point=ref_point, Y=pareto_Y)
 
-        acq = qLogExpectedHypervolumeImprovement(
+        acq = qExpectedHypervolumeImprovement(
             model=model,
             ref_point=ref_point.tolist(),
             partitioning=partitioning,
@@ -602,7 +624,7 @@ class AcquisitionFunctionManager:
         Evaluate qEHVI on a batch of points in original space.
 
         Args:
-            acq_function: qLogExpectedHypervolumeImprovement instance.
+            acq_function: qExpectedHypervolumeImprovement instance.
             X: Points (q, d) in original space.
 
         Returns:
@@ -689,7 +711,7 @@ class AcquisitionFunctionManager:
 
         sampler = SobolQMCNormalSampler(sample_shape=torch.Size([mc_samples]))
         partitioning = NondominatedPartitioning(ref_point=ref_point, Y=pareto_Y)
-        acq = qLogExpectedHypervolumeImprovement(
+        acq = qExpectedHypervolumeImprovement(
             model=model,
             ref_point=ref_point.tolist(),
             partitioning=partitioning,

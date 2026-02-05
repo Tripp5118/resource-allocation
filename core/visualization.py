@@ -1,7 +1,7 @@
 # core/visualization.py
 
 import os
-from typing import Optional, List, Callable
+from typing import Optional, List, Callable, Dict
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -25,12 +25,45 @@ class VisualizationManager:
     - Can color points by:
         * a scalar score from a GP model (via score_fn(Y_pred)), or
         * arbitrary scalar values from a user-supplied evaluator f(x).
+
+    KEY FEATURES:
+    - Handles both normalized (for GP) and raw (for plotting) outputs.
+    - Automatically denormalizes GP predictions for interpretable plots.
+    - Creates comprehensive visualizations: 2D objective space, convergence, Pareto evolution.
+    
+    NORMALIZATION WORKFLOW:
+    - GP operates on normalized outputs (mean=0, std=1).
+    - Visualizations show original scale (interpretable to humans).
+    - Pass normalization_params to enable automatic denormalization.
     """
 
-    def __init__(self, log_dir: str, design_space, experiment_name: str = "experiment"):
+    def __init__(
+        self,
+        log_dir: str = None,  # Backward compatibility
+        design_space = None,
+        experiment_name: str = "experiment",
+        normalization_params: Optional[Dict[str, np.ndarray]] = None,
+        obj1_name: str = "Obj1",
+        obj2_name: str = "Obj2",
+    ):
+        """
+        Initialize visualization manager.
+        
+        Args:
+            log_dir: Directory to save visualizations
+            design_space: DesignSpace object (optional, for composition plots)
+            experiment_name: Name of experiment
+            normalization_params: Dict with 'mean' and 'std' arrays for denormalization
+            obj1_name: Name of first objective (for labels)
+            obj2_name: Name of second objective (for labels)
+        """
         self.log_dir = log_dir
         self.design_space = design_space
         self.experiment_name = experiment_name
+        self.normalization_params = normalization_params
+        self.obj1_name = obj1_name
+        self.obj2_name = obj2_name
+
         self.vis_dir = os.path.join(log_dir, "visualizations")
         os.makedirs(self.vis_dir, exist_ok=True)
 
@@ -57,7 +90,49 @@ class VisualizationManager:
         print(f"[Viz] Initialized visualization in {self.vis_dir}")
         print(f"[Viz] Experiment name: {experiment_name}")
         print(f"[Viz] Dimension d={self.dim}, labels={self.element_names}")
+        if normalization_params is not None:
+            print(f"[Viz] Normalization enabled - will denormalize for plotting")
+            print(f"  {obj1_name}: mean={normalization_params['mean'][0]:.4f}, std={normalization_params['std'][0]:.4f}")
+            print(f"  {obj2_name}: mean={normalization_params['mean'][1]:.4f}, std={normalization_params['std'][1]:.4f}")
 
+    # ------------------------------------------------------------------ #
+    #  NORMALIZATION UTILITIES
+    # ------------------------------------------------------------------ #
+    
+    def denormalize_outputs(self, Y_normalized: np.ndarray) -> np.ndarray:
+        """
+        Denormalize outputs from (mean=0, std=1) to original scale.
+        
+        Args:
+            Y_normalized: Normalized outputs (n, 2)
+            
+        Returns:
+            Y_raw: Original scale outputs (n, 2)
+        """
+        if self.normalization_params is None:
+            return Y_normalized
+        
+        mean = self.normalization_params['mean']
+        std = self.normalization_params['std']
+        return Y_normalized * std + mean
+    
+    def normalize_outputs(self, Y_raw: np.ndarray) -> np.ndarray:
+        """
+        Normalize outputs from original scale to (mean=0, std=1).
+        
+        Args:
+            Y_raw: Original scale outputs (n, 2)
+            
+        Returns:
+            Y_normalized: Normalized outputs (n, 2)
+        """
+        if self.normalization_params is None:
+            return Y_raw
+        
+        mean = self.normalization_params['mean']
+        std = self.normalization_params['std']
+        return (Y_raw - mean) / std
+    
     # ------------------------------------------------------------------ #
     #  Projection setup
     # ------------------------------------------------------------------ #
@@ -92,8 +167,7 @@ class VisualizationManager:
 
     def _affine_transform(self, X: np.ndarray) -> np.ndarray:
         """Project compositions X (n,d) to 2D using the d-gon vertices."""
-        X_norm = X  # assume already valid compositions
-        return X_norm @ self.projection_matrix  # (n,d) x (d,2) -> (n,2)
+        return X @ self.projection_matrix  # (n,d) x (d,2) -> (n,2)
 
     # ------------------------------------------------------------------ #
     #  Generic evaluation over design space
@@ -131,10 +205,15 @@ class VisualizationManager:
         """
         Predict scalar scores on the design space using a MultiTaskGP model.
 
+        This function handles normalization automatically.
+        - GP predictions are in NORMALIZED space
+        - Predictions are DENORMALIZED before applying score_fn
+        - score_fn receives ORIGINAL SCALE outputs
+
         Args:
             model: fitted MultiTaskGP model
             bounds: (2,d) tensor
-            score_fn: maps predicted objectives Y_pred (N,2) -> scores (N,)
+            score_fn: maps predicted objectives Y_pred (N,2) in ORIGINAL scale -> scores (N,)
 
         Returns:
             scores: (N,) scalar scores
@@ -158,8 +237,13 @@ class VisualizationManager:
             mean_obj1 = mean_flat[:n].cpu().numpy()
             mean_obj2 = mean_flat[n:].cpu().numpy()
 
-        Y_pred = np.column_stack([mean_obj1, mean_obj2])
-        scores = score_fn(Y_pred)
+        Y_pred_normalized = np.column_stack([mean_obj1, mean_obj2])
+        
+        # Denormalize GP predictions to original scale
+        Y_pred_raw = self.denormalize_outputs(Y_pred_normalized)
+        
+        # score_fn receives ORIGINAL SCALE outputs
+        scores = score_fn(Y_pred_raw)
 
         # Cleanup
         del vis_space_gpu, X_norm, X_task_0, X_task_1, X_both
@@ -298,6 +382,7 @@ class VisualizationManager:
         if Y.shape[1] != 2:
             raise ValueError("evaluator must return an array of shape (N,2).")
 
+        Y = np.abs(Y)
         paths = []
         for i, name in enumerate(obj_names):
             vals = Y[:, i]
@@ -346,7 +431,8 @@ class VisualizationManager:
             def score_fn_default(Y: np.ndarray) -> np.ndarray:
                 return Y[:, 1]
             score_fn = score_fn_default
-
+        
+        Y_history = np.abs(Y_history)
         fig, ax = plt.subplots(figsize=(12, 10))
         ax.set_aspect("equal")
         ax.axis("off")

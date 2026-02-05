@@ -95,7 +95,7 @@ class LoggingManager:
         self._log_convergence(
             iteration=iteration,
             X_history=X_history,
-            Y_history=Y_history,
+            Y_history=np.abs(Y_history),
             n_new_points=n_new_points,
             strategy=strategy,
             timing=timing,
@@ -143,6 +143,7 @@ class LoggingManager:
         scores = score_fn(Y_new)
         rows = []
 
+        Y_new = np.abs(Y_new)
         for i, (x, y, s) in enumerate(zip(X_new, Y_new, scores)):
             row = {
                 "iteration": iteration,
