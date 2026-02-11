@@ -119,7 +119,7 @@ class BOAgent:
         ...     time_remaining=10.0,
         ...     X_history=X,
         ...     Y_history=Y,
-        ...     allocation_options=acq_data
+        ...     allocation_results=acq_data
         ... )"""
 
     def __init__(
@@ -251,7 +251,7 @@ class BOAgent:
         return context
 
     # ---------------- Resource Allocation (Main Decision) ----------------- #
-    from core.acquisition_functions import AcquisitionData
+    from core.acquisition_functions import AllocationResults
     def select_resource_allocation(
         self,
         iteration: int,
@@ -261,7 +261,7 @@ class BOAgent:
         time_per_point: float,
         X_history: np.ndarray,
         Y_history: np.ndarray,
-        allocation_options: AcquisitionData,
+        allocation_results: AllocationResults,
         max_batch_size: int = 5,
         score_fn: Optional[Callable[[np.ndarray], np.ndarray]] = None,
     ) -> Tuple[int, str, List[np.ndarray]]:
@@ -275,12 +275,12 @@ class BOAgent:
             time_per_point: time per iteration
             X_history: (n, d)
             Y_history: (n, 2)
-            allocation_options: AcquisitionData with 6 allocation options
+            allocation_results: AllocationResults with 6 allocation options
             max_batch_size: maximum allowed batch size
             score_fn: function mapping Y_history -> scores
 
         Returns:
-            selected_idx: index in allocation_options.qehvi_batches
+            selected_idx: index in allocation_results.options
             reasoning: full reasoning text
             selected_points: [exploit_points, explore_points] list for evaluation
         """
@@ -300,8 +300,8 @@ class BOAgent:
         )
         self._log("INFO", f"\nAnalysis:\n{analysis}\n")
 
-        options_desc = self._describe_allocation_options(
-            allocation_options, cost_per_point, time_per_point,
+        options_desc = self._describe_allocation_results(
+            allocation_results, cost_per_point, time_per_point,
             budget_remaining, time_remaining, max_batch_size
         )
 
@@ -409,16 +409,16 @@ Begin analysis."""
 
         selected_idx = self._parse_selection(final_response)
         selected_idx = self._validate_feasibility(
-            selected_idx, allocation_options, budget_remaining, time_remaining,
+            selected_idx, allocation_results, budget_remaining, time_remaining,
             cost_per_point, time_per_point, max_batch_size
         )
 
-        selected_batch = allocation_options.qehvi_batches[selected_idx]
+        selected_batch = allocation_results.options[selected_idx]
         selected_points = []
-        if len(selected_batch.points) > 0:
-            selected_points.append(selected_batch.points)
-        if len(selected_batch.explore_points) > 0:
-            selected_points.append(selected_batch.explore_points)
+        if len(selected_batch.exploitation_points) > 0:
+            selected_points.append(selected_batch.exploitation_points)
+        if len(selected_batch.exploration_points) > 0:
+            selected_points.append(selected_batch.exploration_points)
 
         full_reasoning = "\n\n".join([f"**{t}**\n{c}" for t, c in reasoning_steps])
 
@@ -436,7 +436,7 @@ Begin analysis."""
             "time_remaining": time_remaining,
             "reasoning_steps": [{"step": t, "content": c} for t, c in reasoning_steps],
             "selected_option": selected_idx,
-            "selected_batch_size": selected_batch.batch_size,
+            "selected_batch_size": selected_batch.num_exploitation,
             "summary": iteration_summary,
         }
         self._save_iteration_log(iteration, iteration_log)
@@ -444,7 +444,7 @@ Begin analysis."""
         self._log(
             "INFO",
             f"✓ Selected Option {selected_idx}: "
-            f"{selected_batch.batch_size} exploit + {max_batch_size - selected_batch.batch_size} explore"
+            f"{selected_batch.num_exploitation} exploit + {max_batch_size - selected_batch.num_exploitation} explore"
         )
 
         return selected_idx, full_reasoning, selected_points
@@ -469,22 +469,22 @@ Begin analysis."""
     def _validate_feasibility(
         self,
         selected_idx: int,
-        allocation_data: Any,
+        allocation_results: Any,
         budget: float,
         time: float,
         cost_per_point: float,
         time_per_point: float,
         max_batch: int,
     ) -> int:
-        batch = allocation_data.qehvi_batches[selected_idx]
-        total_points = batch.batch_size + (max_batch - batch.batch_size)
+        batch = allocation_results.options[selected_idx]
+        total_points = batch.num_exploitation + (max_batch - batch.num_exploitation)
         cost = total_points * cost_per_point
         if cost <= budget and time_per_point <= time and total_points <= max_batch:
             return selected_idx
 
         self._log("WARNING", f"Option {selected_idx} infeasible, searching alternatives...")
         for i in range(5, -1, -1):
-            b = allocation_data.qehvi_batches[i]
+            b = allocation_results.options[i]
             total = b.batch_size + (max_batch - b.batch_size)
             if total * cost_per_point <= budget and time_per_point <= time and total <= max_batch:
                 self._log("INFO", f"Using feasible alternative: Option {i}")
@@ -553,9 +553,9 @@ This is the initial exploration phase."""
 
         return analysis
 
-    def _describe_allocation_options(
+    def _describe_allocation_results(
         self,
-        allocation_data: Any,
+        allocation_results: Any,
         cost_per_point: float,
         time_per_point: float,
         budget: float,
@@ -563,8 +563,8 @@ This is the initial exploration phase."""
         max_batch: int,
     ) -> str:
         desc = "## Allocation Options\n\n"
-        for i, batch in enumerate(allocation_data.qehvi_batches):
-            n_exploit = batch.batch_size
+        for i, batch in enumerate(allocation_results.options):
+            n_exploit = batch.num_exploitation
             n_explore = batch.total_batch_size - n_exploit if hasattr(batch, 'total_batch_size') else (max_batch - n_exploit)
             total_points = n_exploit + n_explore
             cost = total_points * cost_per_point
@@ -572,8 +572,8 @@ This is the initial exploration phase."""
 
             desc += (
                 f"**Option {i}**: {n_exploit} exploit + {n_explore} explore | "
-                f"Cost: ${cost:.0f} | EHVI: {batch.full_qehvi:.4f} | "
-                f"Entropy: {batch.full_entropy:.2f} | "
+                f"Cost: ${cost:.0f} | EHVI: {batch.hypervolume_improvement:.4f} | "
+                f"Entropy: {batch.information_gain:.2f} | "
                 f"{'✓ Feasible' if feasible else '✗ Infeasible'}\n"
             )
 
@@ -593,7 +593,7 @@ This is the initial exploration phase."""
         reasoning: str,
         score_fn: Callable[[np.ndarray], np.ndarray],
     ) -> Dict[str, Any]:
-        total_points = selected_batch.batch_size + (5 - selected_batch.batch_size)
+        total_points = selected_batch.num_exploitation + (5 - selected_batch.num_exploitation)
         budget_spent = total_points * cost_per_point
         time_spent = time_per_point
 
@@ -615,7 +615,7 @@ This is the initial exploration phase."""
             "best_obj1": float(Y[best_idx, 0]),
             "best_obj2": float(Y[best_idx, 1]),
             "selected_option": selected_idx,
-            "decision_summary": f"{selected_batch.batch_size} exploit + {5 - selected_batch.batch_size} explore",
+            "decision_summary": f"{selected_batch.num_exploitation} exploit + {5 - selected_batch.num_exploitation} explore",
             "reasoning_summary": reasoning[:500] + "..." if len(reasoning) > 500 else reasoning,
         }
     

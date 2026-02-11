@@ -82,7 +82,7 @@ class LoggingManager:
             strategy: Strategy/agent instance (for metadata)
             timing: Time taken for this iteration (seconds)
             extra_info: Additional info (selection details, budget, etc.)
-            acquisition_data: AcquisitionData object with all options
+            acquisition_data: AllocationResults object with all options
             score_fn: Function taking Y_history (n, 2) and returning scores (n,)
             obj1_name, obj2_name: Names of the two objectives (for column labels)
         """
@@ -295,9 +295,9 @@ class LoggingManager:
         selected_n_exp = extra_info.get("n_exploration", None) if extra_info else None
 
         rows = []
-        for option_num, batch in enumerate(acquisition_data.qehvi_batches, start=1):
-            n_opt = batch.batch_size
-            n_exp = batch.total_batch_size - batch.batch_size if hasattr(batch, "total_batch_size") else None
+        for option_num, batch in enumerate(acquisition_data.options, start=1):
+            n_opt = batch.num_exploitation
+            n_exp = batch.total_batch_size - batch.num_exploitation if hasattr(batch, "total_batch_size") else None
             is_selected = (selected_n_opt == n_opt and selected_n_exp == n_exp)
 
             base_row = {
@@ -306,17 +306,17 @@ class LoggingManager:
                 "n_opt": n_opt,
                 "n_exp": n_exp,
                 "selected": is_selected,
-                "full_qehvi": batch.full_qehvi,
-                "full_entropy": batch.full_entropy,
+                "full_qehvi": batch.hypervolume_improvement,
+                "full_entropy": batch.information_gain,
             }
 
             all_points = []
             all_sources = []
 
-            for point in batch.points:
+            for point in batch.exploitation_points:
                 all_points.append(point)
                 all_sources.append("QEHVI")
-            for point in batch.explore_points:
+            for point in batch.exploration_points:
                 all_points.append(point)
                 all_sources.append("MO-MESMO")
 
@@ -337,7 +337,7 @@ class LoggingManager:
                 # Subsequent writes - append without header
                 df.to_csv(self.options_path, index=False, mode='a', header=False)
             print(
-                f"[Logger] Logged {len(acquisition_data.qehvi_batches)} options "
+                f"[Logger] Logged {len(acquisition_data.options)} options "
                 f"with {len(rows)} total points for iteration {iteration}"
             )
 

@@ -38,7 +38,7 @@ DTYPE = torch.double
 
 
 @dataclass
-class QEHVIBatch:
+class AllocationOption:
     """Represents one allocation option (n exploit + k explore points)."""
 
     batch_size: int              # Number of qEHVI (exploitation) points
@@ -50,9 +50,9 @@ class QEHVIBatch:
 
     def __repr__(self):
         return (
-            f"QEHVIBatch(q={self.batch_size}, "
-            f"Entropy={self.full_entropy:.4f}, "
-            f"QEHVI={self.full_qehvi:.4f})"
+            f"AllocationOption(q={self.batch_size}, "
+            f"Entropy={self.information_gain:.4f}, "
+            f"QEHVI={self.hypervolume_improvement:.4f})"
         )
 
 
@@ -70,16 +70,16 @@ class EntropyPoint:
 
 
 @dataclass
-class AcquisitionData:
+class AllocationResults:
     """Container for all allocation options."""
 
-    qehvi_batches: List[QEHVIBatch]
+    qehvi_batches: List[AllocationOption]
     entropy_points: List[EntropyPoint]
 
     def __repr__(self):
-        s = "AcquisitionData:\n"
+        s = "AllocationResults:\n"
         s += "  Allocation Options:\n"
-        for batch in self.qehvi_batches:
+        for batch in self.options:
             s += f"    {batch}\n"
         return s
 
@@ -161,7 +161,7 @@ class AcquisitionFunctionManager:
         mc_samples: int = 256,
         n_optimization: int = 5,
         n_exploration: int = 0,
-    ) -> AcquisitionData:
+    ) -> AllocationResults:
         """
         Compute a SINGLE allocation option (for fixed policies like Pure QEHVI/MESMO).
         
@@ -178,7 +178,7 @@ class AcquisitionFunctionManager:
             n_exploration: Number of MO-MESMO (exploration) points.
             
         Returns:
-            AcquisitionData with a single allocation option.
+            AllocationResults with a single allocation option.
         """
         total_batch_size = n_optimization + n_exploration
         
@@ -255,7 +255,7 @@ class AcquisitionFunctionManager:
         
         print(f"  → Entropy: {full_entropy:.4f}, QEHVI: {full_qehvi:.4f}")
         
-        batch = QEHVIBatch(
+        batch = AllocationOption(
             batch_size=n_optimization,
             points=qehvi_points,
             explore_points=explore_points,
@@ -274,7 +274,7 @@ class AcquisitionFunctionManager:
             mc_samples=mc_samples,
         )
         
-        return AcquisitionData(qehvi_batches=[batch], entropy_points=entropy_points)
+        return AllocationResults(qehvi_batches=[batch], entropy_points=entropy_points)
     
     def compute_all_allocation_options(
         self,
@@ -283,7 +283,7 @@ class AcquisitionFunctionManager:
         pareto_Y: torch.Tensor,
         ref_point: torch.Tensor,
         mc_samples: int = 256,
-    ) -> AcquisitionData:
+    ) -> AllocationResults:
         """
         Compute all 6 allocation options for a total batch size of 5.
 
@@ -303,7 +303,7 @@ class AcquisitionFunctionManager:
             mc_samples: Monte Carlo samples for acquisition.
 
         Returns:
-            AcquisitionData with 6 allocation options.
+            AllocationResults with 6 allocation options.
         """
         print("[AcqFn] Computing acquisition functions.")
 
@@ -338,7 +338,7 @@ class AcquisitionFunctionManager:
         )
 
         # Step 3: Build all 6 allocation options
-        qehvi_batches: List[QEHVIBatch] = []
+        qehvi_batches: List[AllocationOption] = []
 
         for q_exploit in range(total_batch_size, -1, -1):
             q_explore = total_batch_size - q_exploit
@@ -396,7 +396,7 @@ class AcquisitionFunctionManager:
                 combined_entropy = 0.0
                 combined_qehvi = 0.0
 
-            batch = QEHVIBatch(
+            batch = AllocationOption(
                 batch_size=q_exploit,
                 points=exploit_points,
                 explore_points=explore_points,
@@ -407,11 +407,11 @@ class AcquisitionFunctionManager:
             qehvi_batches.append(batch)
 
             print(
-                f"  → Entropy: {batch.full_entropy:.4f}, "
-                f"QEHVI: {batch.full_qehvi:.4f}"
+                f"  → Entropy: {batch.information_gain:.4f}, "
+                f"QEHVI: {batch.hypervolume_improvement:.4f}"
             )
 
-        return AcquisitionData(qehvi_batches=qehvi_batches, entropy_points=entropy_points)
+        return AllocationResults(qehvi_batches=qehvi_batches, entropy_points=entropy_points)
 
     # ========================================================================
     #  POINT SELECTION
