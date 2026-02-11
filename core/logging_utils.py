@@ -267,9 +267,15 @@ class LoggingManager:
         if extra_info:
             row_data["selected_n_opt"] = extra_info.get("n_optimization", None)
             row_data["selected_n_exp"] = extra_info.get("n_exploration", None)
+            # ADD THESE TWO LINES:
+            row_data["hypervolume_improvement"] = extra_info.get("hypervolume_improvement", None)
+            row_data["information_gain"] = extra_info.get("information_gain", None)
         else:
             row_data["selected_n_opt"] = None
             row_data["selected_n_exp"] = None
+            # ADD THESE TWO LINES:
+            row_data["hypervolume_improvement"] = None
+            row_data["information_gain"] = None
 
         # LLM info, if present
         if hasattr(strategy, "model"):

@@ -9,7 +9,7 @@ from botorch.models import MultiTaskGP
 from botorch.utils.transforms import normalize
 from botorch.utils.multi_objective.pareto import is_non_dominated
 from botorch.acquisition.monte_carlo import qUpperConfidenceBound
-from botorch.acquisition.multi_objective.logei import qLogExpectedHypervolumeImprovement   
+from botorch.acquisition.multi_objective.monte_carlo import qExpectedHypervolumeImprovement   
 from botorch.utils.multi_objective.box_decompositions.non_dominated import NondominatedPartitioning
 from botorch.sampling.normal import SobolQMCNormalSampler
 from botorch.optim import optimize_acqf
@@ -455,7 +455,7 @@ class AcquisitionFunctionManager:
         )
         
         # Evaluate entropy on ALL points
-        info_gain = self._evaluate_information_gain(
+        info_gain = self._evaluate_mutual_information(
             model=model,
             points=all_points
         )
@@ -495,7 +495,7 @@ class AcquisitionFunctionManager:
         sampler = SobolQMCNormalSampler(sample_shape=torch.Size([mc_samples]))
         partitioning = NondominatedPartitioning(ref_point=reference_point, Y=pareto_front)
         
-        qlogehvi = qLogExpectedHypervolumeImprovement   (
+        qehvi = qExpectedHypervolumeImprovement   (
             model=model,
             ref_point=reference_point.tolist(),
             partitioning=partitioning,
@@ -503,49 +503,53 @@ class AcquisitionFunctionManager:
         )
         
         with torch.no_grad():
-            value = qlogehvi(normalized_points.unsqueeze(0))
+            value = qehvi(normalized_points.unsqueeze(0))
         
         return float(value.item())
 
-    def _evaluate_information_gain(
+    def _evaluate_mutual_information(
         self,
         model: MultiTaskGP,
-        points: np.ndarray
+        points: np.ndarray,
+        num_optimal_samples: int = 10
     ) -> float:
-        """Evaluate joint information gain (entropy) on a set of points (exploration metric).
+        """
+        Calculate mutual information between predictions at candidate points
+        and the optimal input-output pairs for both tasks.
         
-        Uses joint posterior entropy over all points and both objectives.
-        This captures correlations between points and provides a more accurate
-        measure of information gain than summing marginal entropies.
-        
-        This is NOT used for optimization, only for scoring allocation options.
+        Automatically samples optimal points by:
+        1. Drawing posterior samples from the GP
+        2. Finding Pareto front for each sample using compute_pareto_front
+        3. Computing conditional entropy for each optimal sample
         
         Args:
-            model: Fitted GP model
-            points: Points to evaluate (n, d) in original space
+            model: Fitted MultiTaskGP model
+            points: Candidate points to evaluate (n x d) - already normalized in [0,1]
+            num_optimal_samples: Number of optimal point samples (default 10)
         
         Returns:
-            Joint information gain (scalar)
+            Mutual information score (scalar)
         """
         if points.shape[0] == 0:
             return 0.0
         
         points_tensor = torch.tensor(points, dtype=DTYPE, device=DEVICE)
-        normalized_points = normalize(points_tensor, self.bounds)
+        n = points_tensor.shape[0]
         
-        n = normalized_points.shape[0]
-        
+        # Create task indicators for both tasks
         task_0 = torch.zeros(n, 1, dtype=DTYPE, device=DEVICE)
         task_1 = torch.ones(n, 1, dtype=DTYPE, device=DEVICE)
-        X_task_0 = torch.cat([normalized_points, task_0], dim=-1)
-        X_task_1 = torch.cat([normalized_points, task_1], dim=-1)
-        X_both = torch.cat([X_task_0, X_task_1], dim=0)
+        
+        X_task_0 = torch.cat([points_tensor, task_0], dim=-1)
+        X_task_1 = torch.cat([points_tensor, task_1], dim=-1)
+        X_both = torch.cat([X_task_0, X_task_1], dim=0)  # Shape: (2n, d+1)
         
         with torch.no_grad():
+            # ============================================
+            # TERM 1: Prior entropy H[p(y|D_n)]
+            # ============================================
             posterior = model.posterior(X_both)
-            
             covariance_matrix = posterior.covariance_matrix.squeeze(0)
-            
             covariance_matrix = covariance_matrix + 1e-6 * torch.eye(
                 covariance_matrix.shape[0],
                 dtype=DTYPE,
@@ -553,22 +557,181 @@ class AcquisitionFunctionManager:
             )
             
             try:
-                log_det = torch.logdet(covariance_matrix)
-                
-                if torch.isnan(log_det) or torch.isinf(log_det):
-                    print("[Warning] Invalid log determinant, using marginal entropy fallback")
+                log_det_prior = torch.logdet(covariance_matrix)
+                if torch.isnan(log_det_prior) or torch.isinf(log_det_prior):
                     variances = posterior.variance.squeeze(-1).clamp_min(1e-12)
-                    log_det = torch.sum(torch.log(variances))
-                
+                    log_det_prior = torch.sum(torch.log(variances))
             except RuntimeError:
-                print("[Warning] Covariance matrix singular, using marginal entropy fallback")
                 variances = posterior.variance.squeeze(-1).clamp_min(1e-12)
-                log_det = torch.sum(torch.log(variances))
+                log_det_prior = torch.sum(torch.log(variances))
             
             d_total = 2 * n
-            entropy = 0.5 * (d_total * np.log(2 * np.pi * np.e) + log_det)
+            H_prior = 0.5 * (d_total * np.log(2 * np.pi * np.e) + log_det_prior)
+            
+            # ============================================
+            # SAMPLE OPTIMAL POINTS
+            # ============================================
+            optimal_samples = self._sample_optimal_points(
+                model=model,
+                num_samples=num_optimal_samples
+            )
+            
+            # ============================================
+            # TERM 2: Expected posterior entropy E[H[p(y|x, D_n, (X*, Y*))]]
+            # ============================================
+            H_posterior_expected = 0.0
+            
+            for i in range(optimal_samples.shape[0]):
+                # Get optimal point sample (already in normalized [0,1] space)
+                opt_point = optimal_samples[i:i+1]  # Shape: (1, d)
+                
+                # Evaluate model at optimal point for both tasks
+                opt_task_0 = torch.cat([opt_point, torch.zeros(1, 1, dtype=DTYPE, device=DEVICE)], dim=-1)
+                opt_task_1 = torch.cat([opt_point, torch.ones(1, 1, dtype=DTYPE, device=DEVICE)], dim=-1)
+                opt_both = torch.cat([opt_task_0, opt_task_1], dim=0)
+                
+                # Create augmented dataset including the optimal point observations
+                X_augmented = torch.cat([X_both, opt_both], dim=0)
+                
+                # Compute joint posterior over all points
+                posterior_cond = model.posterior(X_augmented)
+                cov_augmented = posterior_cond.covariance_matrix.squeeze(0)
+                
+                # Use Schur complement to get conditional covariance
+                # Cov(y_candidates | y_optimal) = Sigma_11 - Sigma_12 @ Sigma_22^{-1} @ Sigma_21
+                cov_11 = cov_augmented[:2*n, :2*n]  # Candidate-candidate
+                cov_12 = cov_augmented[:2*n, 2*n:]  # Candidate-optimal
+                cov_22 = cov_augmented[2*n:, 2*n:]  # Optimal-optimal
+                
+                # Add jitter for numerical stability
+                cov_22 = cov_22 + 1e-6 * torch.eye(cov_22.shape[0], dtype=DTYPE, device=DEVICE)
+                
+                try:
+                    # Conditional covariance via Schur complement
+                    cov_22_inv = torch.linalg.inv(cov_22)
+                    cov_conditional = cov_11 - cov_12 @ cov_22_inv @ cov_12.T
+                    cov_conditional = cov_conditional + 1e-6 * torch.eye(
+                        2*n, dtype=DTYPE, device=DEVICE
+                    )
+                except RuntimeError:
+                    # Fallback: use marginal covariance if inversion fails
+                    cov_conditional = cov_11 + 1e-6 * torch.eye(2*n, dtype=DTYPE, device=DEVICE)
+                
+                try:
+                    log_det_cond = torch.logdet(cov_conditional)
+                    if torch.isnan(log_det_cond) or torch.isinf(log_det_cond):
+                        variances_cond = torch.diagonal(cov_conditional).clamp_min(1e-12)
+                        log_det_cond = torch.sum(torch.log(variances_cond))
+                except RuntimeError:
+                    variances_cond = torch.diagonal(cov_conditional).clamp_min(1e-12)
+                    log_det_cond = torch.sum(torch.log(variances_cond))
+                
+                H_cond = 0.5 * (d_total * np.log(2 * np.pi * np.e) + log_det_cond)
+                H_posterior_expected += H_cond / optimal_samples.shape[0]
+            
+            # ============================================
+            # Mutual Information = Prior Entropy - Expected Posterior Entropy
+            # ============================================
+            mutual_info = H_prior - H_posterior_expected
         
-        return float(entropy.item())
+        return float(mutual_info.item())
+
+
+    def _sample_optimal_points(
+        self,
+        model: MultiTaskGP,
+        num_samples: int = 10,
+        num_grid_points: int = 1000
+    ) -> torch.Tensor:
+        """
+        Sample potential optimal points by:
+        1. Drawing posterior samples from the GP
+        2. For each sample, finding the Pareto front
+        3. Randomly selecting points from each Pareto front
+        
+        All inputs/outputs are already normalized in [0,1] space.
+        
+        Args:
+            model: Fitted MultiTaskGP model
+            num_samples: Number of optimal point samples to return
+            num_grid_points: Number of grid points to evaluate
+        
+        Returns:
+            Tensor of sampled optimal points (num_samples, d) in normalized [0,1] space
+        """
+        # Generate grid of candidate points in normalized [0, 1] space
+        grid_points = torch.rand(
+            num_grid_points, 
+            self.input_dim, 
+            dtype=DTYPE, 
+            device=DEVICE
+        )
+        
+        # Apply simplex constraint: sum(x_i) = 1 in the ORIGINAL space
+        # Since bounds are [min_i, max_i] and we're in normalized [0,1]:
+        # original_i = min_i + (max_i - min_i) * normalized_i
+        # sum(original) = sum(min) + sum((max-min) * normalized) = 1
+        # => sum((max-min) * normalized) = 1 - sum(min)
+        
+        lower_bounds = self.bounds[0, :]
+        upper_bounds = self.bounds[1, :]
+        range_bounds = upper_bounds - lower_bounds
+        target_sum = 1.0 - lower_bounds.sum().item()
+        
+        # Adjust last dimension to satisfy constraint
+        # sum_{i=0}^{d-2} range_i * x_i + range_{d-1} * x_{d-1} = target_sum
+        # => x_{d-1} = (target_sum - sum_{i=0}^{d-2} range_i * x_i) / range_{d-1}
+        grid_sum = (grid_points[:, :-1] * range_bounds[:-1]).sum(dim=1)
+        grid_points[:, -1] = (target_sum - grid_sum) / range_bounds[-1]
+        
+        # Clamp to [0, 1] to ensure validity
+        grid_points = torch.clamp(grid_points, 0.0, 1.0)
+        
+        optimal_samples = []
+        
+        for sample_idx in range(num_samples):
+            # Create task indices for both objectives
+            n_grid = grid_points.shape[0]
+            task_0 = torch.zeros(n_grid, 1, dtype=DTYPE, device=DEVICE)
+            task_1 = torch.ones(n_grid, 1, dtype=DTYPE, device=DEVICE)
+            
+            X_task_0 = torch.cat([grid_points, task_0], dim=-1)
+            X_task_1 = torch.cat([grid_points, task_1], dim=-1)
+            
+            # Draw posterior samples for both objectives
+            posterior_0 = model.posterior(X_task_0)
+            posterior_1 = model.posterior(X_task_1)
+            
+            sample_0 = posterior_0.rsample(torch.Size([1])).squeeze(0).squeeze(-1)  # (n_grid,)
+            sample_1 = posterior_1.rsample(torch.Size([1])).squeeze(0).squeeze(-1)  # (n_grid,)
+            
+            # Stack into objectives matrix (n_grid, 2)
+            objectives = torch.stack([sample_0, sample_1], dim=-1)
+            
+            # Find Pareto front using your existing method
+            try:
+                pareto_front, _ = self.compute_pareto_front(objectives)
+                
+                # Find which grid points are on the Pareto front
+                pareto_mask = is_non_dominated(objectives)
+                pareto_inputs = grid_points[pareto_mask]
+                
+                # Randomly select one point from the Pareto front
+                if pareto_inputs.shape[0] > 0:
+                    random_idx = torch.randint(0, pareto_inputs.shape[0], (1,))
+                    optimal_samples.append(pareto_inputs[random_idx])
+                else:
+                    # Fallback: use random point if no Pareto front found
+                    random_idx = torch.randint(0, n_grid, (1,))
+                    optimal_samples.append(grid_points[random_idx])
+                    
+            except (ValueError, RuntimeError) as e:
+                # Fallback: use random point if Pareto computation fails
+                print(f"[Warning] Pareto computation failed in sample {sample_idx}: {e}")
+                random_idx = torch.randint(0, n_grid, (1,))
+                optimal_samples.append(grid_points[random_idx])
+        
+        return torch.cat(optimal_samples, dim=0)  # (num_samples, d)
 
     def _concatenate_points(
         self,
