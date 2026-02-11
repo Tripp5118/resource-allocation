@@ -485,7 +485,7 @@ Begin analysis."""
         self._log("WARNING", f"Option {selected_idx} infeasible, searching alternatives...")
         for i in range(5, -1, -1):
             b = allocation_results.options[i]
-            total = b.batch_size + (max_batch - b.batch_size)
+            total = b.total_batch_size
             if total * cost_per_point <= budget and time_per_point <= time and total <= max_batch:
                 self._log("INFO", f"Using feasible alternative: Option {i}")
                 return i
