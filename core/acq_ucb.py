@@ -9,7 +9,8 @@ from botorch.models import MultiTaskGP
 from botorch.utils.transforms import normalize
 from botorch.utils.multi_objective.pareto import is_non_dominated
 from botorch.acquisition.monte_carlo import qUpperConfidenceBound
-from botorch.acquisition.multi_objective.monte_carlo import qExpectedHypervolumeImprovement   
+from botorch.acquisition.multi_objective.monte_carlo import qExpectedHypervolumeImprovement  
+from botorch. 
 from botorch.utils.multi_objective.box_decompositions.non_dominated import NondominatedPartitioning
 from botorch.sampling.normal import SobolQMCNormalSampler
 from botorch.optim import optimize_acqf
@@ -372,27 +373,9 @@ class AcquisitionFunctionManager:
         mc_samples: int,
         mode: str
     ) -> np.ndarray:
-        """Optimize qUCB acquisition function to find candidate points.
-        
-        Args:
-            model: MultiTaskGP model
-            batch_size: Number of points to optimize
-            beta: UCB beta parameter
-            mc_samples: Monte Carlo samples
-            mode: "exploitation" or "exploration" (for logging)
-        
-        Returns:
-            Optimized points in original space (batch_size, d)
-        """
-        print(f"  Optimizing {mode} qUCB (beta={beta:.2f}, q={batch_size})")
-        
-        from botorch.acquisition.objective import ScalarizedPosteriorTransform
-        
+        """Uses qUpperConfidenceBound with ScalarizedPosteriorTransform"""
         sampler = SobolQMCNormalSampler(sample_shape=torch.Size([mc_samples]))
-        
-        posterior_transform = ScalarizedPosteriorTransform(
-            weights=self.objective_weights
-        )
+        posterior_transform = ScalarizedPosteriorTransform(weights=self.objective_weights)
         
         acquisition_function = qUpperConfidenceBound(
             model=model,
@@ -400,7 +383,7 @@ class AcquisitionFunctionManager:
             sampler=sampler,
             posterior_transform=posterior_transform
         )
-        
+       
         simplex_constraint = self._get_simplex_constraint()
         
         candidates, _ = optimize_acqf(

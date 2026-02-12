@@ -466,129 +466,107 @@ def run_bo_experiment(
 # PLOTTING FUNCTIONS
 # ============================================================================
 
-def plot_strategy_decisions(logger):
+# ============================================================================
+# PLOTTING FUNCTIONS
+# ============================================================================
+
+def plot_strategy_decisions(logger, seed: int, beta_exploit: float, beta_explore: float):
     df = pd.read_csv(logger.convergence_path)
     df = df[df['iteration'] > 0].copy()
     df = df.sort_values('iteration')
-    
     opt_color = '#2ECC71'
     exp_color = '#6C5CE7'
-    
     fig, ax = plt.subplots(figsize=(10, 6))
-    
     ax.plot(df['iteration'], df['selected_n_opt'],
             color=opt_color, linewidth=2, alpha=0.85)
     ax.scatter(df['iteration'], df['selected_n_opt'],
                color=opt_color, s=100, marker='o',
                label='Optimization Points',
                alpha=0.9, edgecolors='black', linewidth=1)
-    
     ax.plot(df['iteration'], df['selected_n_exp'],
             color=exp_color, linewidth=2, alpha=0.85)
     ax.scatter(df['iteration'], df['selected_n_exp'],
                color=exp_color, s=100, marker='s',
                label='Exploration Points',
                alpha=0.9, edgecolors='black', linewidth=1)
-    
     ax.set_xlabel('Iteration', fontsize=12, fontweight='bold')
     ax.set_ylabel('Number of Points Selected', fontsize=12, fontweight='bold')
-    ax.set_title(f'Strategy Decisions: {logger.experiment_name}',
+    ax.set_title(f'Strategy Decisions: {logger.experiment_name}\n(Seed: {seed}, β_exploit: {beta_exploit}, β_explore: {beta_explore})',
                  fontsize=14, fontweight='bold')
-    
     ax.set_yticks(range(0, 6))
     ax.set_ylim(-0.5, 5.5)
     ax.grid(True, alpha=0.3)
     ax.legend(loc='best', fontsize=10)
-    
     plt.tight_layout()
-    
     save_path = os.path.join(logger.log_dir,
                              f"{logger.experiment_name}_strategy_decisions.png")
     plt.savefig(save_path, dpi=300, bbox_inches='tight')
     plt.close()
-    
     print(f"[Plot] Saved strategy decisions plot to {save_path}")
 
 
-def plot_experiments_comparison(loggers):
+def plot_experiments_comparison(loggers, seed: int, beta_exploit: float, beta_explore: float):
     fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(12, 10), sharex=True)
-    
     colors = plt.cm.tab10(np.linspace(0, 1, len(loggers)))
-    
     for logger, color in zip(loggers, colors):
         df = pd.read_csv(logger.convergence_path)
         df = df[df['iteration'] > 0].copy()
         df['cumulative_hvi'] = df['hypervolume_improvement'].cumsum()
-        
         ax1.plot(df['iteration'], df['cumulative_hvi'],
-                marker='o', linewidth=2, label=logger.experiment_name, 
+                marker='o', linewidth=2, label=logger.experiment_name,
                 color=color, alpha=0.8)
-        
         ax2.plot(df['iteration'], df['information_gain'],
-                marker='s', linewidth=2, label=logger.experiment_name, 
+                marker='s', linewidth=2, label=logger.experiment_name,
                 color=color, alpha=0.8)
-    
     ax1.set_ylabel('Cumulative Hypervolume Improvement', fontsize=12, fontweight='bold')
-    ax1.set_title('Acquisition Metrics Comparison', fontsize=14, fontweight='bold')
+    ax1.set_title(f'Acquisition Metrics Comparison\n(Seed: {seed}, β_exploit: {beta_exploit}, β_explore: {beta_explore})',
+                  fontsize=14, fontweight='bold')
     ax1.grid(True, alpha=0.3)
     ax1.legend(loc='best', fontsize=10)
-    
     ax2.set_xlabel('Iteration', fontsize=12, fontweight='bold')
     ax2.set_ylabel('Mutual Information per Iteration', fontsize=12, fontweight='bold')
     ax2.grid(True, alpha=0.3)
     ax2.legend(loc='best', fontsize=10)
-    
     plt.tight_layout()
-    
     parent_dir = os.path.dirname(loggers[0].log_dir)
     save_path = os.path.join(parent_dir, "acquisition_metrics_comparison.png")
     plt.savefig(save_path, dpi=300, bbox_inches='tight')
     plt.close()
-    
     print(f"[Plot] Saved comparison plot to {save_path}")
 
 
-def plot_convergence_comparison(loggers):
+def plot_convergence_comparison(loggers, seed: int, beta_exploit: float, beta_explore: float):
     logger_exploit = loggers[0]
     logger_explore = loggers[1]
     logger_agent = loggers[2]
-    
     df_exploit = pd.read_csv(logger_exploit.convergence_path)
     df_explore = pd.read_csv(logger_explore.convergence_path)
     df_agent = pd.read_csv(logger_agent.convergence_path)
-    
     exploit_max_iter = df_exploit.loc[df_exploit['best_score'].idxmax(), 'iteration']
     explore_max_iter = df_explore.loc[df_explore['best_score'].idxmax(), 'iteration']
     agent_max_iter = df_agent.loc[df_agent['best_score'].idxmax(), 'iteration']
-    
     fig, ax = plt.subplots(figsize=(12, 7))
-    
-    ax.plot(df_exploit['iteration'], df_exploit['best_score'], 
+    ax.plot(df_exploit['iteration'], df_exploit['best_score'],
             marker='o', linewidth=2.5, label='Pure Exploitation', markersize=6)
-    ax.plot(df_explore['iteration'], df_explore['best_score'], 
+    ax.plot(df_explore['iteration'], df_explore['best_score'],
             marker='s', linewidth=2.5, label='Pure Exploration', markersize=6)
-    ax.plot(df_agent['iteration'], df_agent['best_score'], 
+    ax.plot(df_agent['iteration'], df_agent['best_score'],
             marker='^', linewidth=2.5, label='LLM Agent', markersize=7)
-    
     ax.axvline(x=exploit_max_iter, color='C0', linestyle='--', alpha=0.3, linewidth=1.5)
     ax.axvline(x=explore_max_iter, color='C1', linestyle='--', alpha=0.3, linewidth=1.5)
     ax.axvline(x=agent_max_iter, color='C2', linestyle='--', alpha=0.3, linewidth=1.5)
-    
     ax.set_xlabel('Iteration', fontsize=14, fontweight='bold')
     ax.set_ylabel(f'Best {SCORE_NAME}', fontsize=14, fontweight='bold')
-    ax.set_title('FeCoNiCrV K/CTE Optimization: Strategy Comparison', 
+    ax.set_title(f'FeCoNiCrV K/CTE Optimization: Strategy Comparison\n(Seed: {seed}, β_exploit: {beta_exploit}, β_explore: {beta_explore})',
             fontsize=16, fontweight='bold', pad=20)
     ax.legend(fontsize=12, loc='best', framealpha=0.9)
     ax.grid(True, alpha=0.3, linestyle='-', linewidth=0.5)
     ax.tick_params(labelsize=11)
-    
     plt.tight_layout()
-    
     parent_dir = os.path.dirname(loggers[0].log_dir)
     save_path = os.path.join(parent_dir, "convergence_comparison.png")
     plt.savefig(save_path, dpi=300, bbox_inches='tight')
     plt.close()
-    
     print(f"[Plot] Saved convergence comparison to {save_path}")
 
 
@@ -719,9 +697,9 @@ for seed_idx, seed in enumerate(seeds):
         )
         
         print(f"\n[Plotting] Generating comparison plots for seed{seed}_beta{beta_exploit}_{beta_explore}...")
-        plot_strategy_decisions(logger_agent)
-        plot_experiments_comparison([logger_exploit, logger_explore, logger_agent])
-        plot_convergence_comparison([logger_exploit, logger_explore, logger_agent])
+        plot_strategy_decisions(logger_agent, seed, beta_exploit, beta_explore)
+        plot_experiments_comparison([logger_exploit, logger_explore, logger_agent], seed, beta_exploit, beta_explore)
+        plot_convergence_comparison([logger_exploit, logger_explore, logger_agent], seed, beta_exploit, beta_explore)
         
         del strategy_agent
         cleanup_memory()
