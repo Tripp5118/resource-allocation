@@ -1,3 +1,4 @@
+# core/logging_utils.py
 """Logging utilities for generic 2-objective BO experiments."""
 
 import os
@@ -70,6 +71,8 @@ class LoggingManager:
         score_fn: Optional[Callable[[np.ndarray], np.ndarray]] = None,
         obj1_name: str = "obj1",
         obj2_name: str = "obj2",
+        hypervolume: Optional[float] = None,
+        ref_point: Optional[np.ndarray] = None,
     ):
         """
         Log convergence data and options for one iteration.
@@ -85,6 +88,8 @@ class LoggingManager:
             acquisition_data: AllocationResults object with all options
             score_fn: Function taking Y_history (n, 2) and returning scores (n,)
             obj1_name, obj2_name: Names of the two objectives (for column labels)
+            hypervolume: Hypervolume of current Pareto front
+            ref_point: Reference point used for hypervolume calculation
         """
         if score_fn is None:
             # Default: maximize obj2, ignore obj1
@@ -103,6 +108,8 @@ class LoggingManager:
             score_fn=score_fn,
             obj1_name=obj1_name,
             obj2_name=obj2_name,
+            hypervolume=hypervolume,
+            ref_point=ref_point,
         )
 
         # Log allocation options (if available and not iteration 0)
@@ -213,6 +220,7 @@ class LoggingManager:
             f"best_{obj1_name}": float(last_iter[f"best_{obj1_name}"]),
             f"best_{obj2_name}": float(last_iter[f"best_{obj2_name}"]),
             "final_mean_score": float(last_iter["mean_score"]),
+            "final_hypervolume": float(last_iter.get("total_hypervolume", 0.0)),
             "total_time_sec": float(df["timing_sec"].sum()),
         }
 
@@ -232,6 +240,8 @@ class LoggingManager:
         score_fn: Callable[[np.ndarray], np.ndarray],
         obj1_name: str,
         obj2_name: str,
+        hypervolume: Optional[float],
+        ref_point: Optional[np.ndarray],
     ):
         """Log high-level convergence metrics."""
         scores = score_fn(Y_history)
@@ -257,7 +267,16 @@ class LoggingManager:
             "std_score": np.nanstd(scores),
             f"mean_{obj1_name}": np.nanmean(obj1_vals),
             f"mean_{obj2_name}": np.nanmean(obj2_vals),
+            "total_hypervolume": hypervolume if hypervolume is not None else 0.0,
         }
+
+        # Add reference point coordinates
+        if ref_point is not None:
+            row_data["ref_point_obj1"] = ref_point[0]
+            row_data["ref_point_obj2"] = ref_point[1]
+        else:
+            row_data["ref_point_obj1"] = None
+            row_data["ref_point_obj2"] = None
 
         # add best x_*
         for j, val in enumerate(best_x):
@@ -267,13 +286,11 @@ class LoggingManager:
         if extra_info:
             row_data["selected_n_opt"] = extra_info.get("n_optimization", None)
             row_data["selected_n_exp"] = extra_info.get("n_exploration", None)
-            # ADD THESE TWO LINES:
             row_data["hypervolume_improvement"] = extra_info.get("hypervolume_improvement", None)
             row_data["information_gain"] = extra_info.get("information_gain", None)
         else:
             row_data["selected_n_opt"] = None
             row_data["selected_n_exp"] = None
-            # ADD THESE TWO LINES:
             row_data["hypervolume_improvement"] = None
             row_data["information_gain"] = None
 
@@ -321,10 +338,10 @@ class LoggingManager:
 
             for point in batch.exploitation_points:
                 all_points.append(point)
-                all_sources.append("QEHVI")
+                all_sources.append("qEHVI")
             for point in batch.exploration_points:
                 all_points.append(point)
-                all_sources.append("MO-MESMO")
+                all_sources.append("qUCB")
 
             for point_idx, (point, source) in enumerate(zip(all_points, all_sources)):
                 row = base_row.copy()
