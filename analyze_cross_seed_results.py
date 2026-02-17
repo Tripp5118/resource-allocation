@@ -35,6 +35,10 @@ COLORS = {
 }
 
 
+# ---------------------------------------------------------------------------
+# Data loading
+# ---------------------------------------------------------------------------
+
 def load_convergence_data(
     exp_dir: str,
     beta_value: float = None,
@@ -42,34 +46,34 @@ def load_convergence_data(
 ) -> Dict[str, List[pd.DataFrame]]:
     """
     Load convergence data for all strategies across seeds.
-    
+
     Args:
         exp_dir: Base experiment directory
         beta_value: Beta value (only for grid mode)
         mode: "grid" for beta grid search, "single" for high statistics
-        
+
     Returns:
-        Dictionary mapping strategy names to lists of DataFrames
+        Dictionary mapping strategy names to lists of DataFrames (one per seed)
     """
     data = {strategy: [] for strategy in STRATEGIES}
-    
+
     if mode == "grid":
         if beta_value is None:
             raise ValueError("beta_value must be specified for grid mode")
         search_dir = Path(exp_dir) / f"beta{beta_value}"
     else:
         search_dir = Path(exp_dir)
-    
+
     if not search_dir.exists():
         raise ValueError(f"Directory does not exist: {search_dir}")
-    
+
     seed_dirs = sorted([d for d in search_dir.iterdir() if d.is_dir() and d.name.startswith("seed")])
-    
+
     if len(seed_dirs) == 0:
         raise ValueError(f"No seed directories found in {search_dir}")
-    
+
     print(f"Found {len(seed_dirs)} seed directories in {search_dir}")
-    
+
     for seed_dir in seed_dirs:
         seed = seed_dir.name
         for strategy in STRATEGIES:
@@ -79,12 +83,306 @@ def load_convergence_data(
                 data[strategy].append(df)
             else:
                 print(f"Warning: Missing convergence file for {seed}/{strategy}")
-    
+
     for strategy in STRATEGIES:
         print(f"Loaded {len(data[strategy])} runs for {strategy}")
-    
+
     return data
 
+
+def load_evaluations_data(
+    exp_dir: str,
+    beta_value: float = None,
+    mode: str = "grid"
+) -> Tuple[List[str], Dict[str, List[pd.DataFrame]]]:
+    """
+    Load evaluations data (full Y_history) for all strategies across seeds.
+
+    Each seed directory contains {strategy}/{strategy}_evaluations.csv with columns:
+        iteration, point_idx, CTE, K, score, x_0..x_n, source
+
+    Args:
+        exp_dir: Base experiment directory
+        beta_value: Beta value (only for grid mode)
+        mode: "grid" for beta grid search, "single" for high statistics
+
+    Returns:
+        Tuple of:
+          - seed_names: ordered list of seed directory names
+          - data: dict mapping strategy -> list of DataFrames (one per seed, in seed order)
+    """
+    if mode == "grid":
+        if beta_value is None:
+            raise ValueError("beta_value must be specified for grid mode")
+        search_dir = Path(exp_dir) / f"beta{beta_value}"
+    else:
+        search_dir = Path(exp_dir)
+
+    if not search_dir.exists():
+        raise ValueError(f"Directory does not exist: {search_dir}")
+
+    seed_dirs = sorted([d for d in search_dir.iterdir() if d.is_dir() and d.name.startswith("seed")])
+
+    if len(seed_dirs) == 0:
+        raise ValueError(f"No seed directories found in {search_dir}")
+
+    seed_names = [d.name for d in seed_dirs]
+    data = {strategy: [] for strategy in STRATEGIES}
+
+    for seed_dir in seed_dirs:
+        seed = seed_dir.name
+        for strategy in STRATEGIES:
+            eval_path = seed_dir / strategy / f"{strategy}_evaluations.csv"
+            if eval_path.exists():
+                df = pd.read_csv(eval_path)
+                data[strategy].append(df)
+            else:
+                print(f"Warning: Missing evaluations file for {seed}/{strategy}")
+                data[strategy].append(None)  # placeholder to keep indices aligned
+
+    return seed_names, data
+
+
+# ---------------------------------------------------------------------------
+# Pareto helpers
+# ---------------------------------------------------------------------------
+
+def compute_pareto_mask(points: np.ndarray) -> np.ndarray:
+    """
+    Compute a boolean mask of non-dominated points (maximisation of both objectives).
+
+    Uses a pure-numpy implementation so botorch is not required at post-processing time,
+    though the logic is identical to botorch's is_non_dominated.
+
+    Args:
+        points: (N, 2) array of objective values
+
+    Returns:
+        Boolean mask of length N; True = Pareto-optimal
+    """
+    n = len(points)
+    is_pareto = np.ones(n, dtype=bool)
+    for i in range(n):
+        if not is_pareto[i]:
+            continue
+        # A point is dominated if there exists another point that is >= in all
+        # objectives and strictly > in at least one
+        dominated_by_i = np.all(points >= points[i], axis=1) & np.any(points > points[i], axis=1)
+        dominated_by_i[i] = False
+        # If i is dominated by any remaining candidate, mark it out
+        if np.any(np.all(points[is_pareto] >= points[i], axis=1) & np.any(points[is_pareto] > points[i], axis=1)):
+            is_pareto[i] = False
+    return is_pareto
+
+
+def get_pareto_points(Y: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
+    """
+    Split evaluated points into Pareto-optimal and dominated sets.
+
+    Args:
+        Y: (N, 2) array; column 0 = obj1 (-|CTE| by default), column 1 = obj2 (K)
+
+    Returns:
+        pareto_points: (M, 2) subset that are non-dominated
+        non_pareto_points: (N-M, 2) dominated points
+    """
+    if len(Y) == 0:
+        return np.empty((0, 2)), np.empty((0, 2))
+    mask = compute_pareto_mask(Y)
+    return Y[mask], Y[~mask]
+
+
+# ---------------------------------------------------------------------------
+# Per-seed Pareto plot and data saving
+# ---------------------------------------------------------------------------
+
+def plot_per_seed_pareto(
+    seed_name: str,
+    eval_data: Dict[str, Optional[pd.DataFrame]],
+    beta_value: float,
+    obj1_label: str,
+    obj2_label: str,
+    save_path: str,
+):
+    """
+    Plot Pareto front for all three strategies for a single seed.
+
+    Non-Pareto points are plotted in the strategy colour but transparent.
+    Pareto points are solid with star markers and connected by a sorted line.
+    The beta value appears only in the qUCB legend entry.
+
+    Args:
+        seed_name: Seed identifier string (for plot title)
+        eval_data: Dict mapping strategy name -> evaluations DataFrame (or None if missing)
+        beta_value: Beta value shown in the qUCB legend entry
+        obj1_label: Display label for objective 1 (x-axis)
+        obj2_label: Display label for objective 2 (y-axis)
+        save_path: File path to save the figure
+    """
+    fig, ax = plt.subplots(figsize=(10, 8))
+
+    for strategy in STRATEGIES:
+        df = eval_data.get(strategy)
+        if df is None or len(df) == 0:
+            print(f"  Skipping {strategy} — no evaluation data")
+            continue
+
+        # Build Y array: obj1 = -|CTE| = -(abs(CTE)), obj2 = K
+        # The evaluations CSV stores raw CTE and K values.
+        # We negate CTE to turn minimisation into maximisation (matching runtime convention).
+        Y = np.column_stack([-np.abs(df["CTE"].values), df["K"].values])
+
+        pareto_pts, non_pareto_pts = get_pareto_points(Y)
+
+        color = COLORS.get(strategy, "gray")
+        legend_label = f"qUCB (β={beta_value})" if strategy == "qUCB" else LABELS.get(strategy, strategy)
+
+        # Non-Pareto: same colour, very transparent, no legend entry
+        if len(non_pareto_pts) > 0:
+            ax.scatter(
+                non_pareto_pts[:, 0], non_pareto_pts[:, 1],
+                color=color, s=60, alpha=0.20, zorder=1, linewidths=0,
+            )
+
+        # Pareto: solid colour, star markers, connecting line
+        if len(pareto_pts) > 0:
+            sorted_idx = np.argsort(pareto_pts[:, 0])
+            pareto_sorted = pareto_pts[sorted_idx]
+
+            ax.plot(
+                pareto_sorted[:, 0], pareto_sorted[:, 1],
+                color=color, linewidth=2, alpha=0.7, zorder=2,
+            )
+            ax.scatter(
+                pareto_pts[:, 0], pareto_pts[:, 1],
+                color=color, s=140, marker="*",
+                edgecolors="white", linewidth=0.8,
+                label=f"{legend_label} (Pareto: {len(pareto_pts)})",
+                zorder=3,
+            )
+
+    ax.set_xlabel(obj1_label, fontsize=13, fontweight="bold")
+    ax.set_ylabel(obj2_label, fontsize=13, fontweight="bold")
+    ax.set_title(
+        f"Pareto Front Comparison — {seed_name}",
+        fontsize=15, fontweight="bold", pad=15,
+    )
+    ax.legend(fontsize=11, loc="best", framealpha=0.9)
+    ax.grid(True, alpha=0.3)
+    plt.tight_layout()
+    plt.savefig(save_path, dpi=300, bbox_inches="tight")
+    plt.close()
+    print(f"  Saved Pareto plot → {save_path}")
+
+
+def save_pareto_data(
+    seed_name: str,
+    eval_data: Dict[str, Optional[pd.DataFrame]],
+    save_path: str,
+):
+    """
+    Save all Pareto-optimal points (across all three strategies) for one seed to CSV.
+
+    The saved file has columns:
+        strategy, obj1, obj2, pareto_rank (always 1 here — non-dominated within strategy),
+        CTE_raw, K_raw
+    This is intended as the input for future cross-seed Pareto averaging.
+
+    Args:
+        seed_name: Seed identifier (written into the 'seed' column)
+        eval_data: Dict mapping strategy name -> evaluations DataFrame (or None)
+        save_path: File path for the output CSV
+    """
+    rows = []
+    for strategy in STRATEGIES:
+        df = eval_data.get(strategy)
+        if df is None or len(df) == 0:
+            continue
+
+        Y = np.column_stack([-np.abs(df["CTE"].values), df["K"].values])
+        pareto_pts, _ = get_pareto_points(Y)
+
+        for pt in pareto_pts:
+            rows.append({
+                "seed": seed_name,
+                "strategy": strategy,
+                "obj1": pt[0],   # -|CTE|
+                "obj2": pt[1],   # K
+            })
+
+    if rows:
+        out_df = pd.DataFrame(rows, columns=["seed", "strategy", "obj1", "obj2"])
+        out_df.to_csv(save_path, index=False)
+        print(f"  Saved Pareto data  → {save_path}")
+    else:
+        print(f"  No Pareto data to save for {seed_name}")
+
+
+def generate_pareto_plots_and_data(
+    search_dir: Path,
+    output_dir: Path,
+    beta_value: float,
+    obj1_label: str,
+    obj2_label: str,
+    mode: str,
+):
+    """
+    Iterate over all seed directories under search_dir, produce one Pareto plot
+    per seed, and save per-seed Pareto CSVs for later cross-seed averaging.
+
+    Args:
+        search_dir: Directory containing seed{N} subdirectories
+        output_dir: Where to write output files
+        beta_value: Beta value for qUCB legend entry
+        obj1_label: X-axis label
+        obj2_label: Y-axis label
+        mode: "grid" or "single" (controls subdirectory naming only for logging)
+    """
+    seed_dirs = sorted([d for d in search_dir.iterdir() if d.is_dir() and d.name.startswith("seed")])
+    if not seed_dirs:
+        print("  No seed directories found — skipping Pareto analysis.")
+        return
+
+    pareto_output_dir = output_dir / "pareto_data"
+    pareto_output_dir.mkdir(exist_ok=True)
+
+    for seed_dir in seed_dirs:
+        seed_name = seed_dir.name
+        print(f"  Processing Pareto for {seed_name} ...")
+
+        # Load evaluations for each strategy
+        eval_data = {}
+        for strategy in STRATEGIES:
+            eval_path = seed_dir / strategy / f"{strategy}_evaluations.csv"
+            if eval_path.exists():
+                eval_data[strategy] = pd.read_csv(eval_path)
+            else:
+                print(f"    Warning: Missing evaluations file for {seed_name}/{strategy}")
+                eval_data[strategy] = None
+
+        # Plot
+        plot_path = output_dir / f"pareto_{seed_name}.png"
+        plot_per_seed_pareto(
+            seed_name=seed_name,
+            eval_data=eval_data,
+            beta_value=beta_value,
+            obj1_label=obj1_label,
+            obj2_label=obj2_label,
+            save_path=str(plot_path),
+        )
+
+        # Save Pareto CSV for this seed
+        csv_path = pareto_output_dir / f"pareto_{seed_name}.csv"
+        save_pareto_data(
+            seed_name=seed_name,
+            eval_data=eval_data,
+            save_path=str(csv_path),
+        )
+
+
+# ---------------------------------------------------------------------------
+# Statistics helpers
+# ---------------------------------------------------------------------------
 
 def compute_statistics(
     data: Dict[str, List[pd.DataFrame]],
@@ -93,24 +391,24 @@ def compute_statistics(
 ) -> Dict[str, Dict[str, np.ndarray]]:
     """
     Compute mean and confidence intervals across seeds.
-    
+
     Args:
         data: Dictionary mapping strategy names to lists of DataFrames
         metric: Column name to analyze (e.g., "best_score", "total_hypervolume")
         confidence_level: Confidence level for intervals (default 0.95)
-        
+
     Returns:
         Dictionary with statistics for each strategy
     """
     results = {}
-    
+
     for strategy, dfs in data.items():
         if len(dfs) == 0:
             print(f"Warning: No data for {strategy}")
             continue
-        
+
         max_iters = max(df['iteration'].max() for df in dfs)
-        
+
         values_by_iter = []
         for iter_num in range(int(max_iters) + 1):
             iter_values = []
@@ -119,18 +417,18 @@ def compute_statistics(
                     value = df[df['iteration'] == iter_num][metric].values[0]
                     iter_values.append(value)
             values_by_iter.append(iter_values)
-        
+
         iterations = np.arange(len(values_by_iter))
         means = np.array([np.mean(vals) if len(vals) > 0 else np.nan for vals in values_by_iter])
         stds = np.array([np.std(vals) if len(vals) > 0 else np.nan for vals in values_by_iter])
         n_samples = np.array([len(vals) for vals in values_by_iter])
-        
+
         t_critical = np.array([
             stats.t.ppf((1 + confidence_level) / 2, max(n - 1, 1)) if n > 0 else np.nan
             for n in n_samples
         ])
         ci_half_width = t_critical * stds / np.sqrt(n_samples)
-        
+
         results[strategy] = {
             'iterations': iterations,
             'mean': means,
@@ -139,7 +437,7 @@ def compute_statistics(
             'ci_upper': means + ci_half_width,
             'n_samples': n_samples,
         }
-    
+
     return results
 
 
@@ -214,6 +512,10 @@ def compute_combined_uncertainty_statistics(
     return results
 
 
+# ---------------------------------------------------------------------------
+# Convergence plotting
+# ---------------------------------------------------------------------------
+
 def plot_convergence_with_ci(
     plot_stats: Dict[str, Dict[str, np.ndarray]],
     metric_name: str,
@@ -284,18 +586,26 @@ def plot_convergence_with_ci(
     plt.close()
 
 
+# ---------------------------------------------------------------------------
+# Top-level analysis functions
+# ---------------------------------------------------------------------------
+
 def analyze_beta_grid(
     exp_dir: str,
     beta_values: List[float],
-    confidence_level: float = 0.95
+    confidence_level: float = 0.95,
+    obj1_label: str = "-|CTE|",
+    obj2_label: str = "K",
 ):
     """
     Analyze beta grid search results and generate plots for each beta.
-    
+
     Args:
         exp_dir: Base experiment directory
         beta_values: List of beta values to analyze
         confidence_level: Confidence level for intervals
+        obj1_label: Display label for objective 1 (Pareto x-axis)
+        obj2_label: Display label for objective 2 (Pareto y-axis)
     """
     print(f"\n{'='*80}")
     print("ANALYZING BETA GRID SEARCH RESULTS")
@@ -305,24 +615,24 @@ def analyze_beta_grid(
     print(f"Strategies: {STRATEGIES}")
     print(f"Confidence level: {confidence_level}")
     print(f"{'='*80}\n")
-    
+
     output_dir = Path(exp_dir) / "cross_seed_analysis"
     output_dir.mkdir(exist_ok=True)
-    
+
     for beta in beta_values:
         print(f"\n{'-'*80}")
         print(f"Processing β_explore = {beta}")
         print(f"{'-'*80}")
-        
+
         try:
             data = load_convergence_data(exp_dir, beta_value=beta, mode="grid")
-            
+
             n_seeds = 0
             for strategy in STRATEGIES:
                 if len(data[strategy]) > 0:
                     n_seeds = len(data[strategy])
                     break
-            
+
             # best_score
             stats_score = compute_statistics(data, metric="best_score", confidence_level=confidence_level)
             save_path = output_dir / f"convergence_beta{beta}_ci.png"
@@ -334,7 +644,7 @@ def analyze_beta_grid(
                 save_path=str(save_path),
                 confidence_level=confidence_level,
             )
-            
+
             # hypervolume (optional)
             has_hypervolume = any(
                 len(data[s]) > 0 and 'total_hypervolume' in data[s][0].columns
@@ -365,12 +675,26 @@ def analyze_beta_grid(
                     confidence_level=confidence_level,
                 )
 
+            # Per-seed Pareto plots and data
+            print(f"\n  Generating per-seed Pareto plots for β = {beta} ...")
+            search_dir = Path(exp_dir) / f"beta{beta}"
+            beta_output_dir = output_dir / f"beta{beta}"
+            beta_output_dir.mkdir(exist_ok=True)
+            generate_pareto_plots_and_data(
+                search_dir=search_dir,
+                output_dir=beta_output_dir,
+                beta_value=beta,
+                obj1_label=obj1_label,
+                obj2_label=obj2_label,
+                mode="grid",
+            )
+
             print(f"✓ Completed β = {beta}")
-            
+
         except Exception as e:
             print(f"✗ Error processing β = {beta}: {e}")
             continue
-    
+
     print(f"\n{'='*80}")
     print("BETA GRID ANALYSIS COMPLETE")
     print(f"{'='*80}")
@@ -382,16 +706,20 @@ def analyze_high_statistics(
     exp_dir: str,
     beta_value: float = 2.0,
     confidence_level: float = 0.95,
-    metric_name: str = "K / |CTE|"
+    metric_name: str = "K / |CTE|",
+    obj1_label: str = "-|CTE|",
+    obj2_label: str = "K",
 ):
     """
     Analyze high statistics results and generate plot.
-    
+
     Args:
         exp_dir: Base experiment directory
         beta_value: Beta value (shown in qUCB legend entry)
         confidence_level: Confidence level for intervals
         metric_name: Name of the metric being analyzed
+        obj1_label: Display label for objective 1 (Pareto x-axis)
+        obj2_label: Display label for objective 2 (Pareto y-axis)
     """
     print(f"\n{'='*80}")
     print("ANALYZING HIGH STATISTICS RESULTS")
@@ -401,13 +729,13 @@ def analyze_high_statistics(
     print(f"Beta value: {beta_value}")
     print(f"Confidence level: {confidence_level}")
     print(f"{'='*80}\n")
-    
+
     output_dir = Path(exp_dir) / "cross_seed_analysis"
     output_dir.mkdir(exist_ok=True)
-    
+
     try:
         data = load_convergence_data(exp_dir, mode="single")
-        
+
         n_seeds = 0
         reference_strategy = None
         for strategy in STRATEGIES:
@@ -415,7 +743,7 @@ def analyze_high_statistics(
                 n_seeds = len(data[strategy])
                 reference_strategy = strategy
                 break
-        
+
         # best_score
         stats_score = compute_statistics(data, metric="best_score", confidence_level=confidence_level)
         save_path = output_dir / f"convergence_beta{beta_value}_n{n_seeds}_ci.png"
@@ -427,7 +755,7 @@ def analyze_high_statistics(
             save_path=str(save_path),
             confidence_level=confidence_level,
         )
-        
+
         # hypervolume (optional)
         has_hypervolume = (
             reference_strategy is not None and
@@ -463,7 +791,7 @@ def analyze_high_statistics(
         print(f"\n{'='*80}")
         print("SUMMARY STATISTICS")
         print(f"{'='*80}")
-        
+
         for strategy, stat in stats_score.items():
             final_mean = stat['mean'][-1]
             final_std = stat['std'][-1]
@@ -471,20 +799,35 @@ def analyze_high_statistics(
             print(f"{display_label} ({strategy}):")
             print(f"  Final {metric_name}: {final_mean:.4f} ± {final_std:.4f} (std)")
             print(f"  {int(confidence_level*100)}% CI: [{stat['ci_lower'][-1]:.4f}, {stat['ci_upper'][-1]:.4f}]")
-        
+
         print(f"{'='*80}\n")
         print(f"✓ Analysis complete")
-        
+
+        # Per-seed Pareto plots and data
+        print(f"\nGenerating per-seed Pareto plots ...")
+        generate_pareto_plots_and_data(
+            search_dir=Path(exp_dir),
+            output_dir=output_dir,
+            beta_value=beta_value,
+            obj1_label=obj1_label,
+            obj2_label=obj2_label,
+            mode="single",
+        )
+
     except Exception as e:
         print(f"✗ Error: {e}")
         raise
-    
+
     print(f"\n{'='*80}")
     print("HIGH STATISTICS ANALYSIS COMPLETE")
     print(f"{'='*80}")
     print(f"Plots saved to: {output_dir}")
     print(f"{'='*80}\n")
 
+
+# ---------------------------------------------------------------------------
+# Entry point
+# ---------------------------------------------------------------------------
 
 def main():
     parser = argparse.ArgumentParser(
@@ -497,36 +840,48 @@ Examples:
 
     # Beta grid search mode
     python analyze_cross_seed_results.py --exp_dir results/beta_grid_search --mode grid
+
+    # Custom objective axis labels for Pareto plots
+    python analyze_cross_seed_results.py --exp_dir results/high_statistics --mode single \\
+        --obj1_label "-|CTE| (deg)" --obj2_label "K (N/m)"
         """
     )
-    
+
     parser.add_argument("--exp_dir", type=str, required=True,
-                       help="Experiment directory")
+                        help="Experiment directory")
     parser.add_argument("--mode", type=str, choices=["grid", "single"], required=True,
-                       help="Analysis mode: 'grid' for beta grid search, 'single' for high statistics")
+                        help="Analysis mode: 'grid' for beta grid search, 'single' for high statistics")
     parser.add_argument("--beta_values", type=float, nargs="+", default=[2, 4, 6, 8, 10],
-                       help="Beta values to analyze (grid mode only)")
+                        help="Beta values to analyze (grid mode only)")
     parser.add_argument("--beta_value", type=float, default=2.0,
-                       help="Beta value shown in qUCB legend entry (single mode only)")
+                        help="Beta value shown in qUCB legend entry (single mode only)")
     parser.add_argument("--confidence", type=float, default=0.95,
-                       help="Confidence level for intervals (default: 0.95)")
+                        help="Confidence level for intervals (default: 0.95)")
     parser.add_argument("--metric_name", type=str, default="K / |CTE|",
-                       help="Display name for the metric (default: 'K / |CTE|')")
-    
+                        help="Display name for the convergence metric (default: 'K / |CTE|')")
+    parser.add_argument("--obj1_label", type=str, default="-|CTE|",
+                        help="Pareto plot x-axis label — objective 1 (default: '-|CTE|')")
+    parser.add_argument("--obj2_label", type=str, default="K",
+                        help="Pareto plot y-axis label — objective 2 (default: 'K')")
+
     args = parser.parse_args()
-    
+
     if args.mode == "grid":
         analyze_beta_grid(
             args.exp_dir,
             args.beta_values,
-            args.confidence
+            args.confidence,
+            args.obj1_label,
+            args.obj2_label,
         )
     else:
         analyze_high_statistics(
             args.exp_dir,
             args.beta_value,
             args.confidence,
-            args.metric_name
+            args.metric_name,
+            args.obj1_label,
+            args.obj2_label,
         )
 
 

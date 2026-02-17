@@ -5,8 +5,6 @@ decrease total seeds to 20
 Do an additional 5-10 seeds of all of the data vs just past 3 iterations for the agent. 
 With confidence intervals on the agent-decisions plot.
 
-### Additional Plotting
-Pareto front plot - All runs for all strategies, agent green, ucb red, qehvi blue, transparent for old points.
 
 ## Future generalization for benchmarking
 Simplex constraints need to be moved out to problem definition (this should be true now that we're passing design space)
