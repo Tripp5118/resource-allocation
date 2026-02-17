@@ -107,7 +107,9 @@ class VisualizationManager:
         self,
         Y_history: np.ndarray,
         obj1_name: str,
-        obj2_name: str
+        obj2_name: str,
+        obj1_display: str,
+        obj2_display: str
     ):
         """Create final Pareto front visualization."""
         save_path = os.path.join(self.log_dir, f"{self.experiment_name}_pareto_front.png")
@@ -115,6 +117,8 @@ class VisualizationManager:
             Y_history=Y_history,
             obj1_name=obj1_name,
             obj2_name=obj2_name,
+            obj1_display=obj1_display,
+            obj2_display=obj2_display,
             experiment_name=self.experiment_name,
             save_path=save_path
         )
@@ -707,72 +711,6 @@ def plot_strategy_decisions(
     plt.close()
     print(f"[Plot] Saved strategy decisions plot to {save_path}")
 
-
-def plot_acquisition_metrics_comparison(
-    loggers: List[LoggingManager],
-    seed: int,
-    beta_explore: float,
-    event_iteration: int = None,
-    save_dir: str = None
-):
-    """
-    Plot comparison of acquisition metrics across strategies.
-    
-    Args:
-        loggers: List of LoggingManager objects
-        seed: Random seed used
-        beta_explore: Exploration beta value
-        event_iteration: Iteration where event occurred (optional)
-        save_dir: Directory to save plot (default: parent of first logger)
-    """
-    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(12, 10), sharex=True)
-    colors = plt.cm.tab10(np.linspace(0, 1, len(loggers)))
-    
-    for logger, color in zip(loggers, colors):
-        df = pd.read_csv(logger.convergence_path)
-        df = df[df['iteration'] > 0].copy()
-        df['cumulative_hvi'] = df['hypervolume_improvement'].cumsum()
-        
-        ax1.plot(df['iteration'], df['cumulative_hvi'],
-                marker='o', linewidth=2, label=logger.experiment_name,
-                color=color, alpha=0.8)
-        ax2.plot(df['iteration'], df['information_gain'],
-                marker='s', linewidth=2, label=logger.experiment_name,
-                color=color, alpha=0.8)
-    
-    # Add vertical line at event if applicable
-    if event_iteration is not None:
-        ax1.axvline(x=event_iteration, color='red', linestyle='--', 
-                    linewidth=2, alpha=0.5, label=f'Event')
-        ax2.axvline(x=event_iteration, color='red', linestyle='--', 
-                    linewidth=2, alpha=0.5)
-    
-    title = f'Acquisition Metrics Comparison\n(Seed: {seed}, β_explore: {beta_explore}'
-    if event_iteration is not None:
-        title += f', Event: Iter {event_iteration})'
-    else:
-        title += ')'
-    
-    ax1.set_ylabel('Cumulative Hypervolume Improvement', fontsize=12, fontweight='bold')
-    ax1.set_title(title, fontsize=14, fontweight='bold')
-    ax1.grid(True, alpha=0.3)
-    ax1.legend(loc='best', fontsize=10)
-    
-    ax2.set_xlabel('Iteration', fontsize=12, fontweight='bold')
-    ax2.set_ylabel('Mutual Information per Iteration', fontsize=12, fontweight='bold')
-    ax2.grid(True, alpha=0.3)
-    ax2.legend(loc='best', fontsize=10)
-    
-    plt.tight_layout()
-    
-    if save_dir is None:
-        save_dir = os.path.dirname(loggers[0].log_dir)
-    save_path = os.path.join(save_dir, "acquisition_metrics_comparison.png")
-    plt.savefig(save_path, dpi=300, bbox_inches='tight')
-    plt.close()
-    print(f"[Plot] Saved acquisition metrics comparison to {save_path}")
-
-
 def plot_convergence_comparison(
     loggers: List[LoggingManager],
     seed: int,
@@ -825,7 +763,7 @@ def plot_convergence_comparison(
     ax.set_xlabel('Iteration', fontsize=14, fontweight='bold')
     ax.set_ylabel(f'Best {score_name}', fontsize=14, fontweight='bold')
     
-    title = f'Strategy Comparison\n(Seed: {seed}, β_explore: {beta_explore}'
+    title = f'Strategy Comparison\n(Seed: {seed}'
     if event_iteration is not None:
         title += f', Event: Iter {event_iteration})'
     else:
@@ -886,6 +824,8 @@ def plot_final_pareto_front(
     Y_history: np.ndarray,
     obj1_name: str,
     obj2_name: str,
+    obj1_display: str,
+    obj2_display: str,
     experiment_name: str,
     save_path: str
 ):
@@ -931,8 +871,8 @@ def plot_final_pareto_front(
                    label=f'Pareto Front ({len(pareto_points)} points)',
                    zorder=3)
     
-    ax.set_xlabel(f'{obj1_name}', fontsize=12, fontweight='bold')
-    ax.set_ylabel(f'{obj2_name}', fontsize=12, fontweight='bold')
+    ax.set_xlabel(f'{obj1_display}', fontsize=12, fontweight='bold')
+    ax.set_ylabel(f'{obj2_display}', fontsize=12, fontweight='bold')
     ax.set_title(f'Final Pareto Front: {experiment_name}',
                  fontsize=14, fontweight='bold', pad=15)
     

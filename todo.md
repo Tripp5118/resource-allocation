@@ -1,33 +1,19 @@
-Graph of hypervolume of all points collected up until that iteration - Yes
-
-Plotting of queried points in the objective space with pareto points - Yes
-
-use qScalarizedUpperConfidenceBound https://archive.botorch.org/v/0.6.2/tutorials/custom_acquisition
-3 experiments) - Yes
-    Grid of beta values qUCB runs - Set up 
-    LLM selecting beta values along with allocation options - Not set up
-    LLM doing allocation selection with a fixed beta = 2 - Set up
-    chebyschev + a z somewhere for scalarizing - Not yet
-
-
-
-
-pareto-front plot axes = "Objective 1 (-|CTE|)", "Objective 2(K)"
-summing uncertainty and graphing like hypervolume 
-Change labelling on CI plots to qEVHI instead of pure exploitation and qUCB [beta = x]
-decrease total seeds to 20
+### One Run to Test Out Agents Reasoning
 swap to gpt 5.1
 have the agent give *mathmatical or statistical* reasoning for its decision.
-
+decrease total seeds to 20
 Do an additional 5-10 seeds of all of the data vs just past 3 iterations for the agent. 
 With confidence intervals on the agent-decisions plot.
 
+### Additional Plotting
+Pareto front plot - All runs for all strategies, agent green, ucb red, qehvi blue, transparent for old points.
+
 ## Future generalization for benchmarking
-Simplex constraints need to be moved out
+Simplex constraints need to be moved out to problem definition (this should be true now that we're passing design space)
 Double check agent manager 
 Figure out best trevor problem
 
-Experiment Run: 204995
+### Eventuallly a run where the agent can control beta.
 
 Check out the unusual values in the agent's "best point" reporting stuff:
 [Agent:INFO]

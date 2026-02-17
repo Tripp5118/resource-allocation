@@ -270,19 +270,27 @@ class LoggingManager:
             "total_hypervolume": hypervolume if hypervolume is not None else 0.0,
         }
 
-        # Add reference point coordinates
+        # Add reference point coordinates using objective names
         if ref_point is not None:
-            row_data["ref_point_obj1"] = ref_point[0]
-            row_data["ref_point_obj2"] = ref_point[1]
+            row_data[f"ref_point_{obj1_name}"] = ref_point[0]
+            row_data[f"ref_point_{obj2_name}"] = ref_point[1]
         else:
-            row_data["ref_point_obj1"] = None
-            row_data["ref_point_obj2"] = None
+            row_data[f"ref_point_{obj1_name}"] = None
+            row_data[f"ref_point_{obj2_name}"] = None
 
-        # add best x_*
+        # Add total uncertainty columns using objective names
+        if extra_info:
+            row_data[f"total_uncertainty_obj1"] = extra_info.get("total_uncertainty_obj1", None)
+            row_data[f"total_uncertainty_obj2"] = extra_info.get("total_uncertainty_obj2", None)
+        else:
+            row_data[f"total_uncertainty_{obj1_name}"] = None
+            row_data[f"total_uncertainty_{obj2_name}"] = None
+
+        # Add best x coordinates
         for j, val in enumerate(best_x):
             row_data[f"best_x_{j}"] = val
 
-        # selection info (optional)
+        # Selection info (optional)
         if extra_info:
             row_data["selected_n_opt"] = extra_info.get("n_optimization", None)
             row_data["selected_n_exp"] = extra_info.get("n_exploration", None)
@@ -304,10 +312,8 @@ class LoggingManager:
 
         df_row = pd.DataFrame([row_data])
         if not os.path.exists(self.convergence_path):
-            # First write - create file with header
             df_row.to_csv(self.convergence_path, index=False, mode='w')
         else:
-            # Subsequent writes - append without header
             df_row.to_csv(self.convergence_path, index=False, mode='a', header=False)
 
         print(f"[Logger] Logged convergence for iteration {iteration}")

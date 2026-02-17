@@ -20,7 +20,6 @@ from core.agent_manager import BOAgent
 from core.fixed_policy import PureExploitation, PureExploration
 from core.visualization import (
     plot_strategy_decisions,
-    plot_acquisition_metrics_comparison,
     plot_convergence_comparison,
 )
 
@@ -65,6 +64,8 @@ AGENT_TEMPERATURE = 0.7
 # Objective names
 OBJ1_NAME = "CTE"
 OBJ2_NAME = "K"
+OBJ1_DISPLAY = "-|CTE|"
+OBJ2_DISPLAY = "K"
 SCORE_NAME = "K / |CTE|"
 
 PROBLEM_DESCRIPTION = """
@@ -88,7 +89,7 @@ CREATE_GIF = True
 
 # Output
 SETUP_SEED = 42
-BATCH_EXPERIMENT_NAME = "discrete_acq" # !!! THIS SHOULD CHANGE EVERY RUN !!!
+BATCH_EXPERIMENT_NAME = "new_plots_strategy_names" # !!! THIS SHOULD CHANGE EVERY RUN !!!
 OUTPUT_BASE_DIR = "./test"
 OUTPUT_DIR = os.path.join(OUTPUT_BASE_DIR, BATCH_EXPERIMENT_NAME)
 
@@ -200,7 +201,7 @@ if __name__ == "__main__":
             # Run Pure Exploitation
             print(f"\n[1/3] Running Pure Exploitation...")
             X_exploit, Y_exploit, logger_exploit = run_bo_experiment(
-                experiment_name="PureExploit",
+                experiment_name="qEHVI",
                 strategy=PureExploitation(),
                 output_dir=exp_group_dir,
                 model_path=MODEL_PATH,
@@ -225,6 +226,8 @@ if __name__ == "__main__":
                 time_per_iteration=TIME_PER_ITERATION,
                 obj1_name=OBJ1_NAME,
                 obj2_name=OBJ2_NAME,
+                obj1_display=OBJ1_DISPLAY,
+                obj2_display=OBJ2_DISPLAY,
                 score_name=SCORE_NAME,
                 seed=seed,
                 use_discrete=USE_DISCRETE,
@@ -235,7 +238,7 @@ if __name__ == "__main__":
             # Run Pure Exploration
             print(f"\n[2/3] Running Pure Exploration...")
             X_explore, Y_explore, logger_explore = run_bo_experiment(
-                experiment_name="PureExplore",
+                experiment_name="qUCB",
                 strategy=PureExploration(),
                 output_dir=exp_group_dir,
                 model_path=MODEL_PATH,
@@ -260,6 +263,8 @@ if __name__ == "__main__":
                 time_per_iteration=TIME_PER_ITERATION,
                 obj1_name=OBJ1_NAME,
                 obj2_name=OBJ2_NAME,
+                obj1_display=OBJ1_DISPLAY,
+                obj2_display=OBJ2_DISPLAY,
                 score_name=SCORE_NAME,
                 seed=seed,
                 create_visualization=CREATE_VIS,
@@ -307,6 +312,8 @@ if __name__ == "__main__":
                 time_per_iteration=TIME_PER_ITERATION,
                 obj1_name=OBJ1_NAME,
                 obj2_name=OBJ2_NAME,
+                obj1_display=OBJ1_DISPLAY,
+                obj2_display=OBJ2_DISPLAY,
                 score_name=SCORE_NAME,
                 seed=seed,
                 create_visualization=CREATE_VIS,
@@ -316,10 +323,6 @@ if __name__ == "__main__":
             # Generate comparison plots
             print(f"\n[Plotting] Generating comparison plots...")
             plot_strategy_decisions(logger_agent, seed, beta_explore, save_dir=exp_group_dir)
-            plot_acquisition_metrics_comparison(
-                [logger_exploit, logger_explore, logger_agent],
-                seed, beta_explore, save_dir=exp_group_dir
-            )
             plot_convergence_comparison(
                 [logger_exploit, logger_explore, logger_agent],
                 seed, beta_explore, SCORE_NAME, save_dir=exp_group_dir

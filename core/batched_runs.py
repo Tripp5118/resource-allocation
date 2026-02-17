@@ -269,6 +269,8 @@ def run_bo_experiment(
     # Objective names
     obj1_name: str,
     obj2_name: str,
+    obj1_display: str,
+    obj2_display: str,
     score_name: str,
     
     # Optional parameters
@@ -470,6 +472,14 @@ def run_bo_experiment(
         # Fit GP model
         print("[GP] Fitting model on normalized outputs...")
         model = gp_manager.fit_model(X_torch, Y_torch_normalized)
+
+        # Compute total uncertainty across entire design space
+        print("[GP] Computing total uncertainty across design space...")
+        total_uncertainty_obj1, total_uncertainty_obj2 = compute_total_uncertainty(
+            model=model,
+            design_space=design_space,
+        )
+        print(f"[GP] Total uncertainty - {obj1_name}: {total_uncertainty_obj1:.4f}, {obj2_name}: {total_uncertainty_obj2:.4f}")
         
         # Compute Pareto front
         print("[Acq] Computing Pareto front on normalized outputs...")
@@ -584,6 +594,9 @@ def run_bo_experiment(
             extra_info["information_gain"] = None
             extra_info["n_optimization"] = None
             extra_info["n_exploration"] = None
+
+        extra_info["total_uncertainty_obj1"] = total_uncertainty_obj1
+        extra_info["total_uncertainty_obj2"] = total_uncertainty_obj2
         
         # Add event information to extra_info
         if event_msgs:
@@ -679,6 +692,8 @@ def run_bo_experiment(
             Y_history=Y_history_raw_np,
             obj1_name=obj1_name,
             obj2_name=obj2_name,
+            obj1_display=obj1_display,
+            obj2_display=obj2_display
         )
         
         # Create GIF if requested
@@ -705,3 +720,36 @@ def run_bo_experiment(
     print(f"  Final hypervolume: {final_hv:.4f}")
     
     return X_final, Y_final, logger
+
+def compute_total_uncertainty(
+    model,
+    design_space: DesignSpace,
+) -> Tuple[float, float]:
+    """
+    Compute total uncertainty (sum of posterior std) across the entire design space.
+    
+    Args:
+        model: Fitted GP model
+        design_space: DesignSpace object containing the full space
+    
+    Returns:
+        (total_uncertainty_obj1, total_uncertainty_obj2)
+    """
+    # Use the entire design space
+    X_full = design_space.space  # Full discrete space
+    X_full_torch = torch.tensor(X_full, dtype=DTYPE, device=DEVICE)
+    
+    with torch.no_grad():
+        # Get posterior distribution
+        posterior = model.posterior(X_full_torch)
+        
+        # Get standard deviation (uncertainty) for each objective
+        # posterior.variance has shape (n_points, n_objectives)
+        variance = posterior.variance
+        std = torch.sqrt(variance)
+        
+        # Sum uncertainty across all points for each objective
+        total_std_obj1 = float(std[:, 0].sum().cpu())
+        total_std_obj2 = float(std[:, 1].sum().cpu())
+    
+    return total_std_obj1, total_std_obj2
