@@ -2,6 +2,8 @@
 
 import os
 from typing import Optional, List, Callable, Dict
+import pandas as pd
+from core.logging_utils import LoggingManager
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -94,6 +96,28 @@ class VisualizationManager:
             print(f"[Viz] Normalization enabled - will denormalize for plotting")
             print(f"  {obj1_name}: mean={normalization_params['mean'][0]:.4f}, std={normalization_params['std'][0]:.4f}")
             print(f"  {obj2_name}: mean={normalization_params['mean'][1]:.4f}, std={normalization_params['std'][1]:.4f}")
+
+    # Add to VisualizationManager class in visualization.py
+
+    def create_hypervolume_plot(self, logger: LoggingManager, score_name: str = "Score"):
+        """Create hypervolume progress plot."""
+        plot_hypervolume_per_iteration(logger, score_name, save_dir=self.log_dir)
+
+    def create_pareto_front_plot(
+        self,
+        Y_history: np.ndarray,
+        obj1_name: str,
+        obj2_name: str
+    ):
+        """Create final Pareto front visualization."""
+        save_path = os.path.join(self.log_dir, f"{self.experiment_name}_pareto_front.png")
+        plot_final_pareto_front(
+            Y_history=Y_history,
+            obj1_name=obj1_name,
+            obj2_name=obj2_name,
+            experiment_name=self.experiment_name,
+            save_path=save_path
+        )
 
     # ------------------------------------------------------------------ #
     #  NORMALIZATION UTILITIES
@@ -610,3 +634,312 @@ class VisualizationManager:
             print(f"[Viz] Created GIF at {gif_path}")
         except Exception as e:
             print(f"[Viz] Failed to create GIF: {e}")
+
+# Additional Graphing Functions for Batched Runs
+
+def plot_strategy_decisions(
+    logger: LoggingManager,
+    seed: int,
+    beta_explore: float,
+    event_iteration: int = None,
+    save_dir: str = None
+):
+    """
+    Plot the exploitation vs exploration decisions over iterations.
+    
+    Args:
+        logger: LoggingManager with convergence data
+        seed: Random seed used
+        beta_explore: Exploration beta value
+        event_iteration: Iteration where event occurred (optional)
+        save_dir: Directory to save plot (default: logger.log_dir)
+    """
+    df = pd.read_csv(logger.convergence_path)
+    df = df[df['iteration'] > 0].copy()
+    df = df.sort_values('iteration')
+    
+    opt_color = '#2ECC71'
+    exp_color = '#6C5CE7'
+    
+    fig, ax = plt.subplots(figsize=(10, 6))
+    
+    # Plot optimization points
+    ax.plot(df['iteration'], df['selected_n_opt'],
+            color=opt_color, linewidth=2, alpha=0.85)
+    ax.scatter(df['iteration'], df['selected_n_opt'],
+               color=opt_color, s=100, marker='o',
+               label='Optimization Points',
+               alpha=0.9, edgecolors='black', linewidth=1)
+    
+    # Plot exploration points
+    ax.plot(df['iteration'], df['selected_n_exp'],
+            color=exp_color, linewidth=2, alpha=0.85)
+    ax.scatter(df['iteration'], df['selected_n_exp'],
+               color=exp_color, s=100, marker='s',
+               label='Exploration Points',
+               alpha=0.9, edgecolors='black', linewidth=1)
+    
+    # Add vertical line at event if applicable
+    if event_iteration is not None:
+        ax.axvline(x=event_iteration, color='red', linestyle='--', 
+                   linewidth=2, alpha=0.7, label=f'Event (Iter {event_iteration})')
+    
+    ax.set_xlabel('Iteration', fontsize=12, fontweight='bold')
+    ax.set_ylabel('Number of Points Selected', fontsize=12, fontweight='bold')
+    
+    title = f'Strategy Decisions: {logger.experiment_name}\n(Seed: {seed}, β_explore: {beta_explore}'
+    if event_iteration is not None:
+        title += f', Event: Iter {event_iteration})'
+    else:
+        title += ')'
+    ax.set_title(title, fontsize=14, fontweight='bold')
+    
+    ax.set_yticks(range(0, 6))
+    ax.set_ylim(-0.5, 5.5)
+    ax.grid(True, alpha=0.3)
+    ax.legend(loc='best', fontsize=10)
+    plt.tight_layout()
+    
+    if save_dir is None:
+        save_dir = logger.log_dir
+    save_path = os.path.join(save_dir, f"{logger.experiment_name}_strategy_decisions.png")
+    plt.savefig(save_path, dpi=300, bbox_inches='tight')
+    plt.close()
+    print(f"[Plot] Saved strategy decisions plot to {save_path}")
+
+
+def plot_acquisition_metrics_comparison(
+    loggers: List[LoggingManager],
+    seed: int,
+    beta_explore: float,
+    event_iteration: int = None,
+    save_dir: str = None
+):
+    """
+    Plot comparison of acquisition metrics across strategies.
+    
+    Args:
+        loggers: List of LoggingManager objects
+        seed: Random seed used
+        beta_explore: Exploration beta value
+        event_iteration: Iteration where event occurred (optional)
+        save_dir: Directory to save plot (default: parent of first logger)
+    """
+    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(12, 10), sharex=True)
+    colors = plt.cm.tab10(np.linspace(0, 1, len(loggers)))
+    
+    for logger, color in zip(loggers, colors):
+        df = pd.read_csv(logger.convergence_path)
+        df = df[df['iteration'] > 0].copy()
+        df['cumulative_hvi'] = df['hypervolume_improvement'].cumsum()
+        
+        ax1.plot(df['iteration'], df['cumulative_hvi'],
+                marker='o', linewidth=2, label=logger.experiment_name,
+                color=color, alpha=0.8)
+        ax2.plot(df['iteration'], df['information_gain'],
+                marker='s', linewidth=2, label=logger.experiment_name,
+                color=color, alpha=0.8)
+    
+    # Add vertical line at event if applicable
+    if event_iteration is not None:
+        ax1.axvline(x=event_iteration, color='red', linestyle='--', 
+                    linewidth=2, alpha=0.5, label=f'Event')
+        ax2.axvline(x=event_iteration, color='red', linestyle='--', 
+                    linewidth=2, alpha=0.5)
+    
+    title = f'Acquisition Metrics Comparison\n(Seed: {seed}, β_explore: {beta_explore}'
+    if event_iteration is not None:
+        title += f', Event: Iter {event_iteration})'
+    else:
+        title += ')'
+    
+    ax1.set_ylabel('Cumulative Hypervolume Improvement', fontsize=12, fontweight='bold')
+    ax1.set_title(title, fontsize=14, fontweight='bold')
+    ax1.grid(True, alpha=0.3)
+    ax1.legend(loc='best', fontsize=10)
+    
+    ax2.set_xlabel('Iteration', fontsize=12, fontweight='bold')
+    ax2.set_ylabel('Mutual Information per Iteration', fontsize=12, fontweight='bold')
+    ax2.grid(True, alpha=0.3)
+    ax2.legend(loc='best', fontsize=10)
+    
+    plt.tight_layout()
+    
+    if save_dir is None:
+        save_dir = os.path.dirname(loggers[0].log_dir)
+    save_path = os.path.join(save_dir, "acquisition_metrics_comparison.png")
+    plt.savefig(save_path, dpi=300, bbox_inches='tight')
+    plt.close()
+    print(f"[Plot] Saved acquisition metrics comparison to {save_path}")
+
+
+def plot_convergence_comparison(
+    loggers: List[LoggingManager],
+    seed: int,
+    beta_explore: float,
+    score_name: str = "Score",
+    event_iteration: int = None,
+    save_dir: str = None
+):
+    """
+    Plot convergence comparison across strategies.
+    
+    Args:
+        loggers: List of LoggingManager objects (in order: exploit, explore, agent)
+        seed: Random seed used
+        beta_explore: Exploration beta value
+        score_name: Name of the score metric
+        event_iteration: Iteration where event occurred (optional)
+        save_dir: Directory to save plot (default: parent of first logger)
+    """
+    logger_exploit = loggers[0]
+    logger_explore = loggers[1]
+    logger_agent = loggers[2]
+    
+    df_exploit = pd.read_csv(logger_exploit.convergence_path)
+    df_explore = pd.read_csv(logger_explore.convergence_path)
+    df_agent = pd.read_csv(logger_agent.convergence_path)
+    
+    exploit_max_iter = df_exploit.loc[df_exploit['best_score'].idxmax(), 'iteration']
+    explore_max_iter = df_explore.loc[df_explore['best_score'].idxmax(), 'iteration']
+    agent_max_iter = df_agent.loc[df_agent['best_score'].idxmax(), 'iteration']
+    
+    fig, ax = plt.subplots(figsize=(12, 7))
+    
+    ax.plot(df_exploit['iteration'], df_exploit['best_score'],
+            marker='o', linewidth=2.5, label='Pure Exploitation', markersize=6)
+    ax.plot(df_explore['iteration'], df_explore['best_score'],
+            marker='s', linewidth=2.5, label='Pure Exploration', markersize=6)
+    ax.plot(df_agent['iteration'], df_agent['best_score'],
+            marker='^', linewidth=2.5, label='LLM Agent', markersize=7)
+    
+    ax.axvline(x=exploit_max_iter, color='C0', linestyle='--', alpha=0.3, linewidth=1.5)
+    ax.axvline(x=explore_max_iter, color='C1', linestyle='--', alpha=0.3, linewidth=1.5)
+    ax.axvline(x=agent_max_iter, color='C2', linestyle='--', alpha=0.3, linewidth=1.5)
+    
+    # Add vertical line at event if applicable
+    if event_iteration is not None:
+        ax.axvline(x=event_iteration, color='red', linestyle='--', 
+                   linewidth=2.5, alpha=0.7, label=f'Event (Iter {event_iteration})')
+    
+    ax.set_xlabel('Iteration', fontsize=14, fontweight='bold')
+    ax.set_ylabel(f'Best {score_name}', fontsize=14, fontweight='bold')
+    
+    title = f'Strategy Comparison\n(Seed: {seed}, β_explore: {beta_explore}'
+    if event_iteration is not None:
+        title += f', Event: Iter {event_iteration})'
+    else:
+        title += ')'
+    
+    ax.set_title(title, fontsize=16, fontweight='bold', pad=20)
+    ax.legend(fontsize=12, loc='best', framealpha=0.9)
+    ax.grid(True, alpha=0.3, linestyle='-', linewidth=0.5)
+    ax.tick_params(labelsize=11)
+    plt.tight_layout()
+    
+    if save_dir is None:
+        save_dir = os.path.dirname(loggers[0].log_dir)
+    save_path = os.path.join(save_dir, "convergence_comparison.png")
+    plt.savefig(save_path, dpi=300, bbox_inches='tight')
+    plt.close()
+    print(f"[Plot] Saved convergence comparison to {save_path}")
+
+def plot_hypervolume_per_iteration(
+    logger: LoggingManager,
+    score_name: str = "Score",
+    save_dir: str = None
+):
+    """
+    Plot hypervolume of Pareto front over iterations.
+    
+    Args:
+        logger: LoggingManager with convergence data
+        score_name: Name of score metric (for title)
+        save_dir: Directory to save plot (default: logger.log_dir)
+    """
+    df = pd.read_csv(logger.convergence_path)
+    
+    fig, ax = plt.subplots(figsize=(10, 6))
+    
+    ax.plot(df['iteration'], df['total_hypervolume'],
+            color='#3498DB', linewidth=2.5, marker='o',
+            markersize=8, alpha=0.85, label='Hypervolume')
+    
+    ax.set_xlabel('Iteration', fontsize=12, fontweight='bold')
+    ax.set_ylabel('Hypervolume', fontsize=12, fontweight='bold')
+    ax.set_title(f'Hypervolume Progress: {logger.experiment_name}',
+                 fontsize=14, fontweight='bold')
+    
+    ax.grid(True, alpha=0.3)
+    ax.legend(loc='best', fontsize=10)
+    plt.tight_layout()
+    
+    if save_dir is None:
+        save_dir = logger.log_dir
+    save_path = os.path.join(save_dir, f"{logger.experiment_name}_hypervolume.png")
+    plt.savefig(save_path, dpi=300, bbox_inches='tight')
+    plt.close()
+    print(f"[Plot] Saved hypervolume plot to {save_path}")
+
+
+def plot_final_pareto_front(
+    Y_history: np.ndarray,
+    obj1_name: str,
+    obj2_name: str,
+    experiment_name: str,
+    save_path: str
+):
+    """
+    Plot final Pareto front.
+    
+    Args:
+        Y_history: All objective values (n, 2)
+        obj1_name: Name of objective 1
+        obj2_name: Name of objective 2
+        experiment_name: Name of experiment (for title)
+        save_path: Path to save plot
+    """
+    from botorch.utils.multi_objective.pareto import is_non_dominated
+    
+    # Convert to torch for Pareto filtering
+    Y_tensor = torch.tensor(Y_history, dtype=torch.double)
+    pareto_mask = is_non_dominated(Y_tensor).cpu().numpy()
+    
+    # Split into Pareto and non-Pareto points
+    pareto_points = Y_history[pareto_mask]
+    non_pareto_points = Y_history[~pareto_mask]
+    
+    fig, ax = plt.subplots(figsize=(10, 8))
+    
+    # Plot non-Pareto points
+    if len(non_pareto_points) > 0:
+        ax.scatter(non_pareto_points[:, 0], non_pareto_points[:, 1],
+                   c='lightgray', s=80, alpha=0.5, 
+                   label='Non-Pareto Points', zorder=1)
+    
+    # Plot Pareto front
+    if len(pareto_points) > 0:
+        # Sort Pareto points for line plotting
+        sorted_idx = np.argsort(pareto_points[:, 0])
+        pareto_sorted = pareto_points[sorted_idx]
+        
+        ax.plot(pareto_sorted[:, 0], pareto_sorted[:, 1],
+                'r-', linewidth=2, alpha=0.6, zorder=2)
+        ax.scatter(pareto_points[:, 0], pareto_points[:, 1],
+                   c='#E74C3C', s=150, marker='*',
+                   edgecolors='darkred', linewidth=1.5,
+                   label=f'Pareto Front ({len(pareto_points)} points)',
+                   zorder=3)
+    
+    ax.set_xlabel(f'{obj1_name}', fontsize=12, fontweight='bold')
+    ax.set_ylabel(f'{obj2_name}', fontsize=12, fontweight='bold')
+    ax.set_title(f'Final Pareto Front: {experiment_name}',
+                 fontsize=14, fontweight='bold', pad=15)
+    
+    ax.legend(loc='best', fontsize=10, framealpha=0.9)
+    ax.grid(True, alpha=0.3)
+    plt.tight_layout()
+    
+    plt.savefig(save_path, dpi=300, bbox_inches='tight')
+    plt.close()
+    print(f"[Plot] Saved Pareto front plot to {save_path}")
