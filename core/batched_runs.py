@@ -272,6 +272,7 @@ def run_bo_experiment(
     score_name: str,
     
     # Optional parameters
+    use_discrete: bool = True,
     seed: int = 42,
     create_visualization: bool = True,
     create_gif: bool = True,
@@ -343,6 +344,8 @@ def run_bo_experiment(
         num_restarts=3,
         raw_samples=256,
         exploration_beta=exploration_beta,
+        design_space=design_space,
+        use_discrete=use_discrete
     )
     
     # Setup logging

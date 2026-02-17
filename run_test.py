@@ -42,6 +42,7 @@ COMPONENTS = [
     ("V",  0.10, 0.40),
 ]
 STEP = 0.025
+USE_DISCRETE = True # Set for True if you're using a discrete space for acq
 
 # BO parameters
 INIT_N = 5
@@ -87,7 +88,7 @@ CREATE_GIF = True
 
 # Output
 SETUP_SEED = 42
-BATCH_EXPERIMENT_NAME = "standard_20_iterations_2" # !!! THIS SHOULD CHANGE EVERY RUN !!!
+BATCH_EXPERIMENT_NAME = "discrete_acq" # !!! THIS SHOULD CHANGE EVERY RUN !!!
 OUTPUT_BASE_DIR = "./test"
 OUTPUT_DIR = os.path.join(OUTPUT_BASE_DIR, BATCH_EXPERIMENT_NAME)
 
@@ -226,6 +227,7 @@ if __name__ == "__main__":
                 obj2_name=OBJ2_NAME,
                 score_name=SCORE_NAME,
                 seed=seed,
+                use_discrete=USE_DISCRETE,
                 create_visualization=CREATE_VIS,
                 create_gif=CREATE_GIF,
             )

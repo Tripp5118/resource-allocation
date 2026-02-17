@@ -85,8 +85,8 @@ acquisition values for each option to best reach the goal within budget and time
 """
 
 # Visualization
-CREATE_VIS = False  # Disable per-iteration visualization to save time/space
-CREATE_GIF = False
+CREATE_VIS = True 
+CREATE_GIF = True
 
 # Output
 SETUP_SEED = 42
