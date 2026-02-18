@@ -45,7 +45,7 @@ USE_DISCRETE = True # Set for True if you're using a discrete space for acq
 
 # BO parameters
 INIT_N = 5
-ITERS = 2
+ITERS = 2 # This is a cap, optimization will end when this is reached, or when budget or time runs out. Agent does NOT know about this variable.
 MC_SAMPLES = 256
 POOL_SUBSAMPLE = 5000
 TOTAL_BATCH_SIZE = 5
@@ -60,7 +60,7 @@ TIME_PER_ITERATION = 1.0
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 AGENT_MODEL = "gpt-5.1"
 AGENT_TEMPERATURE = 0.7
-ITER_HISORY = 99
+ITER_HISTORY = 20
 
 # Objective names
 OBJ1_NAME = "CTE"
@@ -90,7 +90,7 @@ CREATE_GIF = True
 
 # Output
 SETUP_SEED = 42
-BATCH_EXPERIMENT_NAME = "new_plots_strategy_names" # !!! THIS SHOULD CHANGE EVERY RUN !!!
+BATCH_EXPERIMENT_NAME = "no_iter_0_hypervolume" # !!! THIS SHOULD CHANGE EVERY RUN !!!
 OUTPUT_BASE_DIR = "./test"
 OUTPUT_DIR = os.path.join(OUTPUT_BASE_DIR, BATCH_EXPERIMENT_NAME)
 

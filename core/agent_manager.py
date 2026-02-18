@@ -235,7 +235,9 @@ class BOAgent:
         summaries = [m for m in self.global_memory if m.get("step") == "iteration_summary"]
         if summaries:
             context += "**Recent Iterations**:\n"
-            for summary in summaries[-self.iter_history:]: # !!! if -1 get all else get most recent n
+            # If iter_history is -1, use all summaries; otherwise use most recent n
+            recent_summaries = summaries if self.iter_history == -1 else summaries[-self.iter_history:]
+            for summary in recent_summaries:
                 it = summary.get("iteration", "?")
                 context += f"\nIteration {it}:\n"
                 context += f"  - Best score: {summary.get('best_score', 0):.3f}\n"
@@ -247,7 +249,13 @@ class BOAgent:
         # Event history
         if self.event_manager.triggered_events:
             context += "\n**Resource Events**:\n"
-            for event in self.event_manager.triggered_events[-self.iter_history:]: # !!!
+            # Same logic for events
+            recent_events = (
+                self.event_manager.triggered_events 
+                if self.iter_history == -1 
+                else self.event_manager.triggered_events[-self.iter_history:]
+            )
+            for event in recent_events:
                 context += f"  - Iter {event['iteration']}: {event['description']}\n"
 
         return context

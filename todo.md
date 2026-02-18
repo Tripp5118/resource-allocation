@@ -9,7 +9,6 @@ With confidence intervals on the agent-decisions plot.
 
 do 95th percentile because it's probably not normally distributed
 
-Mutual information using scikit-learn
 
 ## Future generalization for benchmarking
 Simplex constraints need to be moved out to problem definition (this should be true now that we're passing design space)
@@ -64,11 +63,6 @@ Figure out best trevor problem
          - Optimization Statistics
          - Allocation Option Metrics
          - (eventually) Tools
-
-
-
-
-
 
 
 
