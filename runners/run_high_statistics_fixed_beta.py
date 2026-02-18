@@ -20,7 +20,6 @@ from core.agent_manager import BOAgent
 from core.fixed_policy import PureExploitation, PureExploration
 from core.visualization import (
     plot_strategy_decisions,
-    plot_acquisition_metrics_comparison,
     plot_convergence_comparison,
 )
 
@@ -67,6 +66,8 @@ AGENT_TEMPERATURE = 0.7
 # Objective names (same as before)
 OBJ1_NAME = "CTE"
 OBJ2_NAME = "K"
+OBJ1_DISPLAY = "-|CTE|"
+OBJ2_DISPLAY = "K"
 SCORE_NAME = "K / |CTE|"
 
 PROBLEM_DESCRIPTION = """
@@ -221,6 +222,8 @@ if __name__ == "__main__":
             time_per_iteration=TIME_PER_ITERATION,
             obj1_name=OBJ1_NAME,
             obj2_name=OBJ2_NAME,
+            obj1_display=OBJ1_DISPLAY,
+            obj2_display=OBJ2_DISPLAY,
             score_name=SCORE_NAME,
             seed=seed,
             create_visualization=CREATE_VIS,
@@ -255,73 +258,14 @@ if __name__ == "__main__":
             time_per_iteration=TIME_PER_ITERATION,
             obj1_name=OBJ1_NAME,
             obj2_name=OBJ2_NAME,
+            obj1_display=OBJ1_DISPLAY,
+            obj2_display=OBJ2_DISPLAY,
             score_name=SCORE_NAME,
             seed=seed,
             create_visualization=CREATE_VIS,
             create_gif=CREATE_GIF,
         )
-        
-        # Run LLM Agent
-        print(f"\n[3/3] Running LLM Agent...")
-        agent_log_dir = os.path.join(exp_group_dir, "Agent", "agent_logs")
-        os.makedirs(agent_log_dir, exist_ok=True)
-        
-        strategy_agent = BOAgent(
-            model=AGENT_MODEL,
-            temperature=AGENT_TEMPERATURE,
-            api_key=OPENAI_API_KEY,
-            log_dir=agent_log_dir,
-            problem_description=PROBLEM_DESCRIPTION,
-            obj1_name=OBJ1_NAME,
-            obj2_name=OBJ2_NAME,
-        )
-        
-        X_agent, Y_agent, logger_agent = run_bo_experiment(
-            experiment_name="Agent",
-            strategy=strategy_agent,
-            output_dir=exp_group_dir,
-            model_path=MODEL_PATH,
-            x_scaler_path=X_SCALER_PATH,
-            y_scaler_path=Y_SCALER_PATH,
-            postprocess_fn=postprocess_outputs,
-            score_fn=score_fn,
-            design_space=design_space,
-            bounds=bounds_t,
-            X0_init=X0_shared,
-            Y0_init_raw=Y0_shared_raw,
-            Y0_init_normalized=Y0_shared_normalized,
-            normalization_params=normalization_params,
-            exploration_beta=BETA_EXPLORE,
-            n_iterations=ITERS,
-            mc_samples=MC_SAMPLES,
-            total_batch_size=TOTAL_BATCH_SIZE,
-            pool_subsample=POOL_SUBSAMPLE,
-            total_budget=TOTAL_BUDGET,
-            total_time=TOTAL_TIME,
-            cost_per_point=COST_PER_POINT,
-            time_per_iteration=TIME_PER_ITERATION,
-            obj1_name=OBJ1_NAME,
-            obj2_name=OBJ2_NAME,
-            score_name=SCORE_NAME,
-            seed=seed,
-            create_visualization=CREATE_VIS,
-            create_gif=CREATE_GIF,
-        )
-        
-        # Generate per-seed comparison plots
-        print(f"\n[Plotting] Generating per-seed comparison plots...")
-        plot_strategy_decisions(logger_agent, seed, BETA_EXPLORE, save_dir=exp_group_dir)
-        plot_acquisition_metrics_comparison(
-            [logger_exploit, logger_explore, logger_agent],
-            seed, BETA_EXPLORE, save_dir=exp_group_dir
-        )
-        plot_convergence_comparison(
-            [logger_exploit, logger_explore, logger_agent],
-            seed, BETA_EXPLORE, SCORE_NAME, save_dir=exp_group_dir
-        )
-        
-        del strategy_agent
-        cleanup_memory()
+
         
         print(f"\n✓ Completed seed{seed} ({seed_idx+1}/{NUM_SEEDS})")
     

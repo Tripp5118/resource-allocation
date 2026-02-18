@@ -400,9 +400,7 @@ def run_bo_experiment(
     # Compute initial hypervolume
     # Reference point: slightly below minimum of each objective
     ref_point_raw = Y_history_raw_np.min(axis=0) - 0.1 * np.ones(2)
-    initial_hv = compute_hypervolume(Y_history_raw_np, ref_point_raw)
-    print(f"[Init] Initial hypervolume: {initial_hv:.4f}")
-    
+
     # Log initialization
     logger.log_iteration(
         iteration=0,
@@ -420,7 +418,6 @@ def run_bo_experiment(
         score_fn=score_fn,
         obj1_name=obj1_name,
         obj2_name=obj2_name,
-        hypervolume=initial_hv,
         ref_point=ref_point_raw,
     )
     logger.log_evaluations(
@@ -469,6 +466,7 @@ def run_bo_experiment(
         print(f"[Resources] Budget: ${budget_remaining:.2f} | Time: {time_remaining:.1f}")
         print(f"{'='*80}")
         
+
         # Fit GP model
         print("[GP] Fitting model on normalized outputs...")
         model = gp_manager.fit_model(X_torch, Y_torch_normalized)

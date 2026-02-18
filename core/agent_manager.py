@@ -132,6 +132,7 @@ class BOAgent:
         problem_description: str = "",
         obj1_name: str = "Objective 1",
         obj2_name: str = "Objective 2",
+        iter_history: int = 3
     ):
         """
         Args:
@@ -159,6 +160,7 @@ class BOAgent:
         # Memory
         self.global_memory: List[Dict[str, Any]] = []
         self.iteration_memory: Optional[ConversationBufferMemory] = None
+        self.iter_history = iter_history
 
         # Event management
         self.event_manager = EventManager()
@@ -233,7 +235,7 @@ class BOAgent:
         summaries = [m for m in self.global_memory if m.get("step") == "iteration_summary"]
         if summaries:
             context += "**Recent Iterations**:\n"
-            for summary in summaries[-3:]:
+            for summary in summaries[-self.iter_history:]: # !!! if -1 get all else get most recent n
                 it = summary.get("iteration", "?")
                 context += f"\nIteration {it}:\n"
                 context += f"  - Best score: {summary.get('best_score', 0):.3f}\n"
@@ -245,7 +247,7 @@ class BOAgent:
         # Event history
         if self.event_manager.triggered_events:
             context += "\n**Resource Events**:\n"
-            for event in self.event_manager.triggered_events[-3:]:
+            for event in self.event_manager.triggered_events[-self.iter_history:]: # !!!
                 context += f"  - Iter {event['iteration']}: {event['description']}\n"
 
         return context
@@ -282,7 +284,7 @@ class BOAgent:
         Returns:
             selected_idx: index in allocation_results.options
             reasoning: full reasoning text
-            selected_points: [exploit_points, explore_points] list for evaluation
+            selected_points: [optimize_points, explore_points] list for evaluation
         """
         self._log("INFO", f"\n{'='*80}\nIteration {iteration}: Resource Allocation Decision\n{'='*80}")
 
@@ -330,6 +332,8 @@ Important: Each iteration takes {time_per_point:.1f} week(s) regardless of batch
 
 {global_context}{event_warning}
 
+The primary factor for your decisions should be the metrics for each allocation option at each iteration and an analysis of whether exploration or optimization is needed when directly observing the previous iteration's performance. 
+
 When ready to decide, respond:
 SELECTED_OPTION: <0-5>
 REASONING: <brief justification>"""
@@ -341,8 +345,10 @@ REASONING: <brief justification>"""
 {options_desc}
 
 Decision framework (guideline):
-- If recent progress is improving with enough runway → prefer more exploitation
-- If progress is plateauing or runway is short → prefer more exploration or balanced
+- If recent progress is improving with enough runway → prefer more optimization
+- If progress is plateauing or runway is short → prefer more exploration
+
+When making a decision, provide a detailed, mathmatical summary of your reasoning for the decision you make in order to inform a determination of a dyanmic policy approach for this problem. 
 
 You have up to {self.max_reasoning_steps} reasoning steps.
 
@@ -444,7 +450,7 @@ Begin analysis."""
         self._log(
             "INFO",
             f"✓ Selected Option {selected_idx}: "
-            f"{selected_batch.num_exploitation} exploit + {max_batch_size - selected_batch.num_exploitation} explore"
+            f"{selected_batch.num_exploitation} optimize + {max_batch_size - selected_batch.num_exploitation} explore"
         )
 
         return selected_idx, full_reasoning, selected_points
@@ -571,7 +577,7 @@ This is the initial exploration phase."""
             feasible = cost <= budget and time_per_point <= time and total_points <= max_batch
 
             desc += (
-                f"**Option {i}**: {n_exploit} exploit + {n_explore} explore | "
+                f"**Option {i}**: {n_exploit} optimize + {n_explore} explore | "
                 f"Cost: ${cost:.0f} | EHVI: {batch.hypervolume_improvement:.4f} | "
                 f"Entropy: {batch.information_gain:.2f} | "
                 f"{'✓ Feasible' if feasible else '✗ Infeasible'}\n"
@@ -615,7 +621,7 @@ This is the initial exploration phase."""
             "best_obj1": float(Y[best_idx, 0]),
             "best_obj2": float(Y[best_idx, 1]),
             "selected_option": selected_idx,
-            "decision_summary": f"{selected_batch.num_exploitation} exploit + {5 - selected_batch.num_exploitation} explore",
+            "decision_summary": f"{selected_batch.num_exploitation} optimize + {5 - selected_batch.num_exploitation} explore",
             "reasoning_summary": reasoning[:500] + "..." if len(reasoning) > 500 else reasoning,
         }
     

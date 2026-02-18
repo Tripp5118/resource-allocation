@@ -58,8 +58,9 @@ TIME_PER_ITERATION = 1.0
 
 # Agent parameters
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-AGENT_MODEL = "gpt-4o"
+AGENT_MODEL = "gpt-5.1"
 AGENT_TEMPERATURE = 0.7
+ITER_HISORY = 99
 
 # Objective names
 OBJ1_NAME = "CTE"
@@ -284,6 +285,7 @@ if __name__ == "__main__":
                 problem_description=PROBLEM_DESCRIPTION,
                 obj1_name=OBJ1_NAME,
                 obj2_name=OBJ2_NAME,
+                iter_history=ITER_HISTORY,
             )
             
             X_agent, Y_agent, logger_agent = run_bo_experiment(
