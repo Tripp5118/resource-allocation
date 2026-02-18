@@ -2,7 +2,7 @@
 
 import torch
 import numpy as np
-from typing import List, Tuple, Optional
+from typing import List, Tuple, Optional, Dict, Sequence
 from dataclasses import dataclass
 
 from botorch.models import MultiTaskGP
@@ -14,6 +14,8 @@ from botorch.acquisition.objective import ScalarizedPosteriorTransform
 from botorch.utils.multi_objective.box_decompositions.non_dominated import NondominatedPartitioning
 from botorch.sampling.normal import SobolQMCNormalSampler
 from botorch.optim import optimize_acqf
+from botorch.optim.optimize import optimize_acqf_discrete
+from botorch.optim.optimize_mixed import optimize_acqf_mixed_alternating
 
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 DTYPE = torch.double
@@ -21,17 +23,7 @@ DTYPE = torch.double
 
 @dataclass
 class AllocationOption:
-    """Represents one exploitation/exploration allocation strategy.
-    
-    Args:
-        num_exploitation: Number of exploitation points
-        num_exploration: Number of exploration points
-        exploitation_points: Exploitation candidate points (num_exploitation, d)
-        exploration_points: Exploration candidate points (num_exploration, d)
-        hypervolume_improvement: qEHVI score for exploitation points
-        information_gain: Joint entropy score for exploration points
-        total_batch_size: Total points per iteration (default 5)
-    """
+    """Represents one exploitation/exploration allocation strategy."""
     num_exploitation: int
     num_exploration: int
     exploitation_points: np.ndarray
@@ -42,7 +34,6 @@ class AllocationOption:
 
     @property
     def all_points(self) -> np.ndarray:
-        """Get all points (exploitation + exploration) as a single array."""
         if self.exploitation_points.shape[0] > 0 and self.exploration_points.shape[0] > 0:
             return np.vstack([self.exploitation_points, self.exploration_points])
         elif self.exploitation_points.shape[0] > 0:
@@ -52,69 +43,31 @@ class AllocationOption:
         else:
             return np.empty((0, self.exploitation_points.shape[1]))
 
-    def __repr__(self):
-        return (
-            f"AllocationOption("
-            f"exploit={self.num_exploitation}, "
-            f"explore={self.num_exploration}, "
-            f"HVI={self.hypervolume_improvement:.4f}, "
-            f"InfoGain={self.information_gain:.4f})"
-        )
-
 
 @dataclass
 class AllocationResults:
-    """Container for all allocation options computed during acquisition.
-    
-    Args:
-        options: List of allocation options with different exploit/explore splits
-        metadata: Optional dictionary for debugging information
-    """
+    """Container for all allocation options computed during acquisition."""
     options: List[AllocationOption]
     metadata: Optional[dict] = None
-
-    def __repr__(self):
-        result = "AllocationResults:\n"
-        for i, option in enumerate(self.options):
-            result += f"  Option {i}: {option}\n"
-        return result
 
 
 class AcquisitionFunctionManager:
     """Manages acquisition function computation for 2-objective BO.
     
-    Uses qEHVI for exploitation and qUCB with high beta for exploration.
-    Points are evaluated using qEHVI and joint entropy for interpretable metrics.
-    
-    Enforces simplex constraint: sum(x_i) = 1 with x_i in [min_i, max_i].
-    
-    Exploration beta guidelines:
-        - β ∈ [1.0, 10.0]
-            * 1.0-2.0: Conservative exploration
-            * 3.0-5.0: Moderate exploration (recommended)
-            * 5.0-10.0: Aggressive exploration
-    
-    Example:
-        >>> bounds = torch.tensor([[0.0, 0.0, 0.0], [0.5, 0.5, 1.0]])
-        >>> manager = AcquisitionFunctionManager(
-        ...     bounds=bounds,
-        ...     exploration_beta=2.0
-        ... )
-        >>> pareto_front, ref_point = manager.compute_pareto_front(objectives)
-        >>> results = manager.compute_all_allocations(
-        ...     model=model,
-        ...     pareto_front=pareto_front,
-        ...     reference_point=ref_point
-        ... )
+    Now supports discrete optimization via design space specification.
     """
     
     def __init__(
         self,
         bounds: torch.Tensor,
-        num_restarts: int = 3,
-        raw_samples: int = 256,
+        num_restarts: int = 10,
+        raw_samples: int = 512,
         exploration_beta: float = 2.0,
-        objective_weights: Optional[List[float]] = None
+        objective_weights: Optional[List[float]] = None,
+        # NEW: Design space parameters for discrete optimization
+        design_space: Optional[object] = None,  # Your DesignSpace object
+        discrete_choices: Optional[torch.Tensor] = None,  # Pre-computed discrete choices
+        use_discrete: bool = False,  # Whether to use discrete optimization
     ):
         """Initialize the acquisition function manager.
         
@@ -122,64 +75,219 @@ class AcquisitionFunctionManager:
             bounds: (2, d) tensor of [lower_bounds, upper_bounds]
             num_restarts: Number of restarts for acquisition optimization
             raw_samples: Number of raw samples for initialization
-            exploration_beta: Beta for exploration - higher = more diverse
-                Recommended range: [1.0, 10.0], default 2.0
+            exploration_beta: Beta for exploration
             objective_weights: Weights for scalarizing objectives [w1, w2]
-                Default [0.5, 0.5] gives equal weight to both objectives
+            design_space: DesignSpace object with discrete grid
+            discrete_choices: Pre-computed tensor of valid discrete points (n_choices, d)
+            use_discrete: Whether to use discrete optimization
         """
         if bounds.shape[0] != 2:
             raise ValueError(f"bounds must have shape (2, d), got {bounds.shape}")
-        if bounds.shape[1] < 1 or bounds.shape[1] > 10:
-            raise ValueError(f"Input dimension must be between 1 and 10, got {bounds.shape[1]}")
-        if torch.any(bounds[0] >= bounds[1]):
-            raise ValueError("Lower bounds must be strictly less than upper bounds")
-        if exploration_beta < 0:
-            raise ValueError(f"exploration_beta must be non-negative, got {exploration_beta}")
-        
+            
         self.bounds = bounds.to(dtype=DTYPE, device=DEVICE)
         self.input_dim = self.bounds.shape[1]
         self.num_restarts = num_restarts
         self.raw_samples = raw_samples
         self.exploration_beta = exploration_beta
         
+        # Discrete optimization settings
+        self.use_discrete = use_discrete
+        self.design_space = design_space
+        self.discrete_choices = None
+        
+        # Build discrete choices from design space if provided
+        if design_space is not None and use_discrete:
+            self._build_discrete_choices_from_design_space(design_space)
+        elif discrete_choices is not None and use_discrete:
+            self.discrete_choices = discrete_choices.to(dtype=DTYPE, device=DEVICE)
+            
+        # Objective weights
         if objective_weights is None:
             objective_weights = [0.5, 0.5]
-        if len(objective_weights) != 2:
-            raise ValueError(f"objective_weights must have length 2, got {len(objective_weights)}")
-        if not np.isclose(sum(objective_weights), 1.0):
-            raise ValueError(f"objective_weights must sum to 1.0, got {sum(objective_weights)}")
-        
         self.objective_weights = torch.tensor(
             objective_weights, dtype=DTYPE, device=DEVICE
         )
-
+        
+    def _build_discrete_choices_from_design_space(self, design_space):
+        """Build discrete choices tensor from DesignSpace object.
+        
+        Assumes design_space has a 'space' attribute containing all valid compositions.
+        """
+        if hasattr(design_space, 'space') and design_space.space is not None:
+            # Use the full discrete space
+            self.discrete_choices = torch.tensor(
+                design_space.space, dtype=DTYPE, device=DEVICE
+            )
+            print(f"[AcqFn] Built discrete choices: {self.discrete_choices.shape[0]} points")
+        elif hasattr(design_space, 'get_all_points'):
+            # Alternative method if available
+            all_points = design_space.get_all_points()
+            self.discrete_choices = torch.tensor(
+                all_points, dtype=DTYPE, device=DEVICE
+            )
+            print(f"[AcqFn] Built discrete choices: {self.discrete_choices.shape[0]} points")
+        else:
+            raise ValueError("DesignSpace must have 'space' attribute or 'get_all_points' method")
+    
+    def _build_discrete_dims_from_step(self, step: float) -> Dict[int, List[float]]:
+        """Build discrete_dims dictionary for optimize_acqf_mixed_alternating.
+        
+        Args:
+            step: Step size for discretization (e.g., 0.025)
+            
+        Returns:
+            Dictionary mapping dimension indices to allowed values
+        """
+        discrete_dims = {}
+        for i in range(self.input_dim):
+            lower = float(self.bounds[0, i])
+            upper = float(self.bounds[1, i])
+            # Generate allowed values with given step
+            n_steps = int(round((upper - lower) / step)) + 1
+            allowed_values = [lower + j * step for j in range(n_steps)]
+            # Ensure upper bound is included
+            if allowed_values[-1] < upper:
+                allowed_values.append(upper)
+            discrete_dims[i] = allowed_values
+        return discrete_dims
+    
     def compute_pareto_front(
         self,
         objectives: torch.Tensor
     ) -> Tuple[torch.Tensor, torch.Tensor]:
-        """Compute Pareto front and reference point from objective values.
-        
-        Args:
-            objectives: (n, 2) tensor of objective values (both maximized)
-        
-        Returns:
-            pareto_front: (m, 2) tensor of Pareto-optimal points
-            reference_point: (2,) tensor for hypervolume calculations
-        """
+        """Compute Pareto front and reference point from objective values."""
         if objectives.shape[0] == 0:
             raise ValueError("Cannot compute Pareto front from empty objectives")
-        
         pareto_mask = is_non_dominated(objectives)
         pareto_front = objectives[pareto_mask]
-        
         if len(pareto_front) == 0:
             raise ValueError("No non-dominated points found")
-        
         reference_point = pareto_front.min(dim=0).values - 0.1 * torch.ones(
             2, dtype=DTYPE, device=DEVICE
         )
-        
         return pareto_front, reference_point
+
+    def _optimize_qehvi(
+        self,
+        model: MultiTaskGP,
+        batch_size: int,
+        pareto_front: torch.Tensor,
+        reference_point: torch.Tensor,
+        mc_samples: int
+    ) -> np.ndarray:
+        """Optimize points using qEHVI (exploitation).
+        
+        Uses discrete optimization if enabled, otherwise continuous.
+        """
+        print(f"  Optimizing qEHVI with q={batch_size}...")
+        
+        sampler = SobolQMCNormalSampler(sample_shape=torch.Size([mc_samples]))
+        partitioning = NondominatedPartitioning(ref_point=reference_point, Y=pareto_front)
+        
+        acquisition_function = qExpectedHypervolumeImprovement(
+            model=model,
+            ref_point=reference_point.tolist(),
+            partitioning=partitioning,
+            sampler=sampler,
+        )
+        
+        if self.use_discrete and self.discrete_choices is not None:
+            # DISCRETE OPTIMIZATION using optimize_acqf_discrete [4]
+            print(f"    Using discrete optimization over {self.discrete_choices.shape[0]} choices")
+            
+            # Normalize discrete choices to [0, 1]
+            normalized_choices = normalize(self.discrete_choices, self.bounds)
+            
+            candidates, _ = optimize_acqf_discrete(
+                acq_function=acquisition_function,
+                q=batch_size,
+                choices=normalized_choices,
+                max_batch_size=2048,
+                unique=True,  # Ensure unique candidates
+            )
+            
+            # Denormalize back to original space
+            denormalized_candidates = self._denormalize(candidates, self.bounds)
+            
+        else:
+            # CONTINUOUS OPTIMIZATION (original behavior)
+            simplex_constraint = self._get_simplex_constraint()
+            
+            candidates, _ = optimize_acqf(
+                acq_function=acquisition_function,
+                bounds=torch.stack([
+                    torch.zeros(self.input_dim, dtype=DTYPE, device=DEVICE),
+                    torch.ones(self.input_dim, dtype=DTYPE, device=DEVICE)
+                ]),
+                q=batch_size,
+                num_restarts=self.num_restarts,
+                raw_samples=self.raw_samples,
+                equality_constraints=simplex_constraint,
+                options={"batch_limit": 5, "maxiter": 200}
+            )
+            denormalized_candidates = self._denormalize(candidates, self.bounds)
+            
+        return denormalized_candidates.cpu().numpy()
+
+    def _optimize_qucb(
+        self,
+        model: MultiTaskGP,
+        batch_size: int,
+        beta: float,
+        mc_samples: int
+    ) -> np.ndarray:
+        """Optimize points using qUCB (exploration).
+        
+        Uses discrete optimization if enabled, otherwise continuous.
+        """
+        print(f"  Optimizing qUCB with q={batch_size}, beta={beta}...")
+        
+        sampler = SobolQMCNormalSampler(sample_shape=torch.Size([mc_samples]))
+        posterior_transform = ScalarizedPosteriorTransform(weights=self.objective_weights)
+        
+        acquisition_function = qUpperConfidenceBound(
+            model=model,
+            beta=beta,
+            sampler=sampler,
+            posterior_transform=posterior_transform
+        )
+        
+        if self.use_discrete and self.discrete_choices is not None:
+            # DISCRETE OPTIMIZATION [4]
+            print(f"    Using discrete optimization over {self.discrete_choices.shape[0]} choices")
+            
+            normalized_choices = normalize(self.discrete_choices, self.bounds)
+            
+            candidates, _ = optimize_acqf_discrete(
+                acq_function=acquisition_function,
+                q=batch_size,
+                choices=normalized_choices,
+                max_batch_size=2048,
+                unique=True,
+            )
+            
+            denormalized_candidates = self._denormalize(candidates, self.bounds)
+            
+        else:
+            # CONTINUOUS OPTIMIZATION
+            simplex_constraint = self._get_simplex_constraint()
+            
+            candidates, _ = optimize_acqf(
+                acq_function=acquisition_function,
+                bounds=torch.stack([
+                    torch.zeros(self.input_dim, dtype=DTYPE, device=DEVICE),
+                    torch.ones(self.input_dim, dtype=DTYPE, device=DEVICE)
+                ]),
+                q=batch_size,
+                num_restarts=self.num_restarts,
+                raw_samples=self.raw_samples,
+                equality_constraints=simplex_constraint,
+                options={"batch_limit": 5, "maxiter": 200}
+            )
+            denormalized_candidates = self._denormalize(candidates, self.bounds)
+            
+        return denormalized_candidates.cpu().numpy()
+
 
     def compute_single_allocation(
         self,
@@ -297,7 +405,6 @@ class AcquisitionFunctionManager:
     ) -> AllocationOption:
         """Compute a single allocation option with qEHVI (exploit) and qUCB (explore)."""
         
-        # Exploitation points using qEHVI
         if num_exploitation > 0:
             exploitation_points = self._optimize_qehvi(
                 model=model,
@@ -308,8 +415,7 @@ class AcquisitionFunctionManager:
             )
         else:
             exploitation_points = np.empty((0, self.input_dim))
-        
-        # Exploration points using qUCB with high beta
+            
         if num_exploration > 0:
             exploration_points = self._optimize_qucb(
                 model=model,
@@ -319,7 +425,7 @@ class AcquisitionFunctionManager:
             )
         else:
             exploration_points = np.empty((0, self.input_dim))
-        
+            
         option = AllocationOption(
             num_exploitation=num_exploitation,
             num_exploration=num_exploration,
@@ -338,88 +444,10 @@ class AcquisitionFunctionManager:
             reference_point=reference_point,
             mc_samples=mc_samples
         )
-        
         option.hypervolume_improvement = hv_improvement
         option.information_gain = info_gain
         
         return option
-
-    def _optimize_qehvi(
-        self,
-        model: MultiTaskGP,
-        batch_size: int,
-        pareto_front: torch.Tensor,
-        reference_point: torch.Tensor,
-        mc_samples: int
-    ) -> np.ndarray:
-        """Optimize points using qEHVI (exploitation)."""
-        print(f"  Optimizing qEHVI with q={batch_size}...")
-        
-        sampler = SobolQMCNormalSampler(sample_shape=torch.Size([mc_samples]))
-        partitioning = NondominatedPartitioning(ref_point=reference_point, Y=pareto_front)
-        
-        acquisition_function = qExpectedHypervolumeImprovement(
-            model=model,
-            ref_point=reference_point.tolist(),
-            partitioning=partitioning,
-            sampler=sampler,
-        )
-        
-        simplex_constraint = self._get_simplex_constraint()
-        
-        candidates, _ = optimize_acqf(
-            acq_function=acquisition_function,
-            bounds=torch.stack([
-                torch.zeros(self.input_dim, dtype=DTYPE, device=DEVICE),
-                torch.ones(self.input_dim, dtype=DTYPE, device=DEVICE)
-            ]),
-            q=batch_size,
-            num_restarts=self.num_restarts,
-            raw_samples=self.raw_samples,
-            equality_constraints=simplex_constraint,
-            options={"batch_limit": 5, "maxiter": 200}
-        )
-        
-        denormalized_candidates = self._denormalize(candidates, self.bounds)
-        return denormalized_candidates.cpu().numpy()
-
-    def _optimize_qucb(
-        self,
-        model: MultiTaskGP,
-        batch_size: int,
-        beta: float,
-        mc_samples: int
-    ) -> np.ndarray:
-        """Optimize points using qUCB (exploration)."""
-        print(f"  Optimizing qUCB with q={batch_size}, beta={beta}...")
-        
-        sampler = SobolQMCNormalSampler(sample_shape=torch.Size([mc_samples]))
-        posterior_transform = ScalarizedPosteriorTransform(weights=self.objective_weights)
-        
-        acquisition_function = qUpperConfidenceBound(
-            model=model,
-            beta=beta,
-            sampler=sampler,
-            posterior_transform=posterior_transform
-        )
-       
-        simplex_constraint = self._get_simplex_constraint()
-        
-        candidates, _ = optimize_acqf(
-            acq_function=acquisition_function,
-            bounds=torch.stack([
-                torch.zeros(self.input_dim, dtype=DTYPE, device=DEVICE),
-                torch.ones(self.input_dim, dtype=DTYPE, device=DEVICE)
-            ]),
-            q=batch_size,
-            num_restarts=self.num_restarts,
-            raw_samples=self.raw_samples,
-            equality_constraints=simplex_constraint,
-            options={"batch_limit": 5, "maxiter": 200}
-        )
-        
-        denormalized_candidates = self._denormalize(candidates, self.bounds)
-        return denormalized_candidates.cpu().numpy()
 
     def _compute_allocation_metrics(
         self,
@@ -661,10 +689,7 @@ class AcquisitionFunctionManager:
         lower_bounds = self.bounds[0, :]
         upper_bounds = self.bounds[1, :]
         coefficients = upper_bounds - lower_bounds
-        
         right_hand_side = 1.0 - float(lower_bounds.sum().item())
-        
         indices = torch.arange(self.input_dim, device=DEVICE, dtype=torch.long)
         constraint_coefficients = coefficients.to(dtype=DTYPE, device=DEVICE)
-        
         return [(indices, constraint_coefficients, right_hand_side)]

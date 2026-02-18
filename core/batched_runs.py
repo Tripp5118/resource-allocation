@@ -269,9 +269,12 @@ def run_bo_experiment(
     # Objective names
     obj1_name: str,
     obj2_name: str,
+    obj1_display: str,
+    obj2_display: str,
     score_name: str,
     
     # Optional parameters
+    use_discrete: bool = True,
     seed: int = 42,
     create_visualization: bool = True,
     create_gif: bool = True,
@@ -343,6 +346,8 @@ def run_bo_experiment(
         num_restarts=3,
         raw_samples=256,
         exploration_beta=exploration_beta,
+        design_space=design_space,
+        use_discrete=use_discrete
     )
     
     # Setup logging
@@ -395,9 +400,7 @@ def run_bo_experiment(
     # Compute initial hypervolume
     # Reference point: slightly below minimum of each objective
     ref_point_raw = Y_history_raw_np.min(axis=0) - 0.1 * np.ones(2)
-    initial_hv = compute_hypervolume(Y_history_raw_np, ref_point_raw)
-    print(f"[Init] Initial hypervolume: {initial_hv:.4f}")
-    
+
     # Log initialization
     logger.log_iteration(
         iteration=0,
@@ -409,13 +412,14 @@ def run_bo_experiment(
         extra_info={
             "experiment": experiment_name,
             "shared_init": True,
-            "has_events": events is not None
+            "has_events": events is not None,
+            "budget_remaining": total_budget,
+            "time_remaining": total_time,
         },
         acquisition_data=None,
         score_fn=score_fn,
         obj1_name=obj1_name,
         obj2_name=obj2_name,
-        hypervolume=initial_hv,
         ref_point=ref_point_raw,
     )
     logger.log_evaluations(
@@ -435,6 +439,7 @@ def run_bo_experiment(
     # Main BO loop
     iteration = 0
     while iteration < n_iterations:
+        iteration += 1
         # Check if we have enough resources to continue
         if budget_remaining < current_cost_per_point * total_batch_size or time_remaining < time_per_iteration:
             print(f"\n[Stop] Insufficient resources at iteration {iteration}")
@@ -442,7 +447,7 @@ def run_bo_experiment(
             print(f"       Time: {time_remaining:.1f} (need {time_per_iteration:.1f})")
             break
         
-        iteration += 1
+
         iter_start = time.perf_counter()
         
         # Process events for this iteration
@@ -464,9 +469,18 @@ def run_bo_experiment(
         print(f"[Resources] Budget: ${budget_remaining:.2f} | Time: {time_remaining:.1f}")
         print(f"{'='*80}")
         
+
         # Fit GP model
         print("[GP] Fitting model on normalized outputs...")
         model = gp_manager.fit_model(X_torch, Y_torch_normalized)
+
+        # Compute total uncertainty across entire design space
+        print("[GP] Computing total uncertainty across design space...")
+        total_uncertainty_obj1, total_uncertainty_obj2 = compute_total_uncertainty(
+            model=model,
+            design_space=design_space,
+        )
+        print(f"[GP] Total uncertainty - {obj1_name}: {total_uncertainty_obj1:.4f}, {obj2_name}: {total_uncertainty_obj2:.4f}")
         
         # Compute Pareto front
         print("[Acq] Computing Pareto front on normalized outputs...")
@@ -581,6 +595,9 @@ def run_bo_experiment(
             extra_info["information_gain"] = None
             extra_info["n_optimization"] = None
             extra_info["n_exploration"] = None
+
+        extra_info["total_uncertainty_obj1"] = total_uncertainty_obj1
+        extra_info["total_uncertainty_obj2"] = total_uncertainty_obj2
         
         # Add event information to extra_info
         if event_msgs:
@@ -676,6 +693,8 @@ def run_bo_experiment(
             Y_history=Y_history_raw_np,
             obj1_name=obj1_name,
             obj2_name=obj2_name,
+            obj1_display=obj1_display,
+            obj2_display=obj2_display
         )
         
         # Create GIF if requested
@@ -702,3 +721,36 @@ def run_bo_experiment(
     print(f"  Final hypervolume: {final_hv:.4f}")
     
     return X_final, Y_final, logger
+
+def compute_total_uncertainty(
+    model,
+    design_space: DesignSpace,
+) -> Tuple[float, float]:
+    """
+    Compute total uncertainty (sum of posterior std) across the entire design space.
+    
+    Args:
+        model: Fitted GP model
+        design_space: DesignSpace object containing the full space
+    
+    Returns:
+        (total_uncertainty_obj1, total_uncertainty_obj2)
+    """
+    # Use the entire design space
+    X_full = design_space.space  # Full discrete space
+    X_full_torch = torch.tensor(X_full, dtype=DTYPE, device=DEVICE)
+    
+    with torch.no_grad():
+        # Get posterior distribution
+        posterior = model.posterior(X_full_torch)
+        
+        # Get standard deviation (uncertainty) for each objective
+        # posterior.variance has shape (n_points, n_objectives)
+        variance = posterior.variance
+        std = torch.sqrt(variance)
+        
+        # Sum uncertainty across all points for each objective
+        total_std_obj1 = float(std[:, 0].sum().cpu())
+        total_std_obj2 = float(std[:, 1].sum().cpu())
+    
+    return total_std_obj1, total_std_obj2
