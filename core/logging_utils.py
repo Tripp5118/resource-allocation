@@ -282,9 +282,13 @@ class LoggingManager:
         if extra_info:
             row_data[f"total_uncertainty_obj1"] = extra_info.get("total_uncertainty_obj1", None)
             row_data[f"total_uncertainty_obj2"] = extra_info.get("total_uncertainty_obj2", None)
+            row_data[f"time_remaining"] = extra_info.get("time_remaining", None)
+            row_data[f"budget_remaining"] = extra_info.get("budget_remaining", None)
         else:
             row_data[f"total_uncertainty_{obj1_name}"] = None
             row_data[f"total_uncertainty_{obj2_name}"] = None
+            row_data[f"time_remaining"] = None
+            row_data[f"budget_remaining"] = None
 
         # Add best x coordinates
         for j, val in enumerate(best_x):

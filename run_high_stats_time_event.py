@@ -1,4 +1,4 @@
-# run_high_statistics.py
+# run_high_statistics_fixed_beta.py
 """Runner for high-statistics experiment with fixed beta and many seeds."""
 
 import os
@@ -16,7 +16,7 @@ from core.batched_runs import (
     generate_shared_initialization,
     cleanup_memory,
 )
-from core.agent_manager import BOAgent
+from core.agent_manager import BOAgent, ResourceEvent
 from core.fixed_policy import PureExploitation, PureExploration
 from core.visualization import (
     plot_strategy_decisions,
@@ -28,14 +28,14 @@ from core.visualization import (
 # ============================================================================
 
 # Batch experiment name
-BATCH_EXPERIMENT_NAME = "high_statistics_beta2"
+BATCH_EXPERIMENT_NAME = "new_high_stats_time_event"
 
-# Data paths (same as before)
+# Data paths
 MODEL_PATH = "ground_truth_models/FeCoNiCrV_Min_CTE_Max_K/models/RFR_best_model.pkl"
 X_SCALER_PATH = "ground_truth_models/FeCoNiCrV_Min_CTE_Max_K/models/x_scaler.pkl"
 Y_SCALER_PATH = "ground_truth_models/FeCoNiCrV_Min_CTE_Max_K/models/y_scaler.pkl"
 
-# Design space (same as before)
+# Design space
 COMPONENTS = [
     ("Fe", 0.10, 0.40),
     ("Co", 0.10, 0.40),
@@ -44,26 +44,28 @@ COMPONENTS = [
     ("V",  0.10, 0.40),
 ]
 STEP = 0.025
+USE_DISCRETE = True  # Set for True if you're using a discrete space for acq
 
-# BO parameters (same as before)
+# BO parameters
 INIT_N = 5
 ITERS = 20
 MC_SAMPLES = 256
 POOL_SUBSAMPLE = 5000
 TOTAL_BATCH_SIZE = 5
 
-# Resource parameters (same as before)
+# Resource parameters
 TOTAL_BUDGET = 10000.0
 TOTAL_TIME = 20.0
 COST_PER_POINT = 100.0
 TIME_PER_ITERATION = 1.0
 
-# Agent parameters (same as before)
+# Agent parameters
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-AGENT_MODEL = "gpt-4o"
+AGENT_MODEL = "gpt-5.1"
 AGENT_TEMPERATURE = 0.7
+ITER_HISTORY = 20
 
-# Objective names (same as before)
+# Objective names
 OBJ1_NAME = "CTE"
 OBJ2_NAME = "K"
 OBJ1_DISPLAY = "-|CTE|"
@@ -86,7 +88,7 @@ acquisition values for each option to best reach the goal within budget and time
 """
 
 # Visualization
-CREATE_VIS = True 
+CREATE_VIS = True
 CREATE_GIF = True
 
 # Output
@@ -95,11 +97,15 @@ OUTPUT_BASE_DIR = "./results"
 OUTPUT_DIR = os.path.join(OUTPUT_BASE_DIR, BATCH_EXPERIMENT_NAME)
 
 # High statistics configuration
-NUM_SEEDS = 50  # Large number of seeds for good statistics
+NUM_SEEDS = 20  # Number of seeds for statistics
 BETA_EXPLORE = 2.0  # Fixed beta value
 
+# Event configuration
+TIME_EVENT_ITERATION = 5
+TIME_AFTER_EVENT = 10.0  # Halved from 20 to 10 weeks total
+
 # ============================================================================
-# UTILITY FUNCTIONS (same as before)
+# UTILITY FUNCTIONS
 # ============================================================================
 
 def postprocess_outputs(preds_raw: np.ndarray) -> np.ndarray:
@@ -115,6 +121,15 @@ def score_fn(Y: np.ndarray) -> np.ndarray:
     k = Y[:, 1]
     return k / (np.abs(cte) + 1e-12)
 
+def create_time_event() -> ResourceEvent:
+    """Create a time reduction event at iteration 5."""
+    return ResourceEvent(
+        iteration=TIME_EVENT_ITERATION,
+        event_type="time_change",
+        description=f"Time reduced at iteration {TIME_EVENT_ITERATION} to {TIME_AFTER_EVENT} weeks total "
+                    f"(halved from {TOTAL_TIME} weeks)",
+        modifier=lambda current_time, t=TIME_AFTER_EVENT: t
+    )
 
 # ============================================================================
 # MAIN EXPERIMENT RUNNER
@@ -194,10 +209,10 @@ if __name__ == "__main__":
         exp_group_dir = os.path.join(OUTPUT_DIR, f"seed{seed}")
         os.makedirs(exp_group_dir, exist_ok=True)
         
-        # Run Pure Exploitation
+        # Run Pure Exploitation (qEHVI)
         print(f"\n[1/3] Running Pure Exploitation...")
         X_exploit, Y_exploit, logger_exploit = run_bo_experiment(
-            experiment_name="PureExploit",
+            experiment_name="qEHVI",
             strategy=PureExploitation(),
             output_dir=exp_group_dir,
             model_path=MODEL_PATH,
@@ -226,14 +241,16 @@ if __name__ == "__main__":
             obj2_display=OBJ2_DISPLAY,
             score_name=SCORE_NAME,
             seed=seed,
+            use_discrete=USE_DISCRETE,
             create_visualization=CREATE_VIS,
             create_gif=CREATE_GIF,
+            events=[create_time_event()]
         )
         
-        # Run Pure Exploration
+        # Run Pure Exploration (qUCB)
         print(f"\n[2/3] Running Pure Exploration...")
         X_explore, Y_explore, logger_explore = run_bo_experiment(
-            experiment_name="PureExplore",
+            experiment_name="qUCB",
             strategy=PureExploration(),
             output_dir=exp_group_dir,
             model_path=MODEL_PATH,
@@ -262,10 +279,74 @@ if __name__ == "__main__":
             obj2_display=OBJ2_DISPLAY,
             score_name=SCORE_NAME,
             seed=seed,
+            use_discrete=USE_DISCRETE,
             create_visualization=CREATE_VIS,
             create_gif=CREATE_GIF,
+            events=[create_time_event()]
         )
-
+        
+        # Run LLM Agent
+        print(f"\n[3/3] Running LLM Agent...")
+        agent_log_dir = os.path.join(exp_group_dir, "Agent", "agent_logs")
+        os.makedirs(agent_log_dir, exist_ok=True)
+        
+        strategy_agent = BOAgent(
+            model=AGENT_MODEL,
+            temperature=AGENT_TEMPERATURE,
+            api_key=OPENAI_API_KEY,
+            log_dir=agent_log_dir,
+            problem_description=PROBLEM_DESCRIPTION,
+            obj1_name=OBJ1_NAME,
+            obj2_name=OBJ2_NAME,
+            iter_history=ITER_HISTORY,
+        )
+        
+        X_agent, Y_agent, logger_agent = run_bo_experiment(
+            experiment_name="Agent",
+            strategy=strategy_agent,
+            output_dir=exp_group_dir,
+            model_path=MODEL_PATH,
+            x_scaler_path=X_SCALER_PATH,
+            y_scaler_path=Y_SCALER_PATH,
+            postprocess_fn=postprocess_outputs,
+            score_fn=score_fn,
+            design_space=design_space,
+            bounds=bounds_t,
+            X0_init=X0_shared,
+            Y0_init_raw=Y0_shared_raw,
+            Y0_init_normalized=Y0_shared_normalized,
+            normalization_params=normalization_params,
+            exploration_beta=BETA_EXPLORE,
+            n_iterations=ITERS,
+            mc_samples=MC_SAMPLES,
+            total_batch_size=TOTAL_BATCH_SIZE,
+            pool_subsample=POOL_SUBSAMPLE,
+            total_budget=TOTAL_BUDGET,
+            total_time=TOTAL_TIME,
+            cost_per_point=COST_PER_POINT,
+            time_per_iteration=TIME_PER_ITERATION,
+            obj1_name=OBJ1_NAME,
+            obj2_name=OBJ2_NAME,
+            obj1_display=OBJ1_DISPLAY,
+            obj2_display=OBJ2_DISPLAY,
+            score_name=SCORE_NAME,
+            seed=seed,
+            use_discrete=USE_DISCRETE,
+            create_visualization=CREATE_VIS,
+            create_gif=CREATE_GIF,
+            events=[create_time_event()]
+        )
+        
+        # Generate comparison plots
+        print(f"\n[Plotting] Generating comparison plots...")
+        plot_strategy_decisions(logger_agent, seed, BETA_EXPLORE, save_dir=exp_group_dir)
+        plot_convergence_comparison(
+            [logger_exploit, logger_explore, logger_agent],
+            seed, BETA_EXPLORE, SCORE_NAME, save_dir=exp_group_dir
+        )
+        
+        del strategy_agent
+        cleanup_memory()
         
         print(f"\n✓ Completed seed{seed} ({seed_idx+1}/{NUM_SEEDS})")
     
@@ -278,8 +359,8 @@ if __name__ == "__main__":
     print(f"\nDirectory structure:")
     print(f"  {OUTPUT_DIR}/")
     print(f"    ├── seed<seed1>/")
-    print(f"    │   ├── PureExploit/")
-    print(f"    │   ├── PureExplore/")
+    print(f"    │   ├── qEHVI/")
+    print(f"    │   ├── qUCB/")
     print(f"    │   └── Agent/")
     print(f"    ├── seed<seed2>/")
     print(f"    └── ...")

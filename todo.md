@@ -7,8 +7,6 @@ decrease total seeds to 20
 Do an additional 5-10 seeds of all of the data vs just past 3 iterations for the agent. 
 With confidence intervals on the agent-decisions plot.
 
-do 95th percentile because it's probably not normally distributed
-
 
 ## Future generalization for benchmarking
 Simplex constraints need to be moved out to problem definition (this should be true now that we're passing design space)

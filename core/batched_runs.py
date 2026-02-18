@@ -412,7 +412,9 @@ def run_bo_experiment(
         extra_info={
             "experiment": experiment_name,
             "shared_init": True,
-            "has_events": events is not None
+            "has_events": events is not None,
+            "budget_remaining": total_budget,
+            "time_remaining": total_time,
         },
         acquisition_data=None,
         score_fn=score_fn,
@@ -437,6 +439,7 @@ def run_bo_experiment(
     # Main BO loop
     iteration = 0
     while iteration < n_iterations:
+        iteration += 1
         # Check if we have enough resources to continue
         if budget_remaining < current_cost_per_point * total_batch_size or time_remaining < time_per_iteration:
             print(f"\n[Stop] Insufficient resources at iteration {iteration}")
@@ -444,7 +447,7 @@ def run_bo_experiment(
             print(f"       Time: {time_remaining:.1f} (need {time_per_iteration:.1f})")
             break
         
-        iteration += 1
+
         iter_start = time.perf_counter()
         
         # Process events for this iteration

@@ -44,6 +44,7 @@ COMPONENTS = [
     ("V",  0.10, 0.40),
 ]
 STEP = 0.025
+USE_DISCRETE = True  # Set for True if you're using a discrete space for acq
 
 # BO parameters
 INIT_N = 5
@@ -60,12 +61,15 @@ TIME_PER_ITERATION = 1.0
 
 # Agent parameters
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-AGENT_MODEL = "gpt-4o"
+AGENT_MODEL = "gpt-5.1"
 AGENT_TEMPERATURE = 0.7
+ITER_HISTORY = 20
 
 # Objective names
 OBJ1_NAME = "CTE"
 OBJ2_NAME = "K"
+OBJ1_DISPLAY = "-|CTE|"
+OBJ2_DISPLAY = "K"
 SCORE_NAME = "K / |CTE|"
 
 PROBLEM_DESCRIPTION = """
@@ -93,7 +97,7 @@ OUTPUT_BASE_DIR = "./results"
 OUTPUT_DIR = os.path.join(OUTPUT_BASE_DIR, BATCH_EXPERIMENT_NAME)
 
 # Grid search configuration
-NUM_SEEDS = 10  # Number of random seeds to test
+NUM_SEEDS = 5  # Number of random seeds to test
 BETA_EXPLORE_VALUES = [2, 4, 6, 8, 10]  # Beta values to test
 
 # ============================================================================
@@ -197,10 +201,10 @@ if __name__ == "__main__":
             exp_group_dir = os.path.join(OUTPUT_DIR, f"beta{beta_explore}", f"seed{seed}")
             os.makedirs(exp_group_dir, exist_ok=True)
             
-            # Run Pure Exploitation
+            # Run Pure Exploitation (qEHVI)
             print(f"\n[1/3] Running Pure Exploitation...")
             X_exploit, Y_exploit, logger_exploit = run_bo_experiment(
-                experiment_name="PureExploit",
+                experiment_name="qEHVI",
                 strategy=PureExploitation(),
                 output_dir=exp_group_dir,
                 model_path=MODEL_PATH,
@@ -225,16 +229,19 @@ if __name__ == "__main__":
                 time_per_iteration=TIME_PER_ITERATION,
                 obj1_name=OBJ1_NAME,
                 obj2_name=OBJ2_NAME,
+                obj1_display=OBJ1_DISPLAY,
+                obj2_display=OBJ2_DISPLAY,
                 score_name=SCORE_NAME,
                 seed=seed,
+                use_discrete=USE_DISCRETE,
                 create_visualization=CREATE_VIS,
                 create_gif=CREATE_GIF,
             )
             
-            # Run Pure Exploration
+            # Run Pure Exploration (qUCB)
             print(f"\n[2/3] Running Pure Exploration...")
             X_explore, Y_explore, logger_explore = run_bo_experiment(
-                experiment_name="PureExplore",
+                experiment_name="qUCB",
                 strategy=PureExploration(),
                 output_dir=exp_group_dir,
                 model_path=MODEL_PATH,
@@ -259,8 +266,11 @@ if __name__ == "__main__":
                 time_per_iteration=TIME_PER_ITERATION,
                 obj1_name=OBJ1_NAME,
                 obj2_name=OBJ2_NAME,
+                obj1_display=OBJ1_DISPLAY,
+                obj2_display=OBJ2_DISPLAY,
                 score_name=SCORE_NAME,
                 seed=seed,
+                use_discrete=USE_DISCRETE,
                 create_visualization=CREATE_VIS,
                 create_gif=CREATE_GIF,
             )
@@ -278,6 +288,7 @@ if __name__ == "__main__":
                 problem_description=PROBLEM_DESCRIPTION,
                 obj1_name=OBJ1_NAME,
                 obj2_name=OBJ2_NAME,
+                iter_history=ITER_HISTORY,
             )
             
             X_agent, Y_agent, logger_agent = run_bo_experiment(
@@ -306,8 +317,11 @@ if __name__ == "__main__":
                 time_per_iteration=TIME_PER_ITERATION,
                 obj1_name=OBJ1_NAME,
                 obj2_name=OBJ2_NAME,
+                obj1_display=OBJ1_DISPLAY,
+                obj2_display=OBJ2_DISPLAY,
                 score_name=SCORE_NAME,
                 seed=seed,
+                use_discrete=USE_DISCRETE,
                 create_visualization=CREATE_VIS,
                 create_gif=CREATE_GIF,
             )
@@ -315,10 +329,6 @@ if __name__ == "__main__":
             # Generate per-seed comparison plots
             print(f"\n[Plotting] Generating per-seed comparison plots...")
             plot_strategy_decisions(logger_agent, seed, beta_explore, save_dir=exp_group_dir)
-            plot_acquisition_metrics_comparison(
-                [logger_exploit, logger_explore, logger_agent],
-                seed, beta_explore, save_dir=exp_group_dir
-            )
             plot_convergence_comparison(
                 [logger_exploit, logger_explore, logger_agent],
                 seed, beta_explore, SCORE_NAME, save_dir=exp_group_dir
@@ -339,8 +349,8 @@ if __name__ == "__main__":
     for beta in BETA_EXPLORE_VALUES:
         print(f"    ├── beta{beta}/")
         print(f"    │   ├── seed<seed1>/")
-        print(f"    │   │   ├── PureExploit/")
-        print(f"    │   │   ├── PureExplore/")
+        print(f"    │   │   ├── qEHVI/")
+        print(f"    │   │   ├── qUCB/")
         print(f"    │   │   └── Agent/")
         print(f"    │   ├── seed<seed2>/")
         print(f"    │   └── ...")

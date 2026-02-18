@@ -90,13 +90,13 @@ CREATE_GIF = True
 
 # Output
 SETUP_SEED = 42
-BATCH_EXPERIMENT_NAME = "no_iter_0_hypervolume" # !!! THIS SHOULD CHANGE EVERY RUN !!!
+BATCH_EXPERIMENT_NAME = "budget_and_time_data" # !!! THIS SHOULD CHANGE EVERY RUN !!!
 OUTPUT_BASE_DIR = "./test"
 OUTPUT_DIR = os.path.join(OUTPUT_BASE_DIR, BATCH_EXPERIMENT_NAME)
 
 # Batch experiment configuration
 NUM_SEEDS = 5
-BETA_EXPLORE_VALUES = [100, 10, 5]  # Exploration beta values to test
+BETA_EXPLORE_VALUES = [2, 4, 6, 8, 10]  # Exploration beta values to test
 
 # ============================================================================
 # UTILITY FUNCTIONS
