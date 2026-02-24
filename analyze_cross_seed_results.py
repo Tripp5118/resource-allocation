@@ -19,6 +19,50 @@ from typing import Dict, List, Tuple, Optional
 import scipy.stats as stats
 # Hard-coded strategy configuration
 STRATEGIES = ["qEHVI", "qUCB", "Agent"]
+
+# Aliases for legacy directory/file naming conventions.
+# Files/directories whose names start with any of these prefixes are loaded
+# under the corresponding canonical strategy key.
+# "convergence" is also listed under qEHVI because old runs sometimes used
+# a bare "convergence" prefix before strategy names were standardised.
+STRATEGY_ALIASES: Dict[str, List[str]] = {
+    "qEHVI": ["PureExploit"],
+    "qUCB":  ["PureExplore"],
+    "Agent": [],
+}
+
+# Build a flat prefix → canonical-strategy lookup for fast resolution
+_ALIAS_TO_STRATEGY: Dict[str, str] = {}
+for _strategy, _prefixes in STRATEGY_ALIASES.items():
+    for _prefix in _prefixes:
+        _ALIAS_TO_STRATEGY[_prefix] = _strategy
+
+
+def _resolve_strategy_path(
+    seed_dir: Path, strategy: str, suffix: str
+) -> Optional[Path]:
+    """
+    Return the first existing path for a given strategy file, trying both the
+    canonical name and any registered aliases.
+
+    The suffix should include the file-name template *without* the leading
+    strategy name, e.g. ``"_convergence.csv"`` or ``"_evaluations.csv"``.
+
+    Search order:
+      1. Canonical:  seed_dir / strategy / f"{strategy}{suffix}"
+      2. Each alias: seed_dir / alias   / f"{alias}{suffix}"
+    """
+    # Canonical path
+    canonical = seed_dir / strategy / f"{strategy}{suffix}"
+    if canonical.exists():
+        return canonical
+    # Alias paths
+    for alias in STRATEGY_ALIASES.get(strategy, []):
+        alias_path = seed_dir / alias / f"{alias}{suffix}"
+        if alias_path.exists():
+            return alias_path
+    return None
+
 LABELS = {
     "qEHVI": "qEHVI",
     "qUCB":  "qUCB",   # beta value appended at plot time
@@ -67,8 +111,8 @@ def load_convergence_data(
     for seed_dir in seed_dirs:
         seed = seed_dir.name
         for strategy in STRATEGIES:
-            conv_path = seed_dir / strategy / f"{strategy}_convergence.csv"
-            if conv_path.exists():
+            conv_path = _resolve_strategy_path(seed_dir, strategy, "_convergence.csv")
+            if conv_path is not None:
                 df = pd.read_csv(conv_path)
                 data[strategy].append(df)
             else:
@@ -110,8 +154,8 @@ def load_evaluations_data(
     for seed_dir in seed_dirs:
         seed = seed_dir.name
         for strategy in STRATEGIES:
-            eval_path = seed_dir / strategy / f"{strategy}_evaluations.csv"
-            if eval_path.exists():
+            eval_path = _resolve_strategy_path(seed_dir, strategy, "_evaluations.csv")
+            if eval_path is not None:
                 df = pd.read_csv(eval_path)
                 data[strategy].append(df)
             else:
@@ -293,8 +337,8 @@ def generate_pareto_plots_and_data(
         # Load evaluations for each strategy
         eval_data = {}
         for strategy in STRATEGIES:
-            eval_path = seed_dir / strategy / f"{strategy}_evaluations.csv"
-            if eval_path.exists():
+            eval_path = _resolve_strategy_path(seed_dir, strategy, "_evaluations.csv")
+            if eval_path is not None:
                 eval_data[strategy] = pd.read_csv(eval_path)
             else:
                 print(f"    Warning: Missing evaluations file for {seed_name}/{strategy}")

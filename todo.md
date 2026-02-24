@@ -14,7 +14,7 @@ Double check agent manager
 Figure out best trevor problem
 
 ### Eventuallly a run where the agent can control beta.
-
+ 9272
 
 # Eventual Restructuring to make easier to use
    - The point of this work is for autonomously doing decision-making in a BO loop in order to balance:

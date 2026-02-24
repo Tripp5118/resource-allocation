@@ -200,7 +200,7 @@ if __name__ == "__main__":
             os.makedirs(exp_group_dir, exist_ok=True)
             
             # Run Pure Exploitation
-            print(f"\n[1/3] Running Pure Exploitation...")
+            '''print(f"\n[1/3] Running Pure Exploitation...")
             X_exploit, Y_exploit, logger_exploit = run_bo_experiment(
                 experiment_name="qEHVI",
                 strategy=PureExploitation(),
@@ -270,7 +270,7 @@ if __name__ == "__main__":
                 seed=seed,
                 create_visualization=CREATE_VIS,
                 create_gif=CREATE_GIF,
-            )
+            )'''
             
             # Run LLM Agent
             print(f"\n[3/3] Running LLM Agent...")
@@ -325,10 +325,10 @@ if __name__ == "__main__":
             # Generate comparison plots
             print(f"\n[Plotting] Generating comparison plots...")
             plot_strategy_decisions(logger_agent, seed, beta_explore, save_dir=exp_group_dir)
-            plot_convergence_comparison(
-                [logger_exploit, logger_explore, logger_agent],
-                seed, beta_explore, SCORE_NAME, save_dir=exp_group_dir
-            )
+            # plot_convergence_comparison(
+            #    [logger_exploit, logger_explore, logger_agent],
+            #    seed, beta_explore, SCORE_NAME, save_dir=exp_group_dir
+            #)
             
             del strategy_agent
             cleanup_memory()
