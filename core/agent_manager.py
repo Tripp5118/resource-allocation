@@ -353,10 +353,7 @@ REASONING: <brief justification>"""
 {options_desc}
 
 Decision framework (guideline):
-- If recent progress is improving with enough runway → prefer more optimization
-- If progress is plateauing or runway is short → prefer more exploration
-
-When making a decision, provide a detailed, mathmatical summary of your reasoning for the decision you make in order to inform a determination of a dyanmic policy approach for this problem. 
+- To make a decision, consider the recent optimization progress. We want to find the alloy with the best performance in the space. If optimization is plateauing, it makes sense to try focus on exploring, in the case you're in a local optima. However, exploring just improves knowledge of the space, it doesn't find the most optimal alloys on its own. Exploring is good when there is time, but when the number of future iterations is low, you should focus on instead optimizing in the spaces you've discovered. 
 
 You have up to {self.max_reasoning_steps} reasoning steps.
 
