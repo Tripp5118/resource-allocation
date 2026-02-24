@@ -544,7 +544,7 @@ def run_bo_experiment(
                 cost_per_point=current_cost_per_point,
                 time_per_point=time_per_iteration,
                 X_history=X_torch.cpu().numpy(),
-                Y_history=Y_torch_normalized.cpu().numpy(),
+                Y_history=Y_history_raw_np,
                 allocation_results=allocation_results,
                 max_batch_size=total_batch_size,
                 score_fn=score_fn,

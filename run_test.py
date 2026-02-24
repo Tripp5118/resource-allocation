@@ -45,14 +45,14 @@ USE_DISCRETE = True # Set for True if you're using a discrete space for acq
 
 # BO parameters
 INIT_N = 5
-ITERS = 2 # This is a cap, optimization will end when this is reached, or when budget or time runs out. Agent does NOT know about this variable.
+ITERS = 10 # This is a cap, optimization will end when this is reached, or when budget or time runs out. Agent does NOT know about this variable.
 MC_SAMPLES = 256
 POOL_SUBSAMPLE = 5000
 TOTAL_BATCH_SIZE = 5
 
 # Resource parameters
-TOTAL_BUDGET = 10000.0
-TOTAL_TIME = 20.0
+TOTAL_BUDGET = 5000
+TOTAL_TIME = 10
 COST_PER_POINT = 100.0
 TIME_PER_ITERATION = 1.0
 
@@ -90,13 +90,13 @@ CREATE_GIF = True
 
 # Output
 SETUP_SEED = 42
-BATCH_EXPERIMENT_NAME = "budget_and_time_data" # !!! THIS SHOULD CHANGE EVERY RUN !!!
+BATCH_EXPERIMENT_NAME = "less_instructions_agent_fixed_scores" # !!! THIS SHOULD CHANGE EVERY RUN !!!
 OUTPUT_BASE_DIR = "./test"
 OUTPUT_DIR = os.path.join(OUTPUT_BASE_DIR, BATCH_EXPERIMENT_NAME)
 
 # Batch experiment configuration
 NUM_SEEDS = 5
-BETA_EXPLORE_VALUES = [2, 4, 6, 8, 10]  # Exploration beta values to test
+BETA_EXPLORE_VALUES = [2]  # Exploration beta values to test
 
 # ============================================================================
 # UTILITY FUNCTIONS
