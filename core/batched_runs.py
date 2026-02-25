@@ -386,25 +386,29 @@ def run_bo_experiment(
     
     # Initialize data
     print(f"\n[Init] Using {len(X0_init)} initial samples")
-    
+
     X_torch = torch.tensor(X0_init.copy(), dtype=DTYPE, device=DEVICE)
     Y_torch_normalized = torch.tensor(Y0_init_normalized.copy(), dtype=DTYPE, device=DEVICE)
-    
+
     X_history_np = X0_init.copy()
     Y_history_raw_np = Y0_init_raw.copy()
     Y_history_normalized_np = Y0_init_normalized.copy()
-    
+
     scores = score_fn(Y_history_raw_np)
     best_score = float(np.max(scores))
     print(f"[Init] Best {score_name}: {best_score:.4f}")
-    
-    # Compute initial hypervolume
+
     # Reference point: slightly below minimum of each objective
     ref_point_raw = Y_history_raw_np.min(axis=0) - 0.1 * np.ones(2)
-    init_hv = compute_hypervolume(Y_history_raw_np, ref_point_raw)
-    print(f"[Init] Initial hypervolume: {init_hv:.4f}")
 
-    # Log initialization
+    # Deduct init cost up front
+    budget_remaining = total_budget - (len(X0_init) * cost_per_point)
+    time_remaining = total_time - time_per_iteration
+    current_cost_per_point = cost_per_point
+
+    # Log iteration 0: init points + post-deduction resources.
+    # HV and uncertainty are NOT logged here — they will be logged at the start
+    # of iteration 1 as the values the agent actually sees before its first decision.
     logger.log_iteration(
         iteration=0,
         X_history=X_history_np,
@@ -416,14 +420,14 @@ def run_bo_experiment(
             "experiment": experiment_name,
             "shared_init": True,
             "has_events": events is not None,
-            "budget_remaining": total_budget,
-            "time_remaining": total_time,
+            "budget_remaining": budget_remaining,
+            "time_remaining": time_remaining,
         },
         acquisition_data=None,
         score_fn=score_fn,
         obj1_name=obj1_name,
         obj2_name=obj2_name,
-        hypervolume=init_hv,
+        hypervolume=None,
         ref_point=ref_point_raw,
     )
     logger.log_evaluations(
@@ -434,26 +438,31 @@ def run_bo_experiment(
         obj1_name=obj1_name,
         obj2_name=obj2_name,
     )
-    
-    # Initialize resources
-    budget_remaining = total_budget - (len(X0_init) * cost_per_point)
-    time_remaining = total_time - time_per_iteration
-    current_cost_per_point = cost_per_point
-    
+
+    print(f"[Init] Budget after init: ${budget_remaining:.2f} | Time after init: {time_remaining:.1f}")
+
     # Main BO loop
     iteration = 0
     while iteration < n_iterations:
         iteration += 1
-        # Check if we have enough resources to continue
+
+        # Check resources before starting this iteration
         if budget_remaining < current_cost_per_point * total_batch_size or time_remaining < time_per_iteration:
             print(f"\n[Stop] Insufficient resources at iteration {iteration}")
             print(f"       Budget: ${budget_remaining:.2f} (need ${current_cost_per_point * total_batch_size:.2f})")
             print(f"       Time: {time_remaining:.1f} (need {time_per_iteration:.1f})")
             break
-        
 
         iter_start = time.perf_counter()
-        
+
+        # Deduct resources at the top of the iteration, before any work is done.
+        # This means budget_remaining and time_remaining logged this iteration
+        # reflect what's left AFTER committing to this batch.
+        points_used = total_batch_size
+        budget_spent = points_used * current_cost_per_point
+        budget_remaining -= budget_spent
+        time_remaining -= time_per_iteration
+
         # Process events for this iteration
         event_msgs = []
         if event_manager is not None:
@@ -461,24 +470,22 @@ def run_bo_experiment(
                 event_manager.process_iteration_events(
                     iteration, budget_remaining, time_remaining, current_cost_per_point
                 )
-            
             if event_msgs:
                 print("\n" + "="*80)
                 for msg in event_msgs:
                     print(msg)
                 print("="*80)
-        
+
         print(f"\n{'='*80}")
         print(f"[Iter {iteration}/{n_iterations}] Starting...")
-        print(f"[Resources] Budget: ${budget_remaining:.2f} | Time: {time_remaining:.1f}")
+        print(f"[Resources] Budget remaining: ${budget_remaining:.2f} | Time remaining: {time_remaining:.1f}")
         print(f"{'='*80}")
-        
 
-        # Fit GP model
+        # Fit GP on all data collected so far (does not include this iteration's points yet)
         print("[GP] Fitting model on normalized outputs...")
         model = gp_manager.fit_model(X_torch, Y_torch_normalized)
 
-        # Compute total uncertainty across entire design space
+        # Compute uncertainty and HV — this is exactly what the agent sees this iteration
         print("[GP] Computing total uncertainty across design space...")
         total_uncertainty_obj1, total_uncertainty_obj2 = compute_total_uncertainty(
             model=model,
@@ -486,24 +493,23 @@ def run_bo_experiment(
         )
         print(f"[GP] Total uncertainty - {obj1_name}: {total_uncertainty_obj1:.4f}, {obj2_name}: {total_uncertainty_obj2:.4f}")
 
-        # Compute HV from current data (same snapshot as GP/uncertainty — pre-decision, pre-update)
         current_hv = compute_hypervolume(Y_history_raw_np, ref_point_raw)
-        print(f"[GP] Hypervolume (pre-decision): {current_hv:.4f}")
-        
+        print(f"[GP] Hypervolume: {current_hv:.4f}")
+
         # Compute Pareto front
         print("[Acq] Computing Pareto front on normalized outputs...")
         pareto_Y, ref_point = acq_manager.compute_pareto_front(Y_torch_normalized)
-        
-        # Pool for entropy ranking (if needed)
+
+        # Pool for entropy ranking
         if pool_subsample is not None:
             X_pool_np = design_space.sample(pool_subsample, method="sobol")
         else:
             X_pool_np = design_space.space.copy()
         X_pool = torch.tensor(X_pool_np, dtype=DTYPE, device=DEVICE)
-        
-        # Compute allocation options based on strategy type
+
+        # Compute allocation options
         strategy_name = type(strategy).__name__
-        
+
         if strategy_name == "BOAgent":
             print("[Strategy] LLM Agent - Computing all 6 allocation options")
             allocation_results = acq_manager.compute_all_allocations(
@@ -540,10 +546,10 @@ def run_bo_experiment(
                 pareto_front=pareto_Y,
                 reference_point=ref_point
             )
-        
+
         # Strategy selection
         selected_idx = None
-        
+
         if isinstance(strategy, BOAgent):
             selected_idx, reasoning, selected_point_arrays = strategy.select_resource_allocation(
                 iteration=iteration,
@@ -575,8 +581,6 @@ def run_bo_experiment(
             extra_info = {
                 "agent_selected_option": selected_idx,
                 "agent_reasoning": reasoning[:200] + "..." if len(reasoning) > 200 else reasoning,
-                "budget_remaining": budget_remaining,
-                "time_remaining": time_remaining,
             }
         else:
             X_new_np, reasoning = strategy.select_points(allocation_results)
@@ -590,10 +594,8 @@ def run_bo_experiment(
             extra_info = {
                 "policy": type(strategy).__name__,
                 "reasoning": reasoning,
-                "budget_remaining": budget_remaining,
-                "time_remaining": time_remaining,
             }
-        
+
         # Extract metrics from selected option
         if selected_idx is not None and 0 <= selected_idx < len(allocation_results.options):
             selected_option = allocation_results.options[selected_idx]
@@ -607,39 +609,36 @@ def run_bo_experiment(
             extra_info["n_optimization"] = None
             extra_info["n_exploration"] = None
 
+        # All values below are exactly what the agent saw when making its decision
         extra_info["total_uncertainty_obj1"] = total_uncertainty_obj1
         extra_info["total_uncertainty_obj2"] = total_uncertainty_obj2
-        
-        # Add event information to extra_info
+        extra_info["hypervolume"] = current_hv
+        extra_info["budget_remaining"] = budget_remaining
+        extra_info["time_remaining"] = time_remaining
+
         if event_msgs:
             extra_info["events_triggered"] = "; ".join(event_msgs)
-        
+
         # Evaluate new points
         result_new = evaluator.evaluate(X_new_np)
         Y_new_normalized = result_new.y
         Y_new_raw = evaluator.denormalize(Y_new_normalized)
-        
+
         # Update history
         X_history_np = np.vstack([X_history_np, X_new_np])
         Y_history_normalized_np = np.vstack([Y_history_normalized_np, Y_new_normalized])
         Y_history_raw_np = np.vstack([Y_history_raw_np, Y_new_raw])
         X_torch = torch.tensor(X_history_np, dtype=DTYPE, device=DEVICE)
         Y_torch_normalized = torch.tensor(Y_history_normalized_np, dtype=DTYPE, device=DEVICE)
-        
-        # Update resources
-        points_used = len(X_new_np)
-        budget_spent = points_used * current_cost_per_point
-        time_spent = time_per_iteration
-        budget_remaining -= budget_spent
-        time_remaining -= time_spent
+
         iter_time = time.perf_counter() - iter_start
-        
-        # Logging
+
+        # Log this iteration — hypervolume and uncertainty are exactly what the agent saw
         logger.log_iteration(
             iteration=iteration,
             X_history=X_history_np,
             Y_history=Y_history_raw_np,
-            n_new_points=points_used,
+            n_new_points=len(X_new_np),
             strategy=strategy,
             timing=iter_time,
             extra_info=extra_info,
@@ -658,7 +657,7 @@ def run_bo_experiment(
             obj1_name=obj1_name,
             obj2_name=obj2_name,
         )
-        
+
         # Visualization
         if vis_manager is not None:
             vis_manager.create_iteration_plot(
@@ -674,7 +673,7 @@ def run_bo_experiment(
                 obj1_name=obj1_name,
                 obj2_name=obj2_name,
             )
-        
+
         # Print iteration summary
         scores = score_fn(Y_history_raw_np)
         best_score = float(np.max(scores))
@@ -682,18 +681,28 @@ def run_bo_experiment(
         print(f"[Iter {iteration}] Complete in {iter_time:.2f}s")
         print(f"  Best {score_name}: {best_score:.4f}")
         print(f"  Mean {score_name}: {mean_score:.4f}")
-        print(f"  Hypervolume: {current_hv:.4f}")
-        print(f"  Points evaluated: {points_used}")
+        print(f"  Hypervolume (agent saw): {current_hv:.4f}")
+        print(f"  Points evaluated: {len(X_new_np)}")
         print(f"  Budget remaining: ${budget_remaining:.2f}")
-        
+
         cleanup_memory()
-    
-    # Log terminal state: HV over all collected data, including the last iteration's new points.
-    # This is the only record where HV and uncertainty are not from the same snapshot —
-    # it exists solely to close the convergence curve at the true final value.
+
+    # --- Terminal record ---
+    # Fit GP one final time on all collected data and log the HV + uncertainty
+    # that the next iteration *would* have seen. This closes the convergence curve
+    # without any iteration numbering gap.
+    print(f"\n[Terminal] Fitting final GP and logging terminal state...")
+    final_model = gp_manager.fit_model(X_torch, Y_torch_normalized)
+    final_uncertainty_obj1, final_uncertainty_obj2 = compute_total_uncertainty(
+        model=final_model,
+        design_space=design_space,
+    )
     final_hv = compute_hypervolume(Y_history_raw_np, ref_point_raw)
+    print(f"[Terminal] Final HV: {final_hv:.4f}")
+    print(f"[Terminal] Final uncertainty - {obj1_name}: {final_uncertainty_obj1:.4f}, {obj2_name}: {final_uncertainty_obj2:.4f}")
+
     logger.log_iteration(
-        iteration=iteration + 1,  # One past the last BO iteration — marks terminal state
+        iteration=iteration + 1,
         X_history=X_history_np,
         Y_history=Y_history_raw_np,
         n_new_points=0,
@@ -701,6 +710,9 @@ def run_bo_experiment(
         timing=0.0,
         extra_info={
             "terminal_record": True,
+            "total_uncertainty_obj1": final_uncertainty_obj1,
+            "total_uncertainty_obj2": final_uncertainty_obj2,
+            "hypervolume": final_hv,
             "budget_remaining": budget_remaining,
             "time_remaining": time_remaining,
         },
@@ -711,16 +723,13 @@ def run_bo_experiment(
         hypervolume=final_hv,
         ref_point=ref_point_raw,
     )
-
-    # Finalize
-    logger.finalize()
     
+    # Finalize logger
+    logger.finalize()
+
     # Create final visualizations
     if vis_manager is not None:
-        # Create hypervolume plot
         vis_manager.create_hypervolume_plot(logger, score_name)
-        
-        # Create final Pareto front plot
         vis_manager.create_pareto_front_plot(
             Y_history=Y_history_raw_np,
             obj1_name=obj1_name,
@@ -728,29 +737,27 @@ def run_bo_experiment(
             obj1_display=obj1_display,
             obj2_display=obj2_display
         )
-        
-        # Create GIF if requested
         if create_gif:
             vis_manager.create_gif(duration=2.0, gif_name=f"{experiment_name}.gif")
-    
+
     if isinstance(strategy, BOAgent):
         strategy.save_global_memory()
-    
+
     evaluator.cleanup()
     del evaluator
     cleanup_memory()
-    
+
     # Final summary
     X_final = X_history_np
     Y_final = Y_history_raw_np
     scores_final = score_fn(Y_final)
-    
+
     print(f"\n[{experiment_name}] Experiment complete!")
     print(f"  Total evaluations: {len(X_final)}")
     print(f"  Best {score_name}: {np.max(scores_final):.4f}")
     print(f"  Mean {score_name}: {np.mean(scores_final):.4f}")
     print(f"  Final hypervolume: {final_hv:.4f}")
-    
+
     return X_final, Y_final, logger
 
 def compute_total_uncertainty(

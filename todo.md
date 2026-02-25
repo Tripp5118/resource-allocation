@@ -5,6 +5,12 @@
 Add in hypervolume and uncertainty information
 Add in a version that explicitly is told to look at its prior decision and judge whether it was successful or not. 
    Maybe 3 Agents? Planner, Resource Allocator, Critic? Planner and Critic only act every 2 or 3 iterations?
+
+
+Bug with the last iteration label being too high
+
+Do a run with Trevor's
+Do a run with qUCB and qEHVI - 50 seeds
 # Eventual Restructuring to make easier to use
    - The point of this work is for autonomously doing decision-making in a BO loop in order to balance:
       - Optimization
