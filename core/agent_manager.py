@@ -522,11 +522,13 @@ This is the initial exploration phase."""
         limiting_factor = "time" if max_iterations * 5 < max_affordable_points else "budget"
 
         improvement_status = "N/A"
-        if n >= 6:
-            recent_best = np.max(scores[-3:])
-            earlier_best = np.max(scores[-6:-3])
+        iter_summaries = [m for m in self.global_memory if m.get("step") == "iteration_summary"]
+        if len(iter_summaries) >= 2:
+            # Compare best score at most recent completed iteration vs up to 3 iterations ago
+            recent_best = iter_summaries[-1]["best_score"]
+            earlier_best = iter_summaries[max(0, len(iter_summaries) - 4)]["best_score"]
             if earlier_best > 1e-10:
-                improvement_pct = (recent_best - earlier_best) / earlier_best * 100
+                improvement_pct = (recent_best - earlier_best) / abs(earlier_best) * 100
                 if improvement_pct > 5:
                     improvement_status = f"Accelerating (+{improvement_pct:.1f}%)"
                 elif improvement_pct > 0:
