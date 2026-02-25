@@ -10,6 +10,7 @@ import numpy as np
 from langchain_openai import ChatOpenAI
 from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
 from langchain_classic.memory import ConversationBufferMemory
+from core.prompt_builder import PromptBuilder, DefaultPromptBuilder
 
 
 # ============================================================================
@@ -27,7 +28,6 @@ class ResourceEvent:
     def apply(self, current_value: float) -> float:
         """Apply the event modifier to current value."""
         return self.modifier(current_value)
-
 
 class EventManager:
     """Manages resource events during optimization."""
@@ -132,7 +132,8 @@ class BOAgent:
         problem_description: str = "",
         obj1_name: str = "Objective 1",
         obj2_name: str = "Objective 2",
-        iter_history: int = 3
+        iter_history: int = 3,
+        prompt_builder: Optional[PromptBuilder] = None
     ):
         """
         Args:
@@ -169,6 +170,8 @@ class BOAgent:
         self.log_dir = log_dir
         if log_dir:
             os.makedirs(log_dir, exist_ok=True)
+        
+        self.prompt_builder = prompt_builder or DefaultPromptBuilder()
     
     def _log (self, level: str, message: str):
         """Structured logging helper."""
@@ -274,6 +277,10 @@ class BOAgent:
         allocation_results: AllocationResults,
         max_batch_size: int = 5,
         score_fn: Optional[Callable[[np.ndarray], np.ndarray]] = None,
+        uncertainty_obj1: Optional[float] = None,
+        uncertainty_obj2: Optional[float] = None,
+        current_hypervolume: Optional[float] = None,
+        hv_improvement_pct: Optional[float] = None,
     ) -> Tuple[int, str, List[np.ndarray]]:
         """
         Agent selects resource allocation strategy.
@@ -308,12 +315,22 @@ class BOAgent:
             X_history, Y_history, budget_remaining, time_remaining,
             cost_per_point, time_per_point, score_fn
         )
+        analysis = self.prompt_builder.enhance_analysis(
+            base_analysis=analysis,
+            uncertainty_obj1=uncertainty_obj1,
+            uncertainty_obj2=uncertainty_obj2,
+            current_hypervolume=current_hypervolume,
+            obj1_name=self.obj1_name,
+            obj2_name=self.obj2_name,
+        )
+
         self._log("INFO", f"\nAnalysis:\n{analysis}\n")
 
         options_desc = self._describe_allocation_results(
             allocation_results, cost_per_point, time_per_point,
             budget_remaining, time_remaining, max_batch_size
         )
+        options_desc = self.prompt_builder.enhance_options_description(options_desc)
 
         upcoming = self.event_manager.get_events_for_iteration(iteration + 1)
         event_warning = ""
@@ -322,46 +339,23 @@ class BOAgent:
             for e in upcoming:
                 event_warning += f"  - {e.description}\n"
 
-        system_message = f"""You are an expert AI managing a Bayesian Optimization campaign.
-
-Problem:
-{self.problem_description or '(no additional description provided)'}
-
-Objectives:
-- {self.obj1_name}
-- {self.obj2_name}
-
-Current Status:
-- Iteration: {iteration}
-- Budget: ${budget_remaining:.2f}
-- Time: {time_remaining:.1f} weeks
-
-Important: Each iteration takes {time_per_point:.1f} week(s) regardless of batch size (parallel execution).
-
-{global_context}{event_warning}
-
-The primary factor for your decisions should be the metrics for each allocation option at each iteration and an analysis of whether exploration or optimization is needed when directly observing the previous iteration's performance. 
-
-When ready to decide, respond:
-SELECTED_OPTION: <0-5>
-REASONING: <brief justification>"""
-
-        initial_message = f"""Make a resource allocation decision for this iteration.
-
-{analysis}
-
-{options_desc}
-
-Decision framework (guideline):
-- To make a decision, consider the recent optimization progress. We want to find the alloy with the best performance in the space. If optimization is plateauing, it makes sense to try focus on exploring, in the case you're in a local optima. However, exploring just improves knowledge of the space, it doesn't find the most optimal alloys on its own. Exploring is good when there is time, but when the number of future iterations is low, you should focus on instead optimizing in the spaces you've discovered. 
-
-You have up to {self.max_reasoning_steps} reasoning steps.
-
-When ready:
-SELECTED_OPTION: <0-5>
-REASONING: <justification>
-
-Begin analysis."""
+        system_message = self.prompt_builder.build_system_message(
+            problem_description=self.problem_description,
+            obj1_name=self.obj1_name,
+            obj2_name=self.obj2_name,
+            iteration=iteration,
+            budget_remaining=budget_remaining,
+            time_remaining=time_remaining,
+            time_per_point=time_per_point,
+            global_context=global_context,
+            event_warning=event_warning,
+        )
+        
+        initial_message = self.prompt_builder.build_initial_message(
+            analysis=analysis,
+            options_desc=options_desc,
+            max_reasoning_steps=self.max_reasoning_steps,
+        )
 
         messages = [SystemMessage(content=system_message), HumanMessage(content=initial_message)]
         self.iteration_memory.chat_memory.add_message(SystemMessage(content=system_message))

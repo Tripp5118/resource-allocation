@@ -1,21 +1,10 @@
-### One Run to Test Out Agents Reasoning
+1 Version - No guidelines, just let the agent act on its own.
+1 Version - General guidelines
+1 Version - Old guidelines
 
-Plot of budgets decreasing (probably with convergence stats?)
-
-# Big run tonight
-decrease total seeds to 20
-Do an additional 5-10 seeds of all of the data vs just past 3 iterations for the agent. 
-With confidence intervals on the agent-decisions plot.
-
-
-## Future generalization for benchmarking
-Simplex constraints need to be moved out to problem definition (this should be true now that we're passing design space)
-Double check agent manager 
-Figure out best trevor problem
-
-### Eventuallly a run where the agent can control beta.
- 9272
-
+Add in hypervolume and uncertainty information
+Add in a version that explicitly is told to look at its prior decision and judge whether it was successful or not. 
+   Maybe 3 Agents? Planner, Resource Allocator, Critic? Planner and Critic only act every 2 or 3 iterations?
 # Eventual Restructuring to make easier to use
    - The point of this work is for autonomously doing decision-making in a BO loop in order to balance:
       - Optimization
@@ -61,28 +50,3 @@ Figure out best trevor problem
          - Optimization Statistics
          - Allocation Option Metrics
          - (eventually) Tools
-
-
-
-
-
-
-Check out the unusual values in the agent's "best point" reporting stuff:
-[Agent:INFO]
-Analysis:
-## Key Decision Criteria
-
-**1. Runway Assessment**:
-   - Approx. iterations remaining: ~18
-   - Approx. affordable points: ~90
-   - Limiting factor: budget
-
-**2. Progress Momentum**:
-   - Total points: 10
-   - Best score: 9.045
-   - Trend (last 3 vs previous 3): Accelerating (+5525.2%)
-
-**3. Best Observed Point**:
-   - CTE: -0.1707
-   - K: 1.544
-   - Coordinates: x_0=0.300, x_1=0.400, x_2=0.100, x_3=0.100, x_4=0.100

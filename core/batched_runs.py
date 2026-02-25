@@ -279,6 +279,7 @@ def run_bo_experiment(
     create_visualization: bool = True,
     create_gif: bool = True,
     events: Optional[List[ResourceEvent]] = None,
+    pass_uncertainty_to_agent: bool = False,
     
 ) -> Tuple[np.ndarray, np.ndarray, LoggingManager]:
     """
@@ -400,6 +401,8 @@ def run_bo_experiment(
     # Compute initial hypervolume
     # Reference point: slightly below minimum of each objective
     ref_point_raw = Y_history_raw_np.min(axis=0) - 0.1 * np.ones(2)
+    init_hv = compute_hypervolume(Y_history_raw_np, ref_point_raw)
+    print(f"[Init] Initial hypervolume: {init_hv:.4f}")
 
     # Log initialization
     logger.log_iteration(
@@ -420,6 +423,7 @@ def run_bo_experiment(
         score_fn=score_fn,
         obj1_name=obj1_name,
         obj2_name=obj2_name,
+        hypervolume=init_hv,
         ref_point=ref_point_raw,
     )
     logger.log_evaluations(
@@ -481,6 +485,10 @@ def run_bo_experiment(
             design_space=design_space,
         )
         print(f"[GP] Total uncertainty - {obj1_name}: {total_uncertainty_obj1:.4f}, {obj2_name}: {total_uncertainty_obj2:.4f}")
+
+        # Compute HV from current data (same snapshot as GP/uncertainty — pre-decision, pre-update)
+        current_hv = compute_hypervolume(Y_history_raw_np, ref_point_raw)
+        print(f"[GP] Hypervolume (pre-decision): {current_hv:.4f}")
         
         # Compute Pareto front
         print("[Acq] Computing Pareto front on normalized outputs...")
@@ -548,6 +556,9 @@ def run_bo_experiment(
                 allocation_results=allocation_results,
                 max_batch_size=total_batch_size,
                 score_fn=score_fn,
+                uncertainty_obj1=total_uncertainty_obj1 if pass_uncertainty_to_agent else None,
+                uncertainty_obj2=total_uncertainty_obj2 if pass_uncertainty_to_agent else None,
+                current_hypervolume=current_hv if pass_uncertainty_to_agent else None,
             )
             if selected_point_arrays:
                 X_new_np = np.vstack(selected_point_arrays)
@@ -615,9 +626,6 @@ def run_bo_experiment(
         X_torch = torch.tensor(X_history_np, dtype=DTYPE, device=DEVICE)
         Y_torch_normalized = torch.tensor(Y_history_normalized_np, dtype=DTYPE, device=DEVICE)
         
-        # Compute current hypervolume (use same reference point as iteration 0)
-        current_hv = compute_hypervolume(Y_history_raw_np, ref_point_raw)
-        
         # Update resources
         points_used = len(X_new_np)
         budget_spent = points_used * current_cost_per_point
@@ -680,6 +688,30 @@ def run_bo_experiment(
         
         cleanup_memory()
     
+    # Log terminal state: HV over all collected data, including the last iteration's new points.
+    # This is the only record where HV and uncertainty are not from the same snapshot —
+    # it exists solely to close the convergence curve at the true final value.
+    final_hv = compute_hypervolume(Y_history_raw_np, ref_point_raw)
+    logger.log_iteration(
+        iteration=iteration + 1,  # One past the last BO iteration — marks terminal state
+        X_history=X_history_np,
+        Y_history=Y_history_raw_np,
+        n_new_points=0,
+        strategy=strategy,
+        timing=0.0,
+        extra_info={
+            "terminal_record": True,
+            "budget_remaining": budget_remaining,
+            "time_remaining": time_remaining,
+        },
+        acquisition_data=None,
+        score_fn=score_fn,
+        obj1_name=obj1_name,
+        obj2_name=obj2_name,
+        hypervolume=final_hv,
+        ref_point=ref_point_raw,
+    )
+
     # Finalize
     logger.finalize()
     
@@ -712,7 +744,6 @@ def run_bo_experiment(
     X_final = X_history_np
     Y_final = Y_history_raw_np
     scores_final = score_fn(Y_final)
-    final_hv = compute_hypervolume(Y_final, ref_point_raw)
     
     print(f"\n[{experiment_name}] Experiment complete!")
     print(f"  Total evaluations: {len(X_final)}")
