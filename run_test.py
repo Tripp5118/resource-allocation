@@ -1,5 +1,11 @@
-# run_batched_experiments.py
-"""Clean runner for standard batched BO experiments."""
+# run_test
+"""
+Runner for K/CTE optimization comparing three strategies:
+- Agent_SimpleGuideline_NoUncertainty
+- qEHVI (Pure Exploitation)
+- qUCB (Pure Exploration)
+
+"""
 
 import os
 import time
@@ -18,6 +24,7 @@ from core.batched_runs import (
 )
 from core.agent_manager import BOAgent
 from core.fixed_policy import PureExploitation, PureExploration
+from core.prompt_builder import create_prompt_builder
 from core.visualization import (
     plot_strategy_decisions,
     plot_convergence_comparison,
@@ -26,6 +33,9 @@ from core.visualization import (
 # ============================================================================
 # EXPERIMENT CONFIGURATION
 # ============================================================================
+
+# Batch experiment name
+BATCH_EXPERIMENT_NAME = "k-cte_simple_no_unc"
 
 # Data paths
 MODEL_PATH = "ground_truth_models/FeCoNiCrV_Min_CTE_Max_K/models/RFR_best_model.pkl"
@@ -41,26 +51,26 @@ COMPONENTS = [
     ("V",  0.10, 0.40),
 ]
 STEP = 0.025
-USE_DISCRETE = True # Set for True if you're using a discrete space for acq
+USE_DISCRETE = True
 
 # BO parameters
 INIT_N = 5
-ITERS = 10 # This is a cap, optimization will end when this is reached, or when budget or time runs out. Agent does NOT know about this variable.
+ITERS = 20
 MC_SAMPLES = 256
 POOL_SUBSAMPLE = 5000
 TOTAL_BATCH_SIZE = 5
 
 # Resource parameters
-TOTAL_BUDGET = 5000
-TOTAL_TIME = 10
+TOTAL_BUDGET = 10000.0
+TOTAL_TIME = 20.0
 COST_PER_POINT = 100.0
 TIME_PER_ITERATION = 1.0
 
 # Agent parameters
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-AGENT_MODEL = "gpt-5.1"
+AGENT_MODEL = "gpt-4o"
 AGENT_TEMPERATURE = 0.7
-ITER_HISTORY = 20
+ITER_HISTORY = 3
 
 # Objective names
 OBJ1_NAME = "CTE"
@@ -90,13 +100,19 @@ CREATE_GIF = True
 
 # Output
 SETUP_SEED = 42
-BATCH_EXPERIMENT_NAME = "less_instructions_agent_fixed_scores" # !!! THIS SHOULD CHANGE EVERY RUN !!!
-OUTPUT_BASE_DIR = "./test"
+OUTPUT_BASE_DIR = "./results"
 OUTPUT_DIR = os.path.join(OUTPUT_BASE_DIR, BATCH_EXPERIMENT_NAME)
 
-# Batch experiment configuration
-NUM_SEEDS = 5
-BETA_EXPLORE_VALUES = [2]  # Exploration beta values to test
+# Experiment configuration
+NUM_SEEDS = 50
+BETA_EXPLORE = 2.0  # Fixed beta value
+
+# Strategy configurations
+STRATEGY_CONFIGS = [
+    {"type": "agent", "name": "Agent_SimpleGuideline_NoUncertainty", "style": "simple_guideline", "pass_uncertainty": False},
+    {"type": "qEHVI", "name": "qEHVI"},
+    {"type": "qUCB",  "name": "qUCB"},
+]
 
 # ============================================================================
 # UTILITY FUNCTIONS
@@ -161,14 +177,16 @@ if __name__ == "__main__":
     seeds = np.random.randint(1, 100000, size=NUM_SEEDS).tolist()
     
     print(f"\n{'='*80}")
-    print("BATCH EXPERIMENT CONFIGURATION")
+    print("K/CTE EXPERIMENT CONFIGURATION")
     print(f"{'='*80}")
     print(f"Batch name: {BATCH_EXPERIMENT_NAME}")
     print(f"Output directory: {OUTPUT_DIR}")
-    print(f"Random seeds: {seeds}")
-    print(f"Exploration beta values: {BETA_EXPLORE_VALUES}")
-    print(f"Total experiments: {NUM_SEEDS * len(BETA_EXPLORE_VALUES) * 3} = "
-          f"{NUM_SEEDS} seeds × {len(BETA_EXPLORE_VALUES)} betas × 3 strategies")
+    print(f"Random seeds: {NUM_SEEDS} seeds")
+    print(f"Fixed exploration beta: {BETA_EXPLORE}")
+    print(f"Iterations per run: {ITERS}")
+    print(f"Context window: {ITER_HISTORY} previous iterations")
+    print(f"Total experiments: {NUM_SEEDS * len(STRATEGY_CONFIGS)} = {NUM_SEEDS} seeds × {len(STRATEGY_CONFIGS)} strategies")
+    print(f"Strategies: {[c['name'] for c in STRATEGY_CONFIGS]}")
     print(f"{'='*80}\n")
     
     # Run experiments
@@ -191,19 +209,54 @@ if __name__ == "__main__":
         
         print(f"\nGenerated {INIT_N} initial samples for seed {seed}")
         
-        for beta_idx, beta_explore in enumerate(BETA_EXPLORE_VALUES):
-            print(f"\n{'-'*80}")
-            print(f"BETA CONFIG {beta_idx+1}/{len(BETA_EXPLORE_VALUES)}: β_explore={beta_explore}")
-            print(f"{'-'*80}")
+        exp_group_dir = os.path.join(OUTPUT_DIR, f"seed_{seed}")
+        os.makedirs(exp_group_dir, exist_ok=True)
+        
+        # Run each strategy
+        for strategy_config in STRATEGY_CONFIGS:
+            strategy_name = strategy_config["name"]
+            strategy_type = strategy_config["type"]
             
-            exp_group_dir = os.path.join(OUTPUT_DIR, f"seed{seed}_beta{beta_explore}")
-            os.makedirs(exp_group_dir, exist_ok=True)
+            print(f"\n[Strategy] Running {strategy_name}...")
             
-            # Run Pure Exploitation
-            '''print(f"\n[1/3] Running Pure Exploitation...")
-            X_exploit, Y_exploit, logger_exploit = run_bo_experiment(
-                experiment_name="qEHVI",
-                strategy=PureExploitation(),
+            if strategy_type == "agent":
+                # Create prompt builder for agent
+                prompt_builder = create_prompt_builder(
+                    style=strategy_config["style"],
+                    include_uncertainty=strategy_config["pass_uncertainty"],
+                    include_hypervolume=strategy_config["pass_uncertainty"],
+                )
+                
+                # Create agent log directory
+                agent_log_dir = os.path.join(exp_group_dir, strategy_name, "agent_logs")
+                os.makedirs(agent_log_dir, exist_ok=True)
+                
+                # Create agent with custom prompt builder
+                strategy = BOAgent(
+                    model=AGENT_MODEL,
+                    temperature=AGENT_TEMPERATURE,
+                    api_key=OPENAI_API_KEY,
+                    log_dir=agent_log_dir,
+                    problem_description=PROBLEM_DESCRIPTION,
+                    obj1_name=OBJ1_NAME,
+                    obj2_name=OBJ2_NAME,
+                    iter_history=ITER_HISTORY,
+                    prompt_builder=prompt_builder,
+                )
+                pass_uncertainty = strategy_config["pass_uncertainty"]
+                
+            elif strategy_type == "qEHVI":
+                strategy = PureExploitation()
+                pass_uncertainty = False
+                
+            elif strategy_type == "qUCB":
+                strategy = PureExploration()
+                pass_uncertainty = False
+            
+            # Run experiment
+            X_result, Y_result, logger = run_bo_experiment(
+                experiment_name=strategy_name,
+                strategy=strategy,
                 output_dir=exp_group_dir,
                 model_path=MODEL_PATH,
                 x_scaler_path=X_SCALER_PATH,
@@ -216,7 +269,7 @@ if __name__ == "__main__":
                 Y0_init_raw=Y0_shared_raw,
                 Y0_init_normalized=Y0_shared_normalized,
                 normalization_params=normalization_params,
-                exploration_beta=beta_explore,
+                exploration_beta=BETA_EXPLORE,
                 n_iterations=ITERS,
                 mc_samples=MC_SAMPLES,
                 total_batch_size=TOTAL_BATCH_SIZE,
@@ -234,110 +287,40 @@ if __name__ == "__main__":
                 use_discrete=USE_DISCRETE,
                 create_visualization=CREATE_VIS,
                 create_gif=CREATE_GIF,
+                events=None,
+                pass_uncertainty_to_agent=pass_uncertainty,
             )
             
-            # Run Pure Exploration
-            print(f"\n[2/3] Running Pure Exploration...")
-            X_explore, Y_explore, logger_explore = run_bo_experiment(
-                experiment_name="qUCB",
-                strategy=PureExploration(),
-                output_dir=exp_group_dir,
-                model_path=MODEL_PATH,
-                x_scaler_path=X_SCALER_PATH,
-                y_scaler_path=Y_SCALER_PATH,
-                postprocess_fn=postprocess_outputs,
-                score_fn=score_fn,
-                design_space=design_space,
-                bounds=bounds_t,
-                X0_init=X0_shared,
-                Y0_init_raw=Y0_shared_raw,
-                Y0_init_normalized=Y0_shared_normalized,
-                normalization_params=normalization_params,
-                exploration_beta=beta_explore,
-                n_iterations=ITERS,
-                mc_samples=MC_SAMPLES,
-                total_batch_size=TOTAL_BATCH_SIZE,
-                pool_subsample=POOL_SUBSAMPLE,
-                total_budget=TOTAL_BUDGET,
-                total_time=TOTAL_TIME,
-                cost_per_point=COST_PER_POINT,
-                time_per_iteration=TIME_PER_ITERATION,
-                obj1_name=OBJ1_NAME,
-                obj2_name=OBJ2_NAME,
-                obj1_display=OBJ1_DISPLAY,
-                obj2_display=OBJ2_DISPLAY,
-                score_name=SCORE_NAME,
-                seed=seed,
-                create_visualization=CREATE_VIS,
-                create_gif=CREATE_GIF,
-            )'''
+            # Generate decision plot for agent
+            if strategy_type == "agent":
+                print(f"\n[Plotting] Generating decision plot for {strategy_name}...")
+                plot_strategy_decisions(logger, seed, BETA_EXPLORE, save_dir=os.path.join(exp_group_dir, strategy_name))
             
-            # Run LLM Agent
-            print(f"\n[3/3] Running LLM Agent...")
-            agent_log_dir = os.path.join(exp_group_dir, "Agent", "agent_logs")
-            os.makedirs(agent_log_dir, exist_ok=True)
-            
-            strategy_agent = BOAgent(
-                model=AGENT_MODEL,
-                temperature=AGENT_TEMPERATURE,
-                api_key=OPENAI_API_KEY,
-                log_dir=agent_log_dir,
-                problem_description=PROBLEM_DESCRIPTION,
-                obj1_name=OBJ1_NAME,
-                obj2_name=OBJ2_NAME,
-                iter_history=ITER_HISTORY,
-            )
-            
-            X_agent, Y_agent, logger_agent = run_bo_experiment(
-                experiment_name="Agent",
-                strategy=strategy_agent,
-                output_dir=exp_group_dir,
-                model_path=MODEL_PATH,
-                x_scaler_path=X_SCALER_PATH,
-                y_scaler_path=Y_SCALER_PATH,
-                postprocess_fn=postprocess_outputs,
-                score_fn=score_fn,
-                design_space=design_space,
-                bounds=bounds_t,
-                X0_init=X0_shared,
-                Y0_init_raw=Y0_shared_raw,
-                Y0_init_normalized=Y0_shared_normalized,
-                normalization_params=normalization_params,
-                exploration_beta=beta_explore,
-                n_iterations=ITERS,
-                mc_samples=MC_SAMPLES,
-                total_batch_size=TOTAL_BATCH_SIZE,
-                pool_subsample=POOL_SUBSAMPLE,
-                total_budget=TOTAL_BUDGET,
-                total_time=TOTAL_TIME,
-                cost_per_point=COST_PER_POINT,
-                time_per_iteration=TIME_PER_ITERATION,
-                obj1_name=OBJ1_NAME,
-                obj2_name=OBJ2_NAME,
-                obj1_display=OBJ1_DISPLAY,
-                obj2_display=OBJ2_DISPLAY,
-                score_name=SCORE_NAME,
-                seed=seed,
-                create_visualization=CREATE_VIS,
-                create_gif=CREATE_GIF,
-            )
-            
-            # Generate comparison plots
-            print(f"\n[Plotting] Generating comparison plots...")
-            plot_strategy_decisions(logger_agent, seed, beta_explore, save_dir=exp_group_dir)
-            # plot_convergence_comparison(
-            #    [logger_exploit, logger_explore, logger_agent],
-            #    seed, beta_explore, SCORE_NAME, save_dir=exp_group_dir
-            #)
-            
-            del strategy_agent
+            # Cleanup
+            if strategy_type == "agent":
+                del strategy
             cleanup_memory()
             
-            print(f"\n✓ Completed seed{seed}_beta{beta_explore}")
+            print(f"✓ Completed {strategy_name}")
+        
+        print(f"\n✓ Completed seed_{seed} ({seed_idx+1}/{NUM_SEEDS})")
     
     print(f"\n{'='*80}")
-    print("ALL BATCH EXPERIMENTS COMPLETE!")
+    print("K/CTE EXPERIMENT COMPLETE!")
     print(f"{'='*80}")
-    print(f"Total experiments run: {NUM_SEEDS * len(BETA_EXPLORE_VALUES) * 3}")
+    print(f"Total experiments run: {NUM_SEEDS * len(STRATEGY_CONFIGS)}")
+    print(f"Beta value: {BETA_EXPLORE}")
+    print(f"Iterations: {ITERS}")
+    print(f"Context window: {ITER_HISTORY} iterations")
     print(f"Results saved to: {OUTPUT_DIR}")
+    print(f"\nDirectory structure:")
+    print(f"  {OUTPUT_DIR}/")
+    print(f"    ├── seed_<seed1>/")
+    for cfg in STRATEGY_CONFIGS:
+        print(f"    │   ├── {cfg['name']}/")
+    print(f"    ├── seed_<seed2>/")
+    print(f"    └── ...")
+    print(f"\nStrategies tested:")
+    for i, cfg in enumerate(STRATEGY_CONFIGS, 1):
+        print(f"  {i}. {cfg['name']} (type={cfg['type']})")
     print(f"{'='*80}\n")

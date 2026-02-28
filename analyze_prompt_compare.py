@@ -15,7 +15,7 @@ import scipy.stats as stats
 # ===========================================================================
 
 # Base experiment directory
-EXP_DIR = Path("results/prompt_comparison_3styles")
+EXP_DIR = Path("results/k-H_simple_no_unc")
 
 # Output directory for plots
 OUTPUT_DIR = EXP_DIR / "analysis_plots"
@@ -28,6 +28,8 @@ STRATEGIES = [
     "Agent_Minimal_WithUncertainty",
     "Agent_SimpleGuideline_NoUncertainty",
     "Agent_SimpleGuideline_WithUncertainty",
+    "qEHVI",
+    "qUCB"
 ]
 
 # Display labels for plots (shorter names)
@@ -38,6 +40,8 @@ LABELS = {
     "Agent_Minimal_WithUncertainty": "Minimal (With Unc)",
     "Agent_SimpleGuideline_NoUncertainty": "SimpleGuideline (No Unc)",
     "Agent_SimpleGuideline_WithUncertainty": "SimpleGuideline (With Unc)",
+    "qEHVI": "qEHVI",
+    "qUCB": "qUCB"
 }
 
 # Colors for each strategy
@@ -48,6 +52,8 @@ COLORS = {
     "Agent_Minimal_WithUncertainty": "#922B21",      # Dark Red
     "Agent_SimpleGuideline_NoUncertainty": "#2ECC71", # Green
     "Agent_SimpleGuideline_WithUncertainty": "#1D8348", # Dark Green
+    "qEHVI": "#3498DB",
+    "qUCB":  "#E74C3C",
 }
 
 # Confidence level for intervals
