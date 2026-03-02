@@ -36,7 +36,7 @@ from core.visualization import (
 # ============================================================================
 
 # Batch experiment name
-BATCH_EXPERIMENT_NAME = "k-cte_simple_no_unc"
+BATCH_EXPERIMENT_NAME = "k-cte_simple_no_unc_temp_0.2"
 
 # Data paths
 MODEL_PATH = "ground_truth_models/FeCoNiCrV_Min_CTE_Max_K/models/RFR_best_model.pkl"
@@ -70,7 +70,7 @@ TIME_PER_ITERATION = 1.0
 # Agent parameters
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 AGENT_MODEL = "gpt-4o"
-AGENT_TEMPERATURE = 0.7
+AGENT_TEMPERATURE = 0.2
 ITER_HISTORY = 3
 
 # Objective names

@@ -73,7 +73,7 @@ TIME_PER_ITERATION = 1.0
 # Agent parameters
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 AGENT_MODEL = "gpt-4o"
-AGENT_TEMPERATURE = 0.7
+AGENT_TEMPERATURE = 0.2
 ITER_HISTORY = 3
 
 # Objective names

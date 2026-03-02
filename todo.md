@@ -9,6 +9,8 @@ Add in a version that explicitly is told to look at its prior decision and judge
 
 Bug with the last iteration label being too high
 
+Update prompts so they know the budget and time is after
+
 Do a run with Trevor's
 Do a run with qUCB and qEHVI - 50 seeds
 # Eventual Restructuring to make easier to use
