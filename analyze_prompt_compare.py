@@ -15,43 +15,28 @@ import scipy.stats as stats
 # ===========================================================================
 
 # Base experiment directory
-EXP_DIR = Path("results/k-H_simple_no_unc")
+EXP_DIR = Path("test/k-cte_updated_agents")
 
 # Output directory for plots
 OUTPUT_DIR = EXP_DIR / "analysis_plots"
 
 # Strategy names (folder names within each seed directory)
 STRATEGIES = [
-    "Agent_Default_NoUncertainty",
-    "Agent_Default_WithUncertainty",
-    "Agent_Minimal_NoUncertainty",
-    "Agent_Minimal_WithUncertainty",
-    "Agent_SimpleGuideline_NoUncertainty",
-    "Agent_SimpleGuideline_WithUncertainty",
+    "Agent_MultiStage",
     "qEHVI",
     "qUCB"
 ]
 
 # Display labels for plots (shorter names)
 LABELS = {
-    "Agent_Default_NoUncertainty": "Default (No Unc)",
-    "Agent_Default_WithUncertainty": "Default (With Unc)",
-    "Agent_Minimal_NoUncertainty": "Minimal (No Unc)",
-    "Agent_Minimal_WithUncertainty": "Minimal (With Unc)",
-    "Agent_SimpleGuideline_NoUncertainty": "SimpleGuideline (No Unc)",
-    "Agent_SimpleGuideline_WithUncertainty": "SimpleGuideline (With Unc)",
+    "Agent_MultiStage": "3-Stage Agent",
     "qEHVI": "qEHVI",
     "qUCB": "qUCB"
 }
 
 # Colors for each strategy
 COLORS = {
-    "Agent_Default_NoUncertainty": "#3498DB",        # Blue
-    "Agent_Default_WithUncertainty": "#1A5276",      # Dark Blue
-    "Agent_Minimal_NoUncertainty": "#E74C3C",        # Red
-    "Agent_Minimal_WithUncertainty": "#922B21",      # Dark Red
-    "Agent_SimpleGuideline_NoUncertainty": "#2ECC71", # Green
-    "Agent_SimpleGuideline_WithUncertainty": "#1D8348", # Dark Green
+    "Agent_MultiStage": "#2ECC71", # Green
     "qEHVI": "#3498DB",
     "qUCB":  "#E74C3C",
 }

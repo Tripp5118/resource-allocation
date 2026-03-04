@@ -1,21 +1,20 @@
-# core/agent_manager.py
-"""LLM Agent Manager for generic 2-objective BO with event-driven resource management."""
+"""Agent manager with DecisionState architecture - refactored for multi-stage decisions.""" 
 
 import os
 import json
 from typing import Dict, List, Optional, Tuple, Any, Callable
 from dataclasses import dataclass
-import numpy as np
+import numpy as np 
 
-from langchain_openai import ChatOpenAI
-from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
-from langchain_classic.memory import ConversationBufferMemory
-from core.prompt_builder import PromptBuilder, DefaultPromptBuilder
-
-
-# ============================================================================
-#  EVENT SYSTEM
-# ============================================================================
+from core.decision_state import (
+    DecisionState,
+    StrategyOutcome,
+    ParetoStatus,
+    ProgressVelocity,
+    StrategyEffectiveness,
+    build_strategy_outcome
+)
+from core.decision_maker import DecisionMaker, BalancedPolicyDecisionMaker 
 
 @dataclass
 class ResourceEvent:
@@ -23,15 +22,14 @@ class ResourceEvent:
     iteration: int  # When to trigger (before this iteration)
     event_type: str  # 'budget_change', 'time_change', 'cost_change'
     description: str  # Human-readable description
-    modifier: Callable[[float], float]  # Function that modifies the value
+    modifier: Callable[[float], float]  # Function that modifies the value 
 
     def apply(self, current_value: float) -> float:
         """Apply the event modifier to current value."""
         return self.modifier(current_value)
 
 class EventManager:
-    """Manages resource events during optimization."""
-
+    """Manages resource events during optimization.""" 
     def __init__(self):
         self.events: List[ResourceEvent] = []
         self.triggered_events: List[Dict[str, Any]] = []
@@ -91,93 +89,52 @@ class EventManager:
 
         return budget, time, cost_per_point, messages
 
-
-# ============================================================================
-#  MAIN AGENT CLASS
-# ============================================================================
-
 class BOAgent:
-    """LangChain-based Agent for generic 2-objective Bayesian Optimization.
-    
-    
-    Example:
-        >>> agent = BOAgent(
-        ...     model="gpt-4o",
-        ...     log_dir="./logs",
-        ...     problem_description="Optimize material properties",
-        ...     obj1_name="Strength",
-        ...     obj2_name="Toughness"
-        ... )
-        >>> 
-        >>> # Add resource events
-        >>> agent.add_budget_cut(iteration=5, percentage=0.3)
-        >>> 
-        >>> # Make decision
-        >>> selected_idx, reasoning, points = agent.select_resource_allocation(
-        ...     iteration=1,
-        ...     budget_remaining=5000,
-        ...     time_remaining=10.0,
-        ...     X_history=X,
-        ...     Y_history=Y,
-        ...     allocation_results=acq_data
-        ... )"""
-
     def __init__(
         self,
-        api_key: Optional[str] = None,
-        model: str = "gpt-4o",
+        decision_maker: Optional[DecisionMaker] = None,
         log_dir: Optional[str] = None,
-        max_reasoning_steps: int = 10,
-        temperature: float = 0.7,
         problem_description: str = "",
         obj1_name: str = "Objective 1",
         obj2_name: str = "Objective 2",
-        iter_history: int = 3,
-        prompt_builder: Optional[PromptBuilder] = None
+        **kwargs  # Accept other args for backward compatibility
     ):
         """
         Args:
-            api_key: OpenAI API key (or None to use environment variable)
-            model: LLM model name
-            log_dir: Directory to save agent logs
-            max_reasoning_steps: Maximum reasoning iterations per decision
-            temperature: LLM temperature for generation
-            problem_description: Short description of the optimization problem
-            obj1_name, obj2_name: Human-friendly names of the two objectives
+            decision_maker: DecisionMaker instance (if None, uses balanced policy)
+            log_dir: Directory to save logs
+            problem_description: Description of optimization problem
+            obj1_name, obj2_name: Objective names
         """
-        self.llm = ChatOpenAI(
-            model=model,
-            temperature=temperature,
-            api_key=api_key or os.getenv("OPENAI_API_KEY"),
-        )
-        self.model = model
-        self.temperature = temperature
-        self.max_reasoning_steps = max_reasoning_steps
-
-        self.problem_description = problem_description.strip()
+        self.decision_maker = decision_maker or BalancedPolicyDecisionMaker()
+        self.problem_description = problem_description
         self.obj1_name = obj1_name
         self.obj2_name = obj2_name
-
-        # Memory
-        self.global_memory: List[Dict[str, Any]] = []
-        self.iteration_memory: Optional[ConversationBufferMemory] = None
-        self.iter_history = iter_history
-
-        # Event management
-        self.event_manager = EventManager()
-
-        # Logging
         self.log_dir = log_dir
+        
         if log_dir:
             os.makedirs(log_dir, exist_ok=True)
         
-        self.prompt_builder = prompt_builder or DefaultPromptBuilder()
-    
-    def _log (self, level: str, message: str):
-        """Structured logging helper."""
+        # Memory for tracking outcomes
+        self.outcome_history: List[StrategyOutcome] = []
+        self.pareto_history: List[Dict] = []  # Track pareto status over time
+        self.iteration_history: List[Dict] = []  # Track iteration-level best scores
+        
+        # Event management
+        self.event_manager = EventManager()
+        
+        # Store previous beliefs for LLM continuity
+        self.previous_beliefs: Optional[Dict] = None
+        
+        # Store last decision for completing outcome record
+        self._last_decision: Optional[Dict] = None
+        self._last_pareto_before: Optional[Dict] = None
+
+    def _log(self, level: str, message: str):
+        """Logging helper."""
         print(f"[Agent:{level}] {message}")
 
-    # -------------------------- Event Management --------------------------- #
+    # ===== EVENT MANAGEMENT (unchanged) =====
 
     def add_event(self, event: ResourceEvent):
         self.event_manager.add_event(event)
@@ -196,18 +153,408 @@ class BOAgent:
     ) -> Tuple[float, float, float, List[str]]:
         return self.event_manager.trigger_events(iteration, budget, time, cost_per_point)
 
-    # ---------------------------- Memory & Logs --------------------------- #
+    # ===== CORE DECISION METHOD (refactored) =====
 
-    def _create_iteration_memory(self) -> ConversationBufferMemory:
-        return ConversationBufferMemory(memory_key="chat_history", return_messages=True)
+    def select_resource_allocation(
+        self,
+        iteration: int,
+        budget_remaining: float,
+        time_remaining: float,
+        cost_per_point: float,
+        time_per_point: float,
+        X_history: np.ndarray,
+        Y_history: np.ndarray,
+        allocation_results: Any,
+        max_batch_size: int = 5,
+        score_fn: Optional[Callable] = None,
+        pareto_front_info: Optional[Dict] = None,  # NEW: expect this from BO loop
+        **kwargs  # Backward compatibility
+    ) -> Tuple[int, str, List[np.ndarray]]:
+        """
+        Select resource allocation using DecisionState architecture.
+        
+        Args:
+            iteration: Current iteration number
+            budget_remaining: Remaining budget ($)
+            time_remaining: Remaining time (weeks)
+            cost_per_point: Cost per evaluation ($)
+            time_per_point: Time per iteration (weeks)
+            X_history: Input history (n, d)
+            Y_history: Output history (n, 2)
+            allocation_results: AllocationResults with options
+            max_batch_size: Maximum batch size
+            score_fn: Function mapping Y -> scores (default: maximize Y[:, 1])
+            pareto_front_info: Dict with {num_points, hypervolume, points_added, points_improved}
+        
+        Returns:
+            selected_idx: Index in allocation_results.options
+            reasoning: Full reasoning text
+            selected_points: List of point arrays for evaluation
+        """
+        self._log("INFO", f"\n{'='*80}\nIteration {iteration}: Resource Allocation\n{'='*80}")
+        
+        if score_fn is None:
+            score_fn = lambda Y: Y[:, 1]  # Default: maximize second objective
+        
+        # Build DecisionState
+        state = self._build_decision_state(
+            iteration=iteration,
+            budget_remaining=budget_remaining,
+            time_remaining=time_remaining,
+            cost_per_point=cost_per_point,
+            time_per_point=time_per_point,
+            X_history=X_history,
+            Y_history=Y_history,
+            allocation_results=allocation_results,
+            max_batch_size=max_batch_size,
+            score_fn=score_fn,
+            pareto_front_info=pareto_front_info,
+        )
+        
+        # Delegate decision to decision maker
+        selected_idx, reasoning, updated_beliefs = self.decision_maker.make_decision(state)
+        
+        # Validate feasibility
+        selected_idx = self._validate_feasibility(
+            selected_idx, allocation_results, budget_remaining, time_remaining,
+            cost_per_point, time_per_point, max_batch_size
+        )
+        
+        # Extract points
+        selected_batch = allocation_results.options[selected_idx]
+        selected_points = self._extract_points(selected_batch, max_batch_size)
+        
+        # Store decision for next iteration's outcome tracking
+        self._record_decision(iteration, selected_idx, selected_batch, state, updated_beliefs)
+        
+        # Save logs
+        self._save_iteration_log(iteration, {
+            "iteration": iteration,
+            "selected_option": selected_idx,
+            "reasoning": reasoning,
+            "beliefs": updated_beliefs,
+            "budget_remaining": budget_remaining,
+            "time_remaining": time_remaining,
+        })
+        
+        n_exploit = selected_batch.num_exploitation
+        n_explore = max_batch_size - n_exploit
+        self._log("INFO", f"✓ Selected Option {selected_idx}: {n_exploit} exploit + {n_explore} explore")
+        
+        return selected_idx, reasoning, selected_points
+
+    # ===== STATE BUILDING =====
+
+    def _build_decision_state(
+        self,
+        iteration: int,
+        budget_remaining: float,
+        time_remaining: float,
+        cost_per_point: float,
+        time_per_point: float,
+        X_history: np.ndarray,
+        Y_history: np.ndarray,
+        allocation_results: Any,
+        max_batch_size: int,
+        score_fn: Callable,
+        pareto_front_info: Optional[Dict],
+    ) -> DecisionState:
+        """Build complete DecisionState from BO data."""
+        
+        # Compute current best
+        if len(Y_history) > 0:
+            scores = score_fn(Y_history)
+            best_idx = int(np.argmax(scores))
+            best_score = float(scores[best_idx])
+            best_obj1 = float(Y_history[best_idx, 0])
+            best_obj2 = float(Y_history[best_idx, 1])
+            
+            # Display coordinates based on dimensionality
+            n_dims = X_history.shape[1]
+            if n_dims < 10:
+                # Show all dimensions if less than 10
+                best_coords = ", ".join([f"x_{j}={X_history[best_idx, j]:.3f}" 
+                                        for j in range(n_dims)])
+            else:
+                # Show first 5 dimensions with ellipsis if 10 or more
+                best_coords = ", ".join([f"x_{j}={X_history[best_idx, j]:.3f}" 
+                                        for j in range(5)])
+                best_coords += ", ..."
+        else:
+            best_score = 0.0
+            best_obj1 = 0.0
+            best_obj2 = 0.0
+            best_coords = "N/A"
+        
+        # Store iteration-level info for velocity tracking
+        self.iteration_history.append({
+            'iteration': iteration,
+            'best_score': best_score,
+            'points_evaluated': len(Y_history),
+        })
+        
+        # Build pareto status
+        pareto_status = self._build_pareto_status(pareto_front_info, iteration)
+        
+        # Build progress velocity (iteration-level, raw numbers)
+        progress_velocity = self._build_progress_velocity()
+        
+        # Build strategy effectiveness
+        strategy_effectiveness = self._build_strategy_effectiveness()
+        
+        # Get recent outcomes (last 5)
+        recent_outcomes = self.outcome_history[-5:] if len(self.outcome_history) > 0 else []
+        
+        # Check for upcoming events
+        upcoming = self.event_manager.get_events_for_iteration(iteration + 1)
+        upcoming_events = [e.description for e in upcoming]
+        
+        return DecisionState(
+            iteration=iteration,
+            budget_remaining=budget_remaining,
+            time_remaining=time_remaining,
+            cost_per_point=cost_per_point,
+            time_per_point=time_per_point,
+            strategy_outcomes=recent_outcomes,
+            strategy_effectiveness=strategy_effectiveness,
+            pareto_status=pareto_status,
+            progress_velocity=progress_velocity,
+            best_score=best_score,
+            best_obj1=best_obj1,
+            best_obj2=best_obj2,
+            best_point_coords=best_coords,
+            total_points_evaluated=len(X_history),
+            allocation_options=allocation_results,
+            previous_beliefs=self.previous_beliefs,
+            problem_description=self.problem_description,
+            obj1_name=self.obj1_name,
+            obj2_name=self.obj2_name,
+            upcoming_events=upcoming_events,
+        )
+
+    def _build_pareto_status(self, pareto_info: Optional[Dict], iteration: int) -> Optional[ParetoStatus]:
+        """Build ParetoStatus from info dict."""
+        if pareto_info is None:
+            return None
+        
+        # Store in history
+        self.pareto_history.append(pareto_info)
+        
+        # Compute change from last iteration
+        if len(self.pareto_history) >= 2:
+            prev = self.pareto_history[-2]
+            hv_change = pareto_info['hypervolume'] - prev['hypervolume']
+            hv_change_pct = (hv_change / prev['hypervolume'] * 100) if prev['hypervolume'] > 0 else 0.0
+        else:
+            hv_change = 0.0
+            hv_change_pct = 0.0
+        
+        # Determine status based on changes
+        points_added = pareto_info.get('points_added', 0)
+        points_improved = pareto_info.get('points_improved', 0)
+        
+        if points_added >= 2:
+            status = "GROWING"
+        elif points_added == 1 or points_improved >= 1:
+            status = "REFINING"
+        else:
+            status = "STAGNANT"
+        
+        return ParetoStatus(
+            num_points=pareto_info['num_points'],
+            hypervolume=pareto_info['hypervolume'],
+            hypervolume_change=hv_change,
+            hypervolume_change_pct=hv_change_pct,
+            points_added_last_iter=points_added,
+            points_improved_last_iter=points_improved,
+            status=status,
+        )
+
+    def _build_progress_velocity(self) -> Optional[ProgressVelocity]:
+        """Analyze rate of improvement using iteration-level data (raw numbers, no labels)."""
+        if len(self.iteration_history) < 3:
+            return None
+        
+        # Look at last 3 iterations vs previous 3 iterations
+        recent_3 = self.iteration_history[-3:]
+        previous_3 = self.iteration_history[-6:-3] if len(self.iteration_history) >= 6 else []
+        
+        # Compute improvements (raw numbers)
+        improvement_recent = recent_3[-1]['best_score'] - recent_3[0]['best_score']
+        
+        if previous_3:
+            improvement_previous = previous_3[-1]['best_score'] - previous_3[0]['best_score']
+        else:
+            improvement_previous = 0.0
+        
+        # Return raw numbers - let LLM interpret
+        return ProgressVelocity(
+            recent_improvement=float(improvement_recent),
+            previous_improvement=float(improvement_previous),
+        )
+
+    def _build_strategy_effectiveness(self) -> Optional[StrategyEffectiveness]:
+        """Compute average performance by strategy type.
+        
+        Bins by explore ratio (n_explore / batch_size) so thresholds are
+        meaningful regardless of batch size:
+          exploit-heavy : ratio < 0.33
+          balanced       : ratio 0.33–0.67
+          explore-heavy  : ratio > 0.67
+        """
+        if len(self.outcome_history) < 2:
+            return None
+        
+        exploit_heavy = []
+        balanced = []
+        explore_heavy = []
+        
+        for outcome in self.outcome_history:
+            batch_size = outcome.n_exploit + outcome.n_explore
+            if batch_size == 0:
+                continue  # Shouldn't happen, but guard against divide-by-zero
+            ratio = outcome.n_explore / batch_size
+            if ratio < 0.33:
+                exploit_heavy.append(outcome.improvement)
+            elif ratio > 0.67:
+                explore_heavy.append(outcome.improvement)
+            else:
+                balanced.append(outcome.improvement)
+        
+        def summarize(improvements):
+            if not improvements:
+                return {"avg_improvement": 0.0, "success_rate": 0.0, "n_times_used": 0}
+            return {
+                "avg_improvement": float(np.mean(improvements)),
+                "success_rate": float(sum(1 for x in improvements if x > 0.001) / len(improvements)),
+                "n_times_used": len(improvements),
+            }
+        
+        return StrategyEffectiveness(
+            exploit_heavy=summarize(exploit_heavy),
+            balanced=summarize(balanced),
+            explore_heavy=summarize(explore_heavy),
+        )
+
+    def _record_decision(self, iteration: int, selected_idx: int, selected_batch: Any, 
+                        state: DecisionState, beliefs: Optional[Dict]):
+        """Store decision info for next iteration's outcome tracking."""
+        self.previous_beliefs = beliefs
+        
+        # Store pareto status before evaluation
+        if state.pareto_status:
+            self._last_pareto_before = {
+                'num_points': state.pareto_status.num_points,
+                'hypervolume': state.pareto_status.hypervolume,
+            }
+        else:
+            self._last_pareto_before = {'num_points': 0, 'hypervolume': 0.0}
+        
+        # Store decision details
+        self._last_decision = {
+            'iteration': iteration,
+            'selected_idx': selected_idx,
+            'n_exploit': selected_batch.num_exploitation,
+            'n_explore': state.allocation_options.options[0].total_batch_size - selected_batch.num_exploitation,
+            'score_before': state.best_score,
+            'expected_improvement': selected_batch.hypervolume_improvement,
+        }
+
+    def record_iteration_outcome(self, score_after: float, pareto_after: Dict):
+        """
+        Call this after evaluating points to complete the outcome record.
+        
+        Args:
+            score_after: Best score after evaluation
+            pareto_after: Dict with {num_points, hypervolume, points_added, points_improved}
+        """
+        if not hasattr(self, '_last_decision') or self._last_decision is None:
+            return
+        
+        outcome = build_strategy_outcome(
+            iteration=self._last_decision['iteration'],
+            selected_option_idx=self._last_decision['selected_idx'],
+            n_exploit=self._last_decision['n_exploit'],
+            n_explore=self._last_decision['n_explore'],
+            score_before=self._last_decision['score_before'],
+            score_after=score_after,
+            pareto_before=self._last_pareto_before,
+            pareto_after=pareto_after,
+            expected_improvement=self._last_decision['expected_improvement'],
+        )
+        
+        self.outcome_history.append(outcome)
+        
+        # Clear last decision
+        self._last_decision = None
+        self._last_pareto_before = None
+
+    # ===== HELPER METHODS =====
+
+    def _validate_feasibility(
+        self,
+        selected_idx: int,
+        allocation_results: Any,
+        budget: float,
+        time: float,
+        cost_per_point: float,
+        time_per_point: float,
+        max_batch: int,
+    ) -> int:
+        """Validate selected option is feasible, otherwise find alternative."""
+        num_options = len(allocation_results.options)
+        
+        # Clamp to valid range first
+        if selected_idx < 0 or selected_idx >= num_options:
+            self._log("WARNING", f"Invalid option {selected_idx}, using option 0")
+            selected_idx = 0
+        
+        batch = allocation_results.options[selected_idx]
+        total_points = batch.total_batch_size if hasattr(batch, 'total_batch_size') else max_batch
+        cost = total_points * cost_per_point
+        
+        if cost <= budget and time_per_point <= time and total_points <= max_batch:
+            return selected_idx
+        
+        self._log("WARNING", f"Option {selected_idx} infeasible, searching alternatives...")
+        
+        # Try from smallest to largest
+        for i in range(num_options):
+            b = allocation_results.options[i]
+            total = b.total_batch_size if hasattr(b, 'total_batch_size') else max_batch
+            if total * cost_per_point <= budget and time_per_point <= time and total <= max_batch:
+                self._log("INFO", f"Using feasible alternative: Option {i}")
+                return i
+        
+        self._log("WARNING", "No feasible options, defaulting to Option 0")
+        return 0
+
+    def _extract_points(self, selected_batch: Any, max_batch_size: int) -> List[np.ndarray]:
+        """Extract points from batch."""
+        points = []
+        if hasattr(selected_batch, 'exploitation_points') and len(selected_batch.exploitation_points) > 0:
+            points.append(selected_batch.exploitation_points)
+        if hasattr(selected_batch, 'exploration_points') and len(selected_batch.exploration_points) > 0:
+            points.append(selected_batch.exploration_points)
+        return points
+
+    def _save_iteration_log(self, iteration: int, content: Dict):
+        """Save iteration log."""
+        if self.log_dir:
+            filepath = os.path.join(self.log_dir, f"iteration_{iteration}.json")
+            with open(filepath, "w") as f:
+                json.dump(content, f, indent=2, default=str)
 
     def save_global_memory(self):
+        """Save complete history."""
         if self.log_dir:
-            filepath = os.path.join(self.log_dir, "agent_global_memory.json")
+            # Save outcomes
+            filepath = os.path.join(self.log_dir, "outcome_history.json")
             with open(filepath, "w") as f:
-                json.dump(self.global_memory, f, indent=2)
-
-            events_filepath = os.path.join(self.log_dir, "agent_events.json")
+                json.dump([vars(o) for o in self.outcome_history], f, indent=2)
+            
+            # Save events
+            events_filepath = os.path.join(self.log_dir, "events.json")
             events_data = {
                 "scheduled_events": [
                     {
@@ -222,411 +569,8 @@ class BOAgent:
             with open(events_filepath, "w") as f:
                 json.dump(events_data, f, indent=2)
 
-    def _save_iteration_log(self, iteration: int, content: Dict[str, Any]):
-        if self.log_dir:
-            filepath = os.path.join(self.log_dir, f"agent_iteration_{iteration}.json")
-            with open(filepath, "w") as f:
-                json.dump(content, f, indent=2)
-
-    def _build_global_context(self) -> str:
-        if not self.global_memory:
-            return "This is the first decision in the optimization campaign."
-
-        context = "## Optimization History\n\n"
-
-        # Recent iterations
-        summaries = [m for m in self.global_memory if m.get("step") == "iteration_summary"]
-        if summaries:
-            context += "**Recent Iterations**:\n"
-            # If iter_history is -1, use all summaries; otherwise use most recent n
-            recent_summaries = summaries if self.iter_history == -1 else summaries[-self.iter_history:]
-            for summary in recent_summaries:
-                it = summary.get("iteration", "?")
-                context += f"\nIteration {it}:\n"
-                context += f"  - Best score: {summary.get('best_score', 0):.3f}\n"
-                context += (
-                    f"  - Decision: Option {summary.get('selected_option')} "
-                    f"({summary.get('decision_summary', 'N/A')})\n"
-                )
-
-        # Event history
-        if self.event_manager.triggered_events:
-            context += "\n**Resource Events**:\n"
-            # Same logic for events
-            recent_events = (
-                self.event_manager.triggered_events 
-                if self.iter_history == -1 
-                else self.event_manager.triggered_events[-self.iter_history:]
-            )
-            for event in recent_events:
-                context += f"  - Iter {event['iteration']}: {event['description']}\n"
-
-        return context
-
-    # ---------------- Resource Allocation (Main Decision) ----------------- #
-    from core.acq_ucb import AllocationResults
-    def select_resource_allocation(
-        self,
-        iteration: int,
-        budget_remaining: float,
-        time_remaining: float,
-        cost_per_point: float,
-        time_per_point: float,
-        X_history: np.ndarray,
-        Y_history: np.ndarray,
-        allocation_results: AllocationResults,
-        max_batch_size: int = 5,
-        score_fn: Optional[Callable[[np.ndarray], np.ndarray]] = None,
-        uncertainty_obj1: Optional[float] = None,
-        uncertainty_obj2: Optional[float] = None,
-        current_hypervolume: Optional[float] = None,
-        hv_improvement_pct: Optional[float] = None,
-    ) -> Tuple[int, str, List[np.ndarray]]:
-        """
-        Agent selects resource allocation strategy.
-
-        Args:
-            iteration: Current iteration
-            budget_remaining, time_remaining: remaining resources
-            cost_per_point: cost per point
-            time_per_point: time per iteration
-            X_history: (n, d)
-            Y_history: (n, 2)
-            allocation_results: AllocationResults with 6 allocation options
-            max_batch_size: maximum allowed batch size
-            score_fn: function mapping Y_history -> scores
-
-        Returns:
-            selected_idx: index in allocation_results.options
-            reasoning: full reasoning text
-            selected_points: [optimize_points, explore_points] list for evaluation
-        """
-        self._log("INFO", f"\n{'='*80}\nIteration {iteration}: Resource Allocation Decision\n{'='*80}")
-
-        if score_fn is None:
-            def score_fn_default(Y: np.ndarray) -> np.ndarray:
-                return Y[:, 1]
-            score_fn = score_fn_default
-
-        self.iteration_memory = self._create_iteration_memory()
-        global_context = self._build_global_context()
-
-        analysis = self._analyze_current_state_distilled(
-            X_history, Y_history, budget_remaining, time_remaining,
-            cost_per_point, time_per_point, score_fn
-        )
-        analysis = self.prompt_builder.enhance_analysis(
-            base_analysis=analysis,
-            uncertainty_obj1=uncertainty_obj1,
-            uncertainty_obj2=uncertainty_obj2,
-            current_hypervolume=current_hypervolume,
-            obj1_name=self.obj1_name,
-            obj2_name=self.obj2_name,
-        )
-
-        self._log("INFO", f"\nAnalysis:\n{analysis}\n")
-
-        options_desc = self._describe_allocation_results(
-            allocation_results, cost_per_point, time_per_point,
-            budget_remaining, time_remaining, max_batch_size
-        )
-        options_desc = self.prompt_builder.enhance_options_description(options_desc)
-
-        upcoming = self.event_manager.get_events_for_iteration(iteration + 1)
-        event_warning = ""
-        if upcoming:
-            event_warning = "\n⚠️  **UPCOMING EVENTS NEXT ITERATION**:\n"
-            for e in upcoming:
-                event_warning += f"  - {e.description}\n"
-
-        system_message = self.prompt_builder.build_system_message(
-            problem_description=self.problem_description,
-            obj1_name=self.obj1_name,
-            obj2_name=self.obj2_name,
-            iteration=iteration,
-            budget_remaining=budget_remaining,
-            time_remaining=time_remaining,
-            time_per_point=time_per_point,
-            global_context=global_context,
-            event_warning=event_warning,
-        )
-        
-        initial_message = self.prompt_builder.build_initial_message(
-            analysis=analysis,
-            options_desc=options_desc,
-            max_reasoning_steps=self.max_reasoning_steps,
-        )
-
-        messages = [SystemMessage(content=system_message), HumanMessage(content=initial_message)]
-        self.iteration_memory.chat_memory.add_message(SystemMessage(content=system_message))
-        self.iteration_memory.chat_memory.add_message(HumanMessage(content=initial_message))
-
-        reasoning_steps = []
-        final_response = ""
-
-        for step in range(1, self.max_reasoning_steps + 1):
-            self._log("INFO", f"\nReasoning step {step}/{self.max_reasoning_steps}...")
-            try:
-                response = self.llm.invoke(messages)
-                text = response.content
-            except Exception as e:
-                self._log("ERROR", f"Error in LLM call at step {step}: {e}")
-                if step == 1:
-                    # First step failure - use default
-                    self._log("INFO", "Using default option 2 due to LLM failure")
-                    return 2, "LLM error: using default balanced allocation", []
-                else:
-                    # Use last valid response
-                    self._log("INFO", "Using last valid reasoning step")
-                    break
-            
-            self._log("INFO", f"\n{text}\n")
-
-            reasoning_steps.append((f"Step {step}", text))
-            messages.append(AIMessage(content=text))
-            self.iteration_memory.chat_memory.add_message(AIMessage(content=text))
-
-            if "SELECTED_OPTION:" in text.upper():
-                final_response = text
-                self._log("INFO", f"Decision reached at step {step}")
-                break
-
-            if step < self.max_reasoning_steps:
-                messages.append(HumanMessage(content="Continue reasoning or make final decision."))
-                self.iteration_memory.chat_memory.add_message(
-                    HumanMessage(content="Continue reasoning or make final decision.")
-                )
-            else:
-                messages.append(
-                    HumanMessage(
-                        content="Make final decision now:\nSELECTED_OPTION: <0-5>\nREASONING: <justification>"
-                    )
-                )
-                self.iteration_memory.chat_memory.add_message(
-                    HumanMessage(
-                        content="Make final decision now:\nSELECTED_OPTION: <0-5>\nREASONING: <justification>"
-                    )
-                )
-                response = self.llm.invoke(messages)
-                final_response = response.content
-                reasoning_steps.append(("Final Decision", final_response))
-                self.iteration_memory.chat_memory.add_message(AIMessage(content=final_response))
-
-        selected_idx = self._parse_selection(final_response)
-        selected_idx = self._validate_feasibility(
-            selected_idx, allocation_results, budget_remaining, time_remaining,
-            cost_per_point, time_per_point, max_batch_size
-        )
-
-        selected_batch = allocation_results.options[selected_idx]
-        selected_points = []
-        if len(selected_batch.exploitation_points) > 0:
-            selected_points.append(selected_batch.exploitation_points)
-        if len(selected_batch.exploration_points) > 0:
-            selected_points.append(selected_batch.exploration_points)
-
-        full_reasoning = "\n\n".join([f"**{t}**\n{c}" for t, c in reasoning_steps])
-
-        iteration_summary = self._summarize_iteration(
-            iteration, budget_remaining, time_remaining,
-            cost_per_point, time_per_point,
-            X_history, Y_history, selected_idx, selected_batch,
-            full_reasoning, score_fn
-        )
-        self.global_memory.append(iteration_summary)
-
-        iteration_log = {
-            "iteration": iteration,
-            "budget_remaining": budget_remaining,
-            "time_remaining": time_remaining,
-            "reasoning_steps": [{"step": t, "content": c} for t, c in reasoning_steps],
-            "selected_option": selected_idx,
-            "selected_batch_size": selected_batch.num_exploitation,
-            "summary": iteration_summary,
-        }
-        self._save_iteration_log(iteration, iteration_log)
-
-        self._log(
-            "INFO",
-            f"✓ Selected Option {selected_idx}: "
-            f"{selected_batch.num_exploitation} optimize + {max_batch_size - selected_batch.num_exploitation} explore"
-        )
-
-        return selected_idx, full_reasoning, selected_points
-
-    # -------------------------- Analysis Helpers -------------------------- #
-
-    def _parse_selection(self, response: str) -> int:
-        if "SELECTED_OPTION:" in response.upper():
-            try:
-                line = [l for l in response.split("\n") if "SELECTED_OPTION:" in l.upper()][0]
-                option_str = line.split(":")[1].strip()
-                for ch in option_str:
-                    if ch.isdigit():
-                        opt = int(ch)
-                        if 0 <= opt <= 5:
-                            return opt
-            except Exception:
-                pass
-        self._log("WARNING", "Could not parse selection, defaulting to option 2 (balanced)")
-        return 2
-
-    def _validate_feasibility(
-        self,
-        selected_idx: int,
-        allocation_results: Any,
-        budget: float,
-        time: float,
-        cost_per_point: float,
-        time_per_point: float,
-        max_batch: int,
-    ) -> int:
-        batch = allocation_results.options[selected_idx]
-        total_points = batch.num_exploitation + (max_batch - batch.num_exploitation)
-        cost = total_points * cost_per_point
-        if cost <= budget and time_per_point <= time and total_points <= max_batch:
-            return selected_idx
-
-        self._log("WARNING", f"Option {selected_idx} infeasible, searching alternatives...")
-        for i in range(5, -1, -1):
-            b = allocation_results.options[i]
-            total = b.total_batch_size
-            if total * cost_per_point <= budget and time_per_point <= time and total <= max_batch:
-                self._log("INFO", f"Using feasible alternative: Option {i}")
-                return i
-
-        self._log("WARNING", "No feasible options, defaulting to Option 0")
-        return 0
-
-    def _analyze_current_state_distilled(
-        self,
-        X: np.ndarray,
-        Y: np.ndarray,
-        budget: float,
-        time: float,
-        cost_per_point: float,
-        time_per_point: float,
-        score_fn: Callable[[np.ndarray], np.ndarray],
-    ) -> str:
-        n = len(X)
-        if n == 0:
-            return """## Key Decision Criteria
-**Status**: No evaluation history available yet.
-This is the initial exploration phase."""
-
-        scores = score_fn(Y)
-        best_idx = int(np.argmax(scores))
-
-        max_iterations = int(time / time_per_point)
-        max_affordable_points = int(budget / cost_per_point)
-        limiting_factor = "time" if max_iterations * 5 < max_affordable_points else "budget"
-
-        improvement_status = "N/A"
-        iter_summaries = [m for m in self.global_memory if m.get("step") == "iteration_summary"]
-        if len(iter_summaries) >= 2:
-            # Compare best score at most recent completed iteration vs up to 3 iterations ago
-            recent_best = iter_summaries[-1]["best_score"]
-            earlier_best = iter_summaries[max(0, len(iter_summaries) - 4)]["best_score"]
-            if earlier_best > 1e-10:
-                improvement_pct = (recent_best - earlier_best) / abs(earlier_best) * 100
-                if improvement_pct > 5:
-                    improvement_status = f"Accelerating (+{improvement_pct:.1f}%)"
-                elif improvement_pct > 0:
-                    improvement_status = f"Steady (+{improvement_pct:.1f}%)"
-                else:
-                    improvement_status = f"Plateaued ({improvement_pct:+.1f}%)"
-
-        best_x = X[best_idx]
-        best_y = Y[best_idx]
-
-        coords_str = ", ".join([f"x_{j}={best_x[j]:.3f}" for j in range(best_x.shape[0])])
-
-        analysis = f"""## Key Decision Criteria
-
-**1. Runway Assessment**:
-   - Approx. iterations remaining: ~{max_iterations}
-   - Approx. affordable points: ~{max_affordable_points}
-   - Limiting factor: {limiting_factor}
-
-**2. Progress Momentum**:
-   - Total points: {n}
-   - Best score: {scores[best_idx]:.3f}
-   - Trend (last 3 vs previous 3): {improvement_status}
-
-**3. Best Observed Point**:
-   - {self.obj1_name}: {best_y[0]:.4g}
-   - {self.obj2_name}: {best_y[1]:.4g}
-   - Coordinates: {coords_str}"""
-
-        return analysis
-
-    def _describe_allocation_results(
-        self,
-        allocation_results: Any,
-        cost_per_point: float,
-        time_per_point: float,
-        budget: float,
-        time: float,
-        max_batch: int,
-    ) -> str:
-        desc = "## Allocation Options\n\n"
-        for i, batch in enumerate(allocation_results.options):
-            n_exploit = batch.num_exploitation
-            n_explore = batch.total_batch_size - n_exploit if hasattr(batch, 'total_batch_size') else (max_batch - n_exploit)
-            total_points = n_exploit + n_explore
-            cost = total_points * cost_per_point
-            feasible = cost <= budget and time_per_point <= time and total_points <= max_batch
-
-            desc += (
-                f"**Option {i}**: {n_exploit} optimize + {n_explore} explore | "
-                f"Cost: ${cost:.0f} | EHVI: {batch.hypervolume_improvement:.4f} | "
-                f"Entropy: {batch.information_gain:.2f} | "
-                f"{'✓ Feasible' if feasible else '✗ Infeasible'}\n"
-            )
-
-        return desc
-
-    def _summarize_iteration(
-        self,
-        iteration: int,
-        budget_start: float,
-        time_start: float,
-        cost_per_point: float,
-        time_per_point: float,
-        X: np.ndarray,
-        Y: np.ndarray,
-        selected_idx: int,
-        selected_batch: Any,
-        reasoning: str,
-        score_fn: Callable[[np.ndarray], np.ndarray],
-    ) -> Dict[str, Any]:
-        total_points = selected_batch.num_exploitation + (5 - selected_batch.num_exploitation)
-        budget_spent = total_points * cost_per_point
-        time_spent = time_per_point
-
-        scores = score_fn(Y)
-        best_idx = int(np.argmax(scores))
-
-        return {
-            "step": "iteration_summary",
-            "iteration": iteration,
-            "budget_at_start": budget_start,
-            "time_at_start": time_start,
-            "budget_spent": budget_spent,
-            "time_spent": time_spent,
-            "budget_remaining": budget_start - budget_spent,
-            "time_remaining": time_start - time_spent,
-            "points_evaluated": total_points,
-            "best_score": float(scores[best_idx]),
-            "best_point": X[best_idx].tolist(),
-            "best_obj1": float(Y[best_idx, 0]),
-            "best_obj2": float(Y[best_idx, 1]),
-            "selected_option": selected_idx,
-            "decision_summary": f"{selected_batch.num_exploitation} optimize + {5 - selected_batch.num_exploitation} explore",
-            "reasoning_summary": reasoning[:500] + "..." if len(reasoning) > 500 else reasoning,
-        }
-    
     def cleanup(self):
-        """Cleanup resources at end of optimization."""
+        """Cleanup at end of optimization."""
         self.save_global_memory()
+        self.decision_maker.cleanup()
         self._log("INFO", "Agent cleanup completed")

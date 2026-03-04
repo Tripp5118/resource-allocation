@@ -25,7 +25,7 @@ from core.batched_runs import (
 )
 from core.agent_manager import BOAgent
 from core.fixed_policy import PureExploitation, PureExploration
-from core.prompt_builder import create_prompt_builder
+from core.llm_decision_maker import MultiStageLLMDecisionMaker
 from core.visualization import (
     plot_strategy_decisions,
     plot_convergence_comparison,
@@ -36,7 +36,7 @@ from core.visualization import (
 # ============================================================================
 
 # Batch experiment name
-BATCH_EXPERIMENT_NAME = "k-cte_simple_no_unc_temp_0.2"
+BATCH_EXPERIMENT_NAME = "k-cte_3-step"
 
 # Data paths
 MODEL_PATH = "ground_truth_models/FeCoNiCrV_Min_CTE_Max_K/models/RFR_best_model.pkl"
@@ -62,8 +62,8 @@ POOL_SUBSAMPLE = 5000
 TOTAL_BATCH_SIZE = 5
 
 # Resource parameters
-TOTAL_BUDGET = 10000.0
-TOTAL_TIME = 20.0
+TOTAL_BUDGET = 10500.0
+TOTAL_TIME = 21.0
 COST_PER_POINT = 100.0
 TIME_PER_ITERATION = 1.0
 
@@ -71,7 +71,6 @@ TIME_PER_ITERATION = 1.0
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 AGENT_MODEL = "gpt-4o"
 AGENT_TEMPERATURE = 0.2
-ITER_HISTORY = 3
 
 # Objective names
 OBJ1_NAME = "CTE"
@@ -108,9 +107,16 @@ OUTPUT_DIR = os.path.join(OUTPUT_BASE_DIR, BATCH_EXPERIMENT_NAME)
 NUM_SEEDS = 50
 BETA_EXPLORE = 2.0  # Fixed beta value
 
+# If True, evaluate the entire design space once at startup and compute a fixed
+# reference point as min(Y) - REF_POINT_MARGIN for both objectives.
+# This is stable across seeds and cheap when the design space is small.
+# If False, the reference point is computed dynamically each iteration as min(Y) - 0.1.
+USE_FIXED_REFERENCE_POINT = True
+REF_POINT_MARGIN = 0.1
+
 # Strategy configurations
 STRATEGY_CONFIGS = [
-    {"type": "agent", "name": "Agent_SimpleGuideline_NoUncertainty", "style": "simple_guideline", "pass_uncertainty": False},
+    {"type": "agent", "name": "Agent_MultiStage"},
     {"type": "qEHVI", "name": "qEHVI"},
     {"type": "qUCB",  "name": "qUCB"},
 ]
@@ -169,6 +175,31 @@ if __name__ == "__main__":
         obj2_name=OBJ2_NAME,
     )
     
+    # Compute fixed reference point by evaluating the entire design space once.
+    # Because the design space is discrete and small this is cheap, and the result
+    # is seed-independent so hypervolume is comparable across all runs.
+    if USE_FIXED_REFERENCE_POINT:
+        print("\n[RefPoint] Evaluating full design space to compute fixed reference point...")
+        from core.truth_interface import TruthModelEvaluator
+        _ref_evaluator = TruthModelEvaluator(
+            model_path=MODEL_PATH,
+            x_scaler_path=X_SCALER_PATH,
+            y_scaler_path=Y_SCALER_PATH,
+            postprocess_outputs=postprocess_outputs,
+            normalize_outputs=False,
+        )
+        X_full = design_space.space  # Every valid composition
+        Y_full = _ref_evaluator.evaluate(X_full).y
+        _ref_evaluator.cleanup()
+        del _ref_evaluator
+        fixed_reference_point = np.min(Y_full, axis=0) - REF_POINT_MARGIN
+        print(f"[RefPoint] Design space size: {len(X_full)} points")
+        print(f"[RefPoint] Objective minima: {np.min(Y_full, axis=0)}")
+        print(f"[RefPoint] Fixed reference point: {fixed_reference_point}")
+    else:
+        fixed_reference_point = None
+        print("\n[RefPoint] Using dynamic reference point (min(Y) - 0.1 per iteration)")
+
     print(f"\n{'='*80}")
     print("SHARED SETUP COMPLETE")
     print(f"{'='*80}\n")
@@ -184,8 +215,8 @@ if __name__ == "__main__":
     print(f"Output directory: {OUTPUT_DIR}")
     print(f"Random seeds: {NUM_SEEDS} seeds")
     print(f"Fixed exploration beta: {BETA_EXPLORE}")
+    print(f"Reference point: {'fixed (full design space min - ' + str(REF_POINT_MARGIN) + ')' if USE_FIXED_REFERENCE_POINT else 'dynamic (min(Y) - 0.1)'}")
     print(f"Iterations per run: {ITERS}")
-    print(f"Context window: {ITER_HISTORY} previous iterations")
     print(f"Total experiments: {NUM_SEEDS * len(STRATEGY_CONFIGS)} = {NUM_SEEDS} seeds × {len(STRATEGY_CONFIGS)} strategies")
     print(f"Strategies: {[c['name'] for c in STRATEGY_CONFIGS]}")
     print(f"{'='*80}\n")
@@ -221,38 +252,41 @@ if __name__ == "__main__":
             print(f"\n[Strategy] Running {strategy_name}...")
             
             if strategy_type == "agent":
-                # Create prompt builder for agent
-                prompt_builder = create_prompt_builder(
-                    style=strategy_config["style"],
-                    include_uncertainty=strategy_config["pass_uncertainty"],
-                    include_hypervolume=strategy_config["pass_uncertainty"],
-                )
-                
-                # Create agent log directory
-                agent_log_dir = os.path.join(exp_group_dir, strategy_name, "agent_logs")
-                os.makedirs(agent_log_dir, exist_ok=True)
-                
-                # Create agent with custom prompt builder
-                strategy = BOAgent(
+                from langchain_openai import ChatOpenAI
+
+                llm = ChatOpenAI(
                     model=AGENT_MODEL,
                     temperature=AGENT_TEMPERATURE,
                     api_key=OPENAI_API_KEY,
+                )
+
+                agent_log_dir = os.path.join(exp_group_dir, strategy_name, "agent_logs")
+                os.makedirs(agent_log_dir, exist_ok=True)
+
+                decision_maker = MultiStageLLMDecisionMaker(
+                    llm=llm,
+                    problem_description=PROBLEM_DESCRIPTION,
+                    obj1_name=OBJ1_NAME,
+                    obj2_name=OBJ2_NAME,
+                    log_dir=agent_log_dir,
+                    stage1_temperature=0.2,
+                    stage2_temperature=0.2,
+                    stage3_temperature=0.4,
+                )
+
+                strategy = BOAgent(
+                    decision_maker=decision_maker,
                     log_dir=agent_log_dir,
                     problem_description=PROBLEM_DESCRIPTION,
                     obj1_name=OBJ1_NAME,
                     obj2_name=OBJ2_NAME,
-                    iter_history=ITER_HISTORY,
-                    prompt_builder=prompt_builder,
                 )
-                pass_uncertainty = strategy_config["pass_uncertainty"]
                 
             elif strategy_type == "qEHVI":
                 strategy = PureExploitation()
-                pass_uncertainty = False
-                
+
             elif strategy_type == "qUCB":
                 strategy = PureExploration()
-                pass_uncertainty = False
             
             # Run experiment
             X_result, Y_result, logger = run_bo_experiment(
@@ -289,7 +323,8 @@ if __name__ == "__main__":
                 create_visualization=CREATE_VIS,
                 create_gif=CREATE_GIF,
                 events=None,
-                pass_uncertainty_to_agent=pass_uncertainty,
+                pass_uncertainty_to_agent=False,
+                fixed_reference_point=fixed_reference_point,
             )
             
             # Generate decision plot for agent
@@ -311,8 +346,8 @@ if __name__ == "__main__":
     print(f"{'='*80}")
     print(f"Total experiments run: {NUM_SEEDS * len(STRATEGY_CONFIGS)}")
     print(f"Beta value: {BETA_EXPLORE}")
+    print(f"Reference point: {'fixed' if USE_FIXED_REFERENCE_POINT else 'dynamic'}")
     print(f"Iterations: {ITERS}")
-    print(f"Context window: {ITER_HISTORY} iterations")
     print(f"Results saved to: {OUTPUT_DIR}")
     print(f"\nDirectory structure:")
     print(f"  {OUTPUT_DIR}/")
