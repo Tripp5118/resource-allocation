@@ -280,6 +280,7 @@ def run_bo_experiment(
     create_gif: bool = True,
     events: Optional[List[ResourceEvent]] = None,
     pass_uncertainty_to_agent: bool = False,
+    fixed_reference_point: Optional[np.ndarray] = None,
     
 ) -> Tuple[np.ndarray, np.ndarray, LoggingManager]:
     """
@@ -316,6 +317,8 @@ def run_bo_experiment(
         create_visualization: Whether to create iteration plots
         create_gif: Whether to create GIF
         events: List of ResourceEvent objects to trigger
+        fixed_reference_point: Optional fixed (2,) reference point for hypervolume. 
+            If None, computed dynamically as min(Y) - 0.1 each iteration.
     
     Returns:
         (X_final, Y_final, logger)
@@ -398,8 +401,13 @@ def run_bo_experiment(
     best_score = float(np.max(scores))
     print(f"[Init] Best {score_name}: {best_score:.4f}")
 
-    # Reference point: slightly below minimum of each objective
-    ref_point_raw = Y_history_raw_np.min(axis=0) - 0.1 * np.ones(2)
+    # Reference point: use fixed if provided, otherwise compute dynamically
+    if fixed_reference_point is not None:
+        ref_point_raw = np.array(fixed_reference_point, dtype=float)
+        print(f"[RefPoint] Using fixed reference point: {ref_point_raw}")
+    else:
+        ref_point_raw = Y_history_raw_np.min(axis=0) - 0.1 * np.ones(2)
+        print(f"[RefPoint] Using dynamic reference point: {ref_point_raw}")
 
     # Deduct init cost up front
     budget_remaining = total_budget - (len(X0_init) * cost_per_point)
@@ -500,6 +508,29 @@ def run_bo_experiment(
         print("[Acq] Computing Pareto front on normalized outputs...")
         pareto_Y, ref_point = acq_manager.compute_pareto_front(Y_torch_normalized)
 
+        # Build pareto_front_info for agent: captures state BEFORE this iteration's evaluation.
+        # This is paired with record_iteration_outcome() (called after evaluation) so the agent
+        # can reconstruct the before→after delta for the decision it is about to make.
+        if isinstance(strategy, BOAgent):
+            pareto_mask_current = is_non_dominated(
+                torch.tensor(Y_history_raw_np, dtype=DTYPE, device=DEVICE)
+            )
+            current_pareto_count = int(pareto_mask_current.sum().item())
+            last_pareto_count = getattr(strategy, "_last_pareto_count", current_pareto_count)
+            points_added_since_last = current_pareto_count - last_pareto_count
+
+            pareto_front_info = {
+                "num_points": current_pareto_count,
+                "hypervolume": current_hv,
+                "points_added": points_added_since_last,
+                "points_improved": 0,  # Not tracking individual improvements
+            }
+            # Persist for next iteration's delta calculation
+            strategy._last_pareto_count = current_pareto_count
+            strategy._last_hv = current_hv
+        else:
+            pareto_front_info = None
+
         # Pool for entropy ranking
         if pool_subsample is not None:
             X_pool_np = design_space.sample(pool_subsample, method="sobol")
@@ -562,9 +593,7 @@ def run_bo_experiment(
                 allocation_results=allocation_results,
                 max_batch_size=total_batch_size,
                 score_fn=score_fn,
-                uncertainty_obj1=total_uncertainty_obj1 if pass_uncertainty_to_agent else None,
-                uncertainty_obj2=total_uncertainty_obj2 if pass_uncertainty_to_agent else None,
-                current_hypervolume=current_hv if pass_uncertainty_to_agent else None,
+                pareto_front_info=pareto_front_info,
             )
             if selected_point_arrays:
                 X_new_np = np.vstack(selected_point_arrays)
@@ -631,6 +660,26 @@ def run_bo_experiment(
         X_torch = torch.tensor(X_history_np, dtype=DTYPE, device=DEVICE)
         Y_torch_normalized = torch.tensor(Y_history_normalized_np, dtype=DTYPE, device=DEVICE)
 
+        # Complete the outcome record for this iteration so the agent can learn from it.
+        # We compute the Pareto state AFTER evaluation and pass it alongside the new best score.
+        if isinstance(strategy, BOAgent):
+            scores_after = score_fn(Y_history_raw_np)
+            best_score_after = float(np.max(scores_after))
+
+            pareto_mask_after = is_non_dominated(
+                torch.tensor(Y_history_raw_np, dtype=DTYPE, device=DEVICE)
+            )
+            pareto_count_after = int(pareto_mask_after.sum().item())
+            hv_after = compute_hypervolume(Y_history_raw_np, ref_point_raw)
+
+            pareto_after = {
+                "num_points": pareto_count_after,
+                "hypervolume": hv_after,
+                "points_added": pareto_count_after - pareto_front_info["num_points"],
+                "points_improved": 0,
+            }
+            strategy.record_iteration_outcome(best_score_after, pareto_after)
+
         iter_time = time.perf_counter() - iter_start
 
         # Log this iteration — hypervolume and uncertainty are exactly what the agent saw
@@ -687,43 +736,6 @@ def run_bo_experiment(
 
         cleanup_memory()
 
-    # --- Terminal record ---
-    # Fit GP one final time on all collected data and log the HV + uncertainty
-    # that the next iteration *would* have seen. This closes the convergence curve
-    # without any iteration numbering gap.
-    print(f"\n[Terminal] Fitting final GP and logging terminal state...")
-    final_model = gp_manager.fit_model(X_torch, Y_torch_normalized)
-    final_uncertainty_obj1, final_uncertainty_obj2 = compute_total_uncertainty(
-        model=final_model,
-        design_space=design_space,
-    )
-    final_hv = compute_hypervolume(Y_history_raw_np, ref_point_raw)
-    print(f"[Terminal] Final HV: {final_hv:.4f}")
-    print(f"[Terminal] Final uncertainty - {obj1_name}: {final_uncertainty_obj1:.4f}, {obj2_name}: {final_uncertainty_obj2:.4f}")
-
-    logger.log_iteration(
-        iteration=iteration + 1,
-        X_history=X_history_np,
-        Y_history=Y_history_raw_np,
-        n_new_points=0,
-        strategy=strategy,
-        timing=0.0,
-        extra_info={
-            "terminal_record": True,
-            "total_uncertainty_obj1": final_uncertainty_obj1,
-            "total_uncertainty_obj2": final_uncertainty_obj2,
-            "hypervolume": final_hv,
-            "budget_remaining": budget_remaining,
-            "time_remaining": time_remaining,
-        },
-        acquisition_data=None,
-        score_fn=score_fn,
-        obj1_name=obj1_name,
-        obj2_name=obj2_name,
-        hypervolume=final_hv,
-        ref_point=ref_point_raw,
-    )
-    
     # Finalize logger
     logger.finalize()
 
@@ -751,6 +763,7 @@ def run_bo_experiment(
     X_final = X_history_np
     Y_final = Y_history_raw_np
     scores_final = score_fn(Y_final)
+    final_hv = compute_hypervolume(Y_history_raw_np, ref_point_raw)
 
     print(f"\n[{experiment_name}] Experiment complete!")
     print(f"  Total evaluations: {len(X_final)}")

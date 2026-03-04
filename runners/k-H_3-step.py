@@ -1,10 +1,12 @@
-# run_test
+# k-H_simple_no_unc.py
 """
-Runner for K/CTE optimization comparing three strategies:
-- Agent_SimpleGuideline_NoUncertainty
+Runner for Ti-V-Nb-Mo-Hf-Ta-W refractory alloy optimization comparing three strategies:
+- Agent_MultiStage
 - qEHVI (Pure Exploitation)
 - qUCB (Pure Exploration)
 
+Objectives: Maximize Configurational Entropy and Thermal Conductivity
+50 seeds, 20 iterations each.
 """
 
 import os
@@ -24,7 +26,7 @@ from core.batched_runs import (
 )
 from core.agent_manager import BOAgent
 from core.fixed_policy import PureExploitation, PureExploration
-from core.prompt_builder import create_prompt_builder
+from core.llm_decision_maker import MultiStageLLMDecisionMaker
 from core.visualization import (
     plot_strategy_decisions,
     plot_convergence_comparison,
@@ -35,25 +37,27 @@ from core.visualization import (
 # ============================================================================
 
 # Batch experiment name
-BATCH_EXPERIMENT_NAME = "k-cte_simple_no_unc"
+BATCH_EXPERIMENT_NAME = "k-H_3-step"
 
 # Data paths
-MODEL_PATH = "ground_truth_models/FeCoNiCrV_Min_CTE_Max_K/models/RFR_best_model.pkl"
-X_SCALER_PATH = "ground_truth_models/FeCoNiCrV_Min_CTE_Max_K/models/x_scaler.pkl"
-Y_SCALER_PATH = "ground_truth_models/FeCoNiCrV_Min_CTE_Max_K/models/y_scaler.pkl"
+MODEL_PATH = "ground_truth_models/TiVNbMoHfTaW_Max_S_Max_TCond/models/RFR_best_model.pkl"
+X_SCALER_PATH = "ground_truth_models/TiVNbMoHfTaW_Max_S_Max_TCond/models/x_scaler.pkl"
+Y_SCALER_PATH = "ground_truth_models/TiVNbMoHfTaW_Max_S_Max_TCond/models/y_scaler.pkl"
 
-# Design space
+# Design space (7D simplex with per-element bounds)
 COMPONENTS = [
-    ("Fe", 0.10, 0.40),
-    ("Co", 0.10, 0.40),
-    ("Ni", 0.10, 0.40),
-    ("Cr", 0.10, 0.40),
-    ("V",  0.10, 0.40),
+    ("Ti", 0.0,   0.35),
+    ("V",  0.0,   0.50),
+    ("Nb", 0.225, 0.675),
+    ("Mo", 0.0,   0.125),
+    ("Hf", 0.0,   0.125),
+    ("Ta", 0.0,   0.45),
+    ("W",  0.0,   0.125),
 ]
-STEP = 0.025
+STEP = 0.05
 USE_DISCRETE = True
 
-# BO parameters
+# BO parameters (matching prompt_comparison.py)
 INIT_N = 5
 ITERS = 20
 MC_SAMPLES = 256
@@ -61,37 +65,45 @@ POOL_SUBSAMPLE = 5000
 TOTAL_BATCH_SIZE = 5
 
 # Resource parameters
-TOTAL_BUDGET = 10000.0
-TOTAL_TIME = 20.0
+TOTAL_BUDGET = 10500.0
+TOTAL_TIME = 21.0
 COST_PER_POINT = 100.0
 TIME_PER_ITERATION = 1.0
 
 # Agent parameters
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 AGENT_MODEL = "gpt-4o"
-AGENT_TEMPERATURE = 0.7
-ITER_HISTORY = 3
+AGENT_TEMPERATURE = 0.2
 
 # Objective names
-OBJ1_NAME = "CTE"
-OBJ2_NAME = "K"
-OBJ1_DISPLAY = "-|CTE|"
-OBJ2_DISPLAY = "K"
-SCORE_NAME = "K / |CTE|"
+# Note: RF outputs are [ThermCond, SConf], but we reorder in postprocess to [SConf, ThermCond]
+OBJ1_NAME = "SConf"
+OBJ2_NAME = "ThermCond"
+OBJ1_DISPLAY = "Configurational Entropy"
+OBJ2_DISPLAY = "Thermal Conductivity"
+
+# Fixed global min/max from original RF training data (for score normalization)
+SCONF_MIN = 1.104704674
+SCONF_MAX = 1.592615027
+TC_MIN = 7.279877639
+TC_MAX = 36.56773905
+
+SCORE_NAME = "ThermCond×Entropy (global-normalized)"
 
 PROBLEM_DESCRIPTION = """
-High Entropy Alloy (HEA) optimization in the Fe-Co-Ni-Cr-V composition space.
+Ti-V-Nb-Mo-Hf-Ta-W refractory alloy optimization.
 
 Objectives:
-- Minimize CTE (Coefficient of Thermal Expansion)
-- Maximize K (Thermal Conductivity)
+- Maximize configurational entropy.
+- Maximize room-temperature thermal conductivity (W/(mK)).
 
-Goal: Maximize K / |CTE| ratio
+Input space: 7D compositions (Ti, V, Nb, Mo, Hf, Ta, W) summing to 1.0,
+with element-specific bounds and grid step 0.05.
 
-Input space: 5D compositions (Fe, Co, Ni, Cr, V), each in [0.1, 0.4], summing to 1.0.
-
-You should balance exploration and exploitation given the qEHVI and Mutual Information
-acquisition values for each option to best reach the goal within budget and time constraints.
+Take into account the options for the next candidate batch along with the optimization progress. 
+You should balance exploration and optimization given the qEHVI and Entropy for each option 
+to best reach your goal within the time limit and budget constraints. 
+Think critically about what action should be taken given each constraint.
 """
 
 # Visualization
@@ -107,9 +119,16 @@ OUTPUT_DIR = os.path.join(OUTPUT_BASE_DIR, BATCH_EXPERIMENT_NAME)
 NUM_SEEDS = 50
 BETA_EXPLORE = 2.0  # Fixed beta value
 
+# If True, evaluate the entire design space once at startup and compute a fixed
+# reference point as min(Y) - REF_POINT_MARGIN for both objectives.
+# Seed-independent and cheap when the design space is small.
+# If False, reference point is computed dynamically each iteration as min(Y) - 0.1.
+USE_FIXED_REFERENCE_POINT = True
+REF_POINT_MARGIN = 0.1
+
 # Strategy configurations
 STRATEGY_CONFIGS = [
-    {"type": "agent", "name": "Agent_SimpleGuideline_NoUncertainty", "style": "simple_guideline", "pass_uncertainty": False},
+    {"type": "agent", "name": "Agent_MultiStage"},
     {"type": "qEHVI", "name": "qEHVI"},
     {"type": "qUCB",  "name": "qUCB"},
 ]
@@ -119,17 +138,29 @@ STRATEGY_CONFIGS = [
 # ============================================================================
 
 def postprocess_outputs(preds_raw: np.ndarray) -> np.ndarray:
-    """Postprocess model outputs: negate CTE, keep K as is."""
-    cte = -1.0 * np.abs(preds_raw[:, 0])
-    k = preds_raw[:, 1]
-    return np.column_stack([cte, k])
+    """
+    Postprocess model outputs.
+    RF outputs: [ThermCond, SConf]
+    We reorder to: [SConf, ThermCond] to match OBJ1=SConf, OBJ2=ThermCond
+    """
+    therm_cond = preds_raw[:, 0]
+    sconf = preds_raw[:, 1]
+    return np.column_stack([sconf, therm_cond])
 
 
 def score_fn(Y: np.ndarray) -> np.ndarray:
-    """Compute K / |CTE| score."""
-    cte = Y[:, 0]
-    k = Y[:, 1]
-    return k / (np.abs(cte) + 1e-12)
+    """
+    Compute ThermCond × Entropy score with global normalization.
+    Y[:, 0] = SConf (configurational entropy)
+    Y[:, 1] = ThermCond (thermal conductivity)
+    """
+    sconf = Y[:, 0]
+    tcond = Y[:, 1]
+    
+    sconf_norm = (sconf - SCONF_MIN) / (SCONF_MAX - SCONF_MIN + 1e-12)
+    tcond_norm = (tcond - TC_MIN) / (TC_MAX - TC_MIN + 1e-12)
+    
+    return sconf_norm * tcond_norm
 
 
 # ============================================================================
@@ -167,7 +198,31 @@ if __name__ == "__main__":
         obj1_name=OBJ1_NAME,
         obj2_name=OBJ2_NAME,
     )
-    
+
+    # Compute fixed reference point by evaluating the entire design space once.
+    # Seed-independent so hypervolume is comparable across all runs.
+    if USE_FIXED_REFERENCE_POINT:
+        print("\n[RefPoint] Evaluating full design space to compute fixed reference point...")
+        from core.truth_interface import TruthModelEvaluator
+        _ref_evaluator = TruthModelEvaluator(
+            model_path=MODEL_PATH,
+            x_scaler_path=X_SCALER_PATH,
+            y_scaler_path=Y_SCALER_PATH,
+            postprocess_outputs=postprocess_outputs,
+            normalize_outputs=False,
+        )
+        X_full = design_space.space  # Every valid composition
+        Y_full = _ref_evaluator.evaluate(X_full).y
+        _ref_evaluator.cleanup()
+        del _ref_evaluator
+        fixed_reference_point = np.min(Y_full, axis=0) - REF_POINT_MARGIN
+        print(f"[RefPoint] Design space size: {len(X_full)} points")
+        print(f"[RefPoint] Objective minima: {np.min(Y_full, axis=0)}")
+        print(f"[RefPoint] Fixed reference point: {fixed_reference_point}")
+    else:
+        fixed_reference_point = None
+        print("\n[RefPoint] Using dynamic reference point (min(Y) - 0.1 per iteration)")
+
     print(f"\n{'='*80}")
     print("SHARED SETUP COMPLETE")
     print(f"{'='*80}\n")
@@ -177,14 +232,14 @@ if __name__ == "__main__":
     seeds = np.random.randint(1, 100000, size=NUM_SEEDS).tolist()
     
     print(f"\n{'='*80}")
-    print("K/CTE EXPERIMENT CONFIGURATION")
+    print("K-H (ThermCond × Entropy) EXPERIMENT CONFIGURATION")
     print(f"{'='*80}")
     print(f"Batch name: {BATCH_EXPERIMENT_NAME}")
     print(f"Output directory: {OUTPUT_DIR}")
     print(f"Random seeds: {NUM_SEEDS} seeds")
     print(f"Fixed exploration beta: {BETA_EXPLORE}")
+    print(f"Reference point: {'fixed (full design space min - ' + str(REF_POINT_MARGIN) + ')' if USE_FIXED_REFERENCE_POINT else 'dynamic (min(Y) - 0.1)'}")
     print(f"Iterations per run: {ITERS}")
-    print(f"Context window: {ITER_HISTORY} previous iterations")
     print(f"Total experiments: {NUM_SEEDS * len(STRATEGY_CONFIGS)} = {NUM_SEEDS} seeds × {len(STRATEGY_CONFIGS)} strategies")
     print(f"Strategies: {[c['name'] for c in STRATEGY_CONFIGS]}")
     print(f"{'='*80}\n")
@@ -220,38 +275,41 @@ if __name__ == "__main__":
             print(f"\n[Strategy] Running {strategy_name}...")
             
             if strategy_type == "agent":
-                # Create prompt builder for agent
-                prompt_builder = create_prompt_builder(
-                    style=strategy_config["style"],
-                    include_uncertainty=strategy_config["pass_uncertainty"],
-                    include_hypervolume=strategy_config["pass_uncertainty"],
-                )
-                
-                # Create agent log directory
-                agent_log_dir = os.path.join(exp_group_dir, strategy_name, "agent_logs")
-                os.makedirs(agent_log_dir, exist_ok=True)
-                
-                # Create agent with custom prompt builder
-                strategy = BOAgent(
+                from langchain_openai import ChatOpenAI
+
+                llm = ChatOpenAI(
                     model=AGENT_MODEL,
                     temperature=AGENT_TEMPERATURE,
                     api_key=OPENAI_API_KEY,
+                )
+
+                agent_log_dir = os.path.join(exp_group_dir, strategy_name, "agent_logs")
+                os.makedirs(agent_log_dir, exist_ok=True)
+
+                decision_maker = MultiStageLLMDecisionMaker(
+                    llm=llm,
+                    problem_description=PROBLEM_DESCRIPTION,
+                    obj1_name=OBJ1_NAME,
+                    obj2_name=OBJ2_NAME,
+                    log_dir=agent_log_dir,
+                    stage1_temperature=0.2,
+                    stage2_temperature=0.2,
+                    stage3_temperature=0.4,
+                )
+
+                strategy = BOAgent(
+                    decision_maker=decision_maker,
                     log_dir=agent_log_dir,
                     problem_description=PROBLEM_DESCRIPTION,
                     obj1_name=OBJ1_NAME,
                     obj2_name=OBJ2_NAME,
-                    iter_history=ITER_HISTORY,
-                    prompt_builder=prompt_builder,
                 )
-                pass_uncertainty = strategy_config["pass_uncertainty"]
-                
+
             elif strategy_type == "qEHVI":
                 strategy = PureExploitation()
-                pass_uncertainty = False
-                
+
             elif strategy_type == "qUCB":
                 strategy = PureExploration()
-                pass_uncertainty = False
             
             # Run experiment
             X_result, Y_result, logger = run_bo_experiment(
@@ -288,7 +346,8 @@ if __name__ == "__main__":
                 create_visualization=CREATE_VIS,
                 create_gif=CREATE_GIF,
                 events=None,
-                pass_uncertainty_to_agent=pass_uncertainty,
+                pass_uncertainty_to_agent=False,
+                fixed_reference_point=fixed_reference_point,
             )
             
             # Generate decision plot for agent
@@ -306,12 +365,12 @@ if __name__ == "__main__":
         print(f"\n✓ Completed seed_{seed} ({seed_idx+1}/{NUM_SEEDS})")
     
     print(f"\n{'='*80}")
-    print("K/CTE EXPERIMENT COMPLETE!")
+    print("K-H (ThermCond × Entropy) EXPERIMENT COMPLETE!")
     print(f"{'='*80}")
     print(f"Total experiments run: {NUM_SEEDS * len(STRATEGY_CONFIGS)}")
     print(f"Beta value: {BETA_EXPLORE}")
+    print(f"Reference point: {'fixed' if USE_FIXED_REFERENCE_POINT else 'dynamic'}")
     print(f"Iterations: {ITERS}")
-    print(f"Context window: {ITER_HISTORY} iterations")
     print(f"Results saved to: {OUTPUT_DIR}")
     print(f"\nDirectory structure:")
     print(f"  {OUTPUT_DIR}/")
