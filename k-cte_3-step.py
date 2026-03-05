@@ -36,7 +36,7 @@ from core.visualization import (
 # ============================================================================
 
 # Batch experiment name
-BATCH_EXPERIMENT_NAME = "k-cte_3-step"
+BATCH_EXPERIMENT_NAME = "k-cte_3-step_updated_agent_batch_3"
 
 # Data paths
 MODEL_PATH = "ground_truth_models/FeCoNiCrV_Min_CTE_Max_K/models/RFR_best_model.pkl"
@@ -55,11 +55,11 @@ STEP = 0.025
 USE_DISCRETE = True
 
 # BO parameters
-INIT_N = 5
+INIT_N = 3
 ITERS = 20
 MC_SAMPLES = 256
 POOL_SUBSAMPLE = 5000
-TOTAL_BATCH_SIZE = 5
+TOTAL_BATCH_SIZE = 3
 
 # Resource parameters
 TOTAL_BUDGET = 10500.0
@@ -100,11 +100,11 @@ CREATE_GIF = True
 
 # Output
 SETUP_SEED = 42
-OUTPUT_BASE_DIR = "./results"
+OUTPUT_BASE_DIR = "./test"
 OUTPUT_DIR = os.path.join(OUTPUT_BASE_DIR, BATCH_EXPERIMENT_NAME)
 
 # Experiment configuration
-NUM_SEEDS = 50
+NUM_SEEDS = 10
 BETA_EXPLORE = 2.0  # Fixed beta value
 
 # If True, evaluate the entire design space once at startup and compute a fixed

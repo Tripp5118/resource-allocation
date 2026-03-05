@@ -547,7 +547,8 @@ def run_bo_experiment(
                 model=model,
                 mc_samples=mc_samples,
                 pareto_front=pareto_Y,
-                reference_point=ref_point
+                reference_point=ref_point,
+                total_batch_size=total_batch_size
             )
         elif "Exploit" in strategy_name or strategy_name == "PureExploitation":
             print("[Strategy] Pure Exploitation - Computing option 0 only")
@@ -575,7 +576,8 @@ def run_bo_experiment(
                 model=model,
                 mc_samples=mc_samples,
                 pareto_front=pareto_Y,
-                reference_point=ref_point
+                reference_point=ref_point,
+                total_batch_size=total_batch_size
             )
 
         # Strategy selection

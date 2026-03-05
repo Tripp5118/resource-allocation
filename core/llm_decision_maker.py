@@ -328,14 +328,19 @@ Write a 2-3 sentence analysis. Be specific about the numbers."""
         # Strategy effectiveness summary
         eff = state.strategy_effectiveness
         if eff:
-            eff_text = (
-                f"  Exploit-heavy (ratio<0.33): avg score Δ={eff.exploit_heavy['avg_improvement']:+.4f}, "
-                f"success={eff.exploit_heavy['success_rate']:.0%}, n={eff.exploit_heavy['n_times_used']}\n"
-                f"  Balanced (ratio 0.33-0.67) : avg score Δ={eff.balanced['avg_improvement']:+.4f}, "
-                f"success={eff.balanced['success_rate']:.0%}, n={eff.balanced['n_times_used']}\n"
-                f"  Explore-heavy (ratio>0.67) : avg score Δ={eff.explore_heavy['avg_improvement']:+.4f}, "
-                f"success={eff.explore_heavy['success_rate']:.0%}, n={eff.explore_heavy['n_times_used']}"
-            )
+            def _format_strategy_stats(name: str, stats: dict) -> str:
+                if stats['n_times_used'] == 0:
+                    return f"  {name}: none tried yet"
+                return (
+                    f"  {name}: avg score Δ={stats['avg_improvement']:+.4f}, "
+                    f"success={stats['success_rate']:.0%}, n={stats['n_times_used']}"
+                )
+            
+            eff_text = "\n".join([
+                _format_strategy_stats("Exploit-heavy (ratio<0.33)", eff.exploit_heavy),
+                _format_strategy_stats("Balanced (ratio 0.33-0.67) ", eff.balanced),
+                _format_strategy_stats("Explore-heavy (ratio>0.67) ", eff.explore_heavy),
+            ])
         else:
             eff_text = "  (not enough history yet)"
 
@@ -482,8 +487,10 @@ Decision instructions:
   - IMPORTANT: qEHVI and MutualInfo are on different scales and cannot be compared to
     each other directly. Compare qEHVI across options and MutualInfo across options
     separately — do not compare qEHVI against MutualInfo.
+  - Selections do not need to be "balanced." Focus on testing your beliefs. You should not be afraid to pick all points from either option. If you think one method is better for the problem than the other, focus primarily on that method. DO NOT SELECT BALANCED / MIXED ALLOCATIONS UNLESS THOSE ARE THE ONLY METHODS THAT SUCCEED. DO NOT BE AFRAID TO TEST WHICH METHODS WORK BEST FOR THE PROBLEM. Worry less about the metrics and more about what has and hasn't worked so far.
   - Use the resource context (budget, time, iterations remaining) as a secondary
     factor if it materially changes what is the rational choice.
+  - If you are nearing the end of the optimization you should avoid testing beliefs and just act on them to try and satisfy the problem statement.
 
 Respond using EXACTLY this format:
 

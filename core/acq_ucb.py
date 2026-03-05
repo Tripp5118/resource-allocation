@@ -315,7 +315,7 @@ class AcquisitionFunctionManager:
             exploration_points=exploration_points,
             hypervolume_improvement=0.0,
             information_gain=0.0,
-            total_batch_size=5,
+            total_batch_size=num_exploitation+num_exploration,
         )
 
         hv_improvement, info_gain = self._compute_allocation_metrics(
@@ -339,9 +339,6 @@ class AcquisitionFunctionManager:
         reference_point: torch.Tensor,
         mc_samples: int = 256,
     ) -> AllocationResults:
-        total_batch = num_exploitation + num_exploration
-        if total_batch != 5:
-            raise ValueError(f"Total batch size must be 5, got {total_batch}")
 
         print(f"[AcqFn] Computing allocation: {num_exploitation} exploit + {num_exploration} explore")
 
@@ -365,10 +362,10 @@ class AcquisitionFunctionManager:
         pareto_front: torch.Tensor,
         reference_point: torch.Tensor,
         mc_samples: int = 256,
+        total_batch_size: int = 5,
     ) -> AllocationResults:
         print("[AcqFn] Computing all allocation options (qEHVI + qUCB)")
 
-        total_batch_size = 5
         options = []
 
         for num_exploitation in range(total_batch_size, -1, -1):
