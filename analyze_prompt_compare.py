@@ -15,7 +15,7 @@ import scipy.stats as stats
 # ===========================================================================
 
 # Base experiment directory
-EXP_DIR = Path("test/k-cte_updated_agents")
+EXP_DIR = Path("test/k-cte_3-step_time-event_batch-3_event-aware")
 
 # Output directory for plots
 OUTPUT_DIR = EXP_DIR / "analysis_plots"

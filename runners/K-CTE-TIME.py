@@ -36,7 +36,7 @@ from core.visualization import (
 # ============================================================================
 
 # Batch experiment name
-BATCH_EXPERIMENT_NAME = "k-cte_3-step_time-event"
+BATCH_EXPERIMENT_NAME = "k-cte_3-step_time-event_batch-3_event-aware"
 
 # Data paths
 MODEL_PATH = "ground_truth_models/FeCoNiCrV_Min_CTE_Max_K/models/RFR_best_model.pkl"
@@ -55,8 +55,8 @@ STEP = 0.025
 USE_DISCRETE = True
 
 # BO parameters
-INIT_N = 5
-ITERS = 9  # End after iteration 8 (no iteration 9)
+INIT_N = 3
+ITERS = 16  # End after iteration 15 (no iteration 9)
 MC_SAMPLES = 256
 POOL_SUBSAMPLE = 5000
 TOTAL_BATCH_SIZE = 5
@@ -68,8 +68,8 @@ COST_PER_POINT = 100.0
 TIME_PER_ITERATION = 1.0
 
 # Event configuration
-TIME_EVENT_ITERATION = 4  # Event happens at iteration 4
-TIME_AFTER_EVENT = 4.0    # Time remaining after event (allows iterations 5-8)
+TIME_EVENT_ITERATION = 8  # Event happens at iteration 4
+TIME_AFTER_EVENT = 5    # Time remaining after event (allows iterations 5-8)
 
 # Agent parameters
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
@@ -94,8 +94,6 @@ Goal: Maximize K / |CTE| ratio
 
 Input space: 5D compositions (Fe, Co, Ni, Cr, V), each in [0.1, 0.4], summing to 1.0.
 
-You should balance exploration and exploitation given the qEHVI and Mutual Information
-acquisition values for each option to best reach the goal within budget and time constraints.
 """
 
 # Visualization
@@ -108,7 +106,7 @@ OUTPUT_BASE_DIR = "./test"
 OUTPUT_DIR = os.path.join(OUTPUT_BASE_DIR, BATCH_EXPERIMENT_NAME)
 
 # Experiment configuration
-NUM_SEEDS = 25  # 25 seeds as requested
+NUM_SEEDS = 10  # 25 seeds as requested
 BETA_EXPLORE = 2.0  # Fixed beta value
 
 # Reference point configuration

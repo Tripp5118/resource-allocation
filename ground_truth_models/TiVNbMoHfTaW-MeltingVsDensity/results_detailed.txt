@@ -1,0 +1,73 @@
+DETAILED RESULTS WITH PER-OUTPUT METRICS
+================================================================================
+
+Model: Linear
+Optimization Time: 0.0 seconds
+Retraining Time: 0.0 seconds
+Best Params: {}
+
+TRAINING METRICS:
+  Mean R²: 0.9577
+  Mean MSE: 0.021352
+  Mean MAE: 0.080481
+  Per-Output Metrics:
+    Melting Point (K):
+      R²: 1.0000
+      MSE: 0.000000
+      MAE: 0.000000
+    Density (g/cm3):
+      R²: 0.9153
+      MSE: 0.042704
+      MAE: 0.160963
+
+TEST METRICS:
+  Mean R²: 0.9622
+  Mean MSE: 0.018715
+  Mean MAE: 0.076278
+  Per-Output Metrics:
+    Melting Point (K):
+      R²: 1.0000
+      MSE: 0.000000
+      MAE: 0.000000
+    Density (g/cm3):
+      R²: 0.9243
+      MSE: 0.037430
+      MAE: 0.152556
+
+--------------------------------------------------------------------------------
+
+Model: RFR
+Optimization Time: 2.164 seconds
+Retraining Time: 0.065 seconds
+Best Params: {'n_estimators': 53, 'max_depth': 56, 'min_samples_split': 3, 'min_samples_leaf': 1}
+
+TRAINING METRICS:
+  Mean R²: 0.9831
+  Mean MSE: 47.047857
+  Mean MAE: 3.887371
+  Per-Output Metrics:
+    Melting Point (K):
+      R²: 0.9813
+      MSE: 94.088107
+      MAE: 7.706075
+    Density (g/cm3):
+      R²: 0.9849
+      MSE: 0.007608
+      MAE: 0.068668
+
+TEST METRICS:
+  Mean R²: 0.9098
+  Mean MSE: 269.600396
+  Mean MAE: 9.846438
+  Per-Output Metrics:
+    Melting Point (K):
+      R²: 0.8909
+      MSE: 539.165465
+      MAE: 19.540713
+    Density (g/cm3):
+      R²: 0.9286
+      MSE: 0.035326
+      MAE: 0.152162
+
+--------------------------------------------------------------------------------
+

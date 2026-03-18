@@ -122,6 +122,10 @@ class BOAgent:
         
         # Event management
         self.event_manager = EventManager()
+        self._recent_event_messages: List[str] = []
+
+        self._initial_budget: Optional[float] = None
+        self._initial_time: Optional[float] = None
         
         # Store previous beliefs for LLM continuity
         self.previous_beliefs: Optional[Dict] = None
@@ -151,7 +155,12 @@ class BOAgent:
     def process_iteration_events(
         self, iteration: int, budget: float, time: float, cost_per_point: float
     ) -> Tuple[float, float, float, List[str]]:
-        return self.event_manager.trigger_events(iteration, budget, time, cost_per_point)
+        budget, time, cost_per_point, messages = self.event_manager.trigger_events(
+            iteration, budget, time, cost_per_point
+        )
+        # NEW: Store messages so they can be passed to DecisionState
+        self._recent_event_messages = messages
+        return budget, time, cost_per_point, messages
 
     # ===== CORE DECISION METHOD (refactored) =====
 
@@ -192,7 +201,13 @@ class BOAgent:
             selected_points: List of point arrays for evaluation
         """
         self._log("INFO", f"\n{'='*80}\nIteration {iteration}: Resource Allocation\n{'='*80}")
-        
+        # NEW: Track initial resources on first call
+        if self._initial_budget is None:
+            self._initial_budget = budget_remaining
+        if self._initial_time is None:
+            self._initial_time = time_remaining
+
+
         if score_fn is None:
             score_fn = lambda Y: Y[:, 1]  # Default: maximize second objective
         
@@ -214,11 +229,11 @@ class BOAgent:
         # Delegate decision to decision maker
         selected_idx, reasoning, updated_beliefs = self.decision_maker.make_decision(state)
         
-        # Validate feasibility
-        selected_idx = self._validate_feasibility(
-            selected_idx, allocation_results, budget_remaining, time_remaining,
-            cost_per_point, time_per_point, max_batch_size
-        )
+        # Validate feasibility # Not needed anymore since we're validating budget and everything before selection now.
+        #selected_idx = self._validate_feasibility(
+        #    selected_idx, allocation_results, budget_remaining, time_remaining,
+        #    cost_per_point, time_per_point, max_batch_size
+        #)
         
         # Extract points
         selected_batch = allocation_results.options[selected_idx]
@@ -240,6 +255,7 @@ class BOAgent:
         n_exploit = selected_batch.num_exploitation
         n_explore = max_batch_size - n_exploit
         self._log("INFO", f"✓ Selected Option {selected_idx}: {n_exploit} exploit + {n_explore} explore")
+        self._recent_event_messages = []
         
         return selected_idx, reasoning, selected_points
 
@@ -330,6 +346,9 @@ class BOAgent:
             obj1_name=self.obj1_name,
             obj2_name=self.obj2_name,
             upcoming_events=upcoming_events,
+            recent_events=self._recent_event_messages,
+            initial_budget=self._initial_budget,
+            initial_time=self._initial_time,
         )
 
     def _build_pareto_status(self, pareto_info: Optional[Dict], iteration: int) -> Optional[ParetoStatus]:

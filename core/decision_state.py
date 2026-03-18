@@ -94,6 +94,10 @@ class DecisionState:
     uncertainty_landscape: Optional[Dict] = None
     prediction_accuracy: Optional[Dict] = None
 
+    recent_events: List[str] = field(default_factory=list)  # NEW
+    initial_budget: Optional[float] = None  # For phase calculation
+    initial_time: Optional[float] = None    # For phase calculation
+
 
 def build_strategy_outcome(
     iteration: int,

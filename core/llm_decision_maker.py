@@ -149,6 +149,24 @@ def _format_options(state: DecisionState) -> str:
         )
     return "\n".join(lines)
 
+def _format_events(state: DecisionState) -> str:
+    """Format recent and upcoming events for prompt display."""
+    lines = []
+    
+    # Recent events (things that JUST happened this iteration)
+    if hasattr(state, 'recent_events') and state.recent_events:
+        lines.append("⚠️  RECENT CHANGES THIS ITERATION:")
+        for event in state.recent_events:
+            lines.append(f"  • {event}")
+        lines.append("")  # blank line
+    
+    # Upcoming events (things happening next iteration)
+    if state.upcoming_events:
+        lines.append("Upcoming events:")
+        for event in state.upcoming_events:
+            lines.append(f"  ⚠ {event}")
+    
+    return "\n".join(lines) if lines else ""
 
 # ---------------------------------------------------------------------------
 # Main class
@@ -219,6 +237,87 @@ class MultiStageLLMDecisionMaker(DecisionMaker):
     # ------------------------------------------------------------------
     # Public interface
     # ------------------------------------------------------------------
+
+    def _compute_campaign_phase(self, state: DecisionState) -> dict:
+        """
+        Compute campaign phase based on remaining resources.
+        Returns a dict with phase info for prompt injection.
+        """
+        # Calculate resource consumption ratios
+        time_fraction = None
+        budget_fraction = None
+        
+        if hasattr(state, 'initial_time') and state.initial_time and state.initial_time > 0:
+            time_fraction = state.time_remaining / state.initial_time
+        
+        if hasattr(state, 'initial_budget') and state.initial_budget and state.initial_budget > 0:
+            budget_fraction = state.budget_remaining / state.initial_budget
+        
+        # Use the more constrained resource to determine phase
+        fractions = [f for f in [time_fraction, budget_fraction] if f is not None]
+        
+        if not fractions:
+            return {
+                "phase": "UNKNOWN",
+                "urgency": "NORMAL",
+                "time_fraction": None,
+                "budget_fraction": None,
+                "binding_constraint": "UNKNOWN",
+                "guidance": "",
+            }
+        
+        fraction_remaining = min(fractions)
+        
+        # Determine which resource is the binding constraint
+        if time_fraction is not None and budget_fraction is not None:
+            binding = "TIME" if time_fraction < budget_fraction else "BUDGET"
+        elif time_fraction is not None:
+            binding = "TIME"
+        else:
+            binding = "BUDGET"
+        
+        # Determine phase and urgency
+        if fraction_remaining <= 0.15:
+            phase = "ENDGAME"
+            urgency = "CRITICAL"
+            guidance = """
+    ⚠️  ENDGAME PHASE — CRITICAL URGENCY
+    You have very limited iterations remaining. STOP testing beliefs and START acting on them.
+    Your goal now is to MAXIMIZE RESULTS for the problem statement using what you've learned.
+    If exploitation has worked → exploit heavily now.
+    If exploration has worked → but you need the best score, consider whether continued exploration 
+    or a shift to exploitation will best satisfy the problem statement.
+    Focus on the PRIMARY GOAL, not on learning more about the landscape."""
+
+        elif fraction_remaining <= 0.30:
+            phase = "LATE"
+            urgency = "HIGH"
+            guidance = """
+    ⚠️  LATE PHASE — HIGH URGENCY
+    You are running low on iterations. Begin transitioning from belief-testing to belief-acting.
+    Favor strategies that have proven effective. Reduce experimentation with unproven approaches.
+    Start prioritizing the problem statement's primary goal over information gathering."""
+
+        elif fraction_remaining <= 0.60:
+            phase = "MID"
+            urgency = "NORMAL"
+            guidance = ""  # No special guidance for mid-phase
+
+        else:
+            phase = "EARLY"
+            urgency = "LOW"
+            guidance = """
+    EARLY PHASE — Low urgency. Focus on testing different strategies to learn what works 
+    for this problem. You have time to experiment."""
+
+        return {
+            "phase": phase,
+            "urgency": urgency,
+            "time_fraction": time_fraction,
+            "budget_fraction": budget_fraction,
+            "binding_constraint": binding,
+            "guidance": guidance,
+        }
 
     def make_decision(
         self, state: DecisionState
@@ -454,12 +553,29 @@ with specific evidence from the history above."""
         pareto_pts_str = str(state.pareto_status.num_points) if state.pareto_status else "?"
         pareto_hv_str = f"{state.pareto_status.hypervolume:.4f}" if state.pareto_status else "?"
 
+        # NEW: Get campaign phase
+        phase_info = self._compute_campaign_phase(state)
+        
+        # NEW: Format events
+        events_text = _format_events(state)
+        
+        # NEW: Build phase header (only if phase is known)
+        phase_header = ""
+        if phase_info["phase"] != "UNKNOWN":
+            phase_header = f"""
+    Campaign Phase: {phase_info["phase"]} (Urgency: {phase_info["urgency"]})
+    Binding constraint: {phase_info["binding_constraint"]}
+    {phase_info["guidance"]}
+    """
+
         prompt = f"""You are making a resource allocation decision for a Bayesian Optimization campaign.
 
 Problem:
 {self.problem_description}
 
-Optimisation objectives: {self.obj1_name} and {self.obj2_name}
+Optimization objectives: {self.obj1_name} and {self.obj2_name}
+{phase_header}
+{events_text}
 
 Your current beliefs about this problem:
 {belief_summary}
@@ -477,7 +593,6 @@ Current status:
 
 Available allocation options (Option 0 = pure exploit, Option {num_options-1} = pure explore):
 {options_text}
-{"" if not state.upcoming_events else chr(10) + "Upcoming events:" + chr(10) + chr(10).join("  ⚠ " + e for e in state.upcoming_events)}
 
 Decision instructions:
   - Your beliefs above are your primary guide. Choose the option whose exploit/explore
@@ -487,10 +602,17 @@ Decision instructions:
   - IMPORTANT: qEHVI and MutualInfo are on different scales and cannot be compared to
     each other directly. Compare qEHVI across options and MutualInfo across options
     separately — do not compare qEHVI against MutualInfo.
-  - Selections do not need to be "balanced." Focus on testing your beliefs. You should not be afraid to pick all points from either option. If you think one method is better for the problem than the other, focus primarily on that method. DO NOT SELECT BALANCED / MIXED ALLOCATIONS UNLESS THOSE ARE THE ONLY METHODS THAT SUCCEED. DO NOT BE AFRAID TO TEST WHICH METHODS WORK BEST FOR THE PROBLEM. Worry less about the metrics and more about what has and hasn't worked so far.
-  - Use the resource context (budget, time, iterations remaining) as a secondary
-    factor if it materially changes what is the rational choice.
-  - If you are nearing the end of the optimization you should avoid testing beliefs and just act on them to try and satisfy the problem statement.
+  - Selections do not need to be "balanced." Focus on testing your beliefs. You should 
+    not be afraid to pick all points from either option. If you think one method is 
+    better for the problem than the other, focus primarily on that method. DO NOT SELECT 
+    BALANCED / MIXED ALLOCATIONS UNLESS THOSE ARE THE ONLY METHODS THAT SUCCEED. DO NOT 
+    BE AFRAID TO TEST WHICH METHODS WORK BEST FOR THE PROBLEM. Worry less about the 
+    metrics and more about what has and hasn't worked so far.
+  - Use the campaign phase and resource context to adjust your strategy:
+    * EARLY/MID phase: Test beliefs, experiment with different strategies
+    * LATE phase: Start committing to what works
+    * ENDGAME phase: Stop experimenting, act decisively on your strongest beliefs to maximize results
+  - If you are in ENDGAME phase, your goal is to satisfy the problem statement, not to learn more.
 
 Respond using EXACTLY this format:
 
