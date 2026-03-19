@@ -15,7 +15,7 @@ import scipy.stats as stats
 # ===========================================================================
 
 # Base experiment directory
-EXP_DIR = Path("test/k-cte_3-step_time-event_batch-3_event-aware")
+EXP_DIR = Path("test/MP-D_3-step_100iters")
 
 # Output directory for plots
 OUTPUT_DIR = EXP_DIR / "analysis_plots"
@@ -597,6 +597,66 @@ def plot_exploration_all_strategies(
     print(f"Saved: {save_path}")
 
 
+import json
+from collections import defaultdict
+
+EFFECTIVENESS_MAP = {"HIGH": 2, "MEDIUM": 1, "LOW": 0}
+
+def load_belief_data(exp_dir, seeds, agent_strategy_name):
+    # exp_dir: Path to experiment
+    # seeds: list of seed folder names (e.g., ["seed1", "seed2", ...])
+    # returns: dict[iteration][key] = list of values
+    
+    iter_data = defaultdict(lambda: defaultdict(list))
+    
+    for seed in seeds:
+        seed_dir = exp_dir / seed / agent_strategy_name / "agent_logs"
+        # Find all iterations (could also use a known max or glob)
+        for file in seed_dir.glob("iteration_*.json"):
+            iter_str = file.stem.split("_")[-1]
+            iteration = int(iter_str)
+            with open(file, "r") as f:
+                j = json.load(f)
+            beliefs = j.get("beliefs", {})
+            # Effectiveness as int
+            try:
+                exp_eff = EFFECTIVENESS_MAP[beliefs["exploration_effectiveness"]]
+                exp_conf = float(beliefs["exploration_confidence"])
+                expt_eff = EFFECTIVENESS_MAP[beliefs["exploitation_effectiveness"]]
+                expt_conf = float(beliefs["exploitation_confidence"])
+            except (KeyError, ValueError):
+                continue
+            iter_data[iteration]["exp_eff"].append(exp_eff)
+            iter_data[iteration]["exp_conf"].append(exp_conf)
+            iter_data[iteration]["expt_eff"].append(expt_eff)
+            iter_data[iteration]["expt_conf"].append(expt_conf)
+    return iter_data
+
+def plot_belief_stats(iter_data, save_path):
+    # iter_data: as from prev func
+    # save_path: Path to output image
+    import matplotlib.pyplot as plt
+    import numpy as np
+
+    iterations = sorted(iter_data.keys())
+    exp_eff = [np.mean(iter_data[i]["exp_eff"]) for i in iterations]
+    exp_conf = [np.mean(iter_data[i]["exp_conf"]) for i in iterations]
+    expt_eff = [np.mean(iter_data[i]["expt_eff"]) for i in iterations]
+    expt_conf = [np.mean(iter_data[i]["expt_conf"]) for i in iterations]
+
+    plt.figure(figsize=(10,6))
+    plt.plot(iterations, exp_eff, label="Exploration Effectiveness (mean)", marker="o")
+    plt.plot(iterations, exp_conf, label="Exploration Confidence (mean)", marker="o")
+    plt.plot(iterations, expt_eff, label="Exploitation Effectiveness (mean)", marker="o")
+    plt.plot(iterations, expt_conf, label="Exploitation Confidence (mean)", marker="o")
+    plt.xlabel("Iteration")
+    plt.ylabel("Mean Value")
+    plt.title("Belief Dynamics over Iterations")
+    plt.legend()
+    plt.tight_layout()
+    plt.savefig(save_path, dpi=300)
+    plt.close()
+
 # ===========================================================================
 # MAIN ANALYSIS FUNCTION
 # ===========================================================================
@@ -735,12 +795,29 @@ def run_analysis():
         print("Warning: No selection count data found. Skipping Plot 6.")
     
     # =========================================================================
+    # PLOT 7: Belief Dynamics (Expl/Explt Effectiveness & Confidence)
+    # =========================================================================
+    print("-" * 80)
+    print("PLOT 7: LLM Belief Dynamics (Effectiveness/Confidence)")
+    print("-" * 80)
+    
+    # Point to the "LLM" strategy name as required
+    BELIEF_AGENT = "Agent_MultiStage"  # or whatever your agent strategy is called
+    seed_dirs = sorted([d for d in EXP_DIR.iterdir() if d.is_dir() and d.name.startswith("seed")])
+    iter_data = load_belief_data(EXP_DIR, [d.name for d in seed_dirs], BELIEF_AGENT)
+    plot_belief_stats(
+        iter_data,
+        save_path=str(OUTPUT_DIR / "plot7_llm_belief_dynamics.png")
+    )
+    
+    # =========================================================================
     # SUMMARY
     # =========================================================================
     print("\n" + "=" * 80)
     print("ANALYSIS COMPLETE")
     print("=" * 80)
     print(f"All plots saved to: {OUTPUT_DIR}")
+    print("Belief dynamics plot saved as: plot7_llm_belief_dynamics.png")
     print("=" * 80 + "\n")
 
 

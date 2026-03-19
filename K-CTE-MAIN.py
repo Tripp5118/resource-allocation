@@ -36,7 +36,7 @@ from core.visualization import (
 # ============================================================================
 
 # Batch experiment name
-BATCH_EXPERIMENT_NAME = "k-cte_3-step_updated_agent_batch_3"
+BATCH_EXPERIMENT_NAME = "k-cte_3-step_3-batch"
 
 # Data paths
 MODEL_PATH = "ground_truth_models/FeCoNiCrV_Min_CTE_Max_K/models/RFR_best_model.pkl"
