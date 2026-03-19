@@ -107,7 +107,7 @@ CREATE_GIF = True
 
 # Output
 SETUP_SEED = 42
-OUTPUT_BASE_DIR = "./test"
+OUTPUT_BASE_DIR = "./results"
 OUTPUT_DIR = os.path.join(OUTPUT_BASE_DIR, BATCH_EXPERIMENT_NAME)
 
 # Experiment configuration

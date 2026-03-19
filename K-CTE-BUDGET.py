@@ -99,7 +99,7 @@ CREATE_GIF = True
 
 # Output
 SETUP_SEED = 42
-OUTPUT_BASE_DIR = "./test"
+OUTPUT_BASE_DIR = "./results"
 OUTPUT_DIR = os.path.join(OUTPUT_BASE_DIR, BATCH_EXPERIMENT_NAME)
 
 # Experiment configuration
@@ -230,7 +230,6 @@ if __name__ == "__main__":
     print(f"Fixed exploration beta: {BETA_EXPLORE}")
     print(f"Reference point: {'fixed (full design space min - ' + str(REF_POINT_MARGIN) + ')' if USE_FIXED_REFERENCE_POINT else 'dynamic (min(Y) - 0.1)'}")
     print(f"Iterations per run: {ITERS}")
-    print(f"Time event: At iteration {TIME_EVENT_ITERATION}, time reduced to {TIME_AFTER_EVENT} weeks")
     print(f"Total experiments: {NUM_SEEDS * len(STRATEGY_CONFIGS)} = {NUM_SEEDS} seeds × {len(STRATEGY_CONFIGS)} strategies")
     print(f"Strategies: {[c['name'] for c in STRATEGY_CONFIGS]}")
     print(f"{'='*80}\n")
