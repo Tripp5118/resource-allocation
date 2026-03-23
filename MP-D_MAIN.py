@@ -108,7 +108,7 @@ OUTPUT_BASE_DIR = "./results"
 OUTPUT_DIR = os.path.join(OUTPUT_BASE_DIR, BATCH_EXPERIMENT_NAME)
 
 # Experiment configuration
-NUM_SEEDS = 1
+NUM_SEEDS = 25
 BETA_EXPLORE = 2.0  # Fixed beta value
 
 # If True, evaluate the entire design space once at startup and compute a fixed
