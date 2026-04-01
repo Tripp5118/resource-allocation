@@ -11,6 +11,29 @@ from typing import Dict, List
 import scipy.stats as stats
 
 # ===========================================================================
+# PUBLICATION STYLE DEFAULTS
+# ===========================================================================
+
+plt.rcParams.update({
+    # Font sizes
+    'font.size':        16,
+    'axes.titlesize':   18,
+    'axes.labelsize':   16,
+    'xtick.labelsize':  14,
+    'ytick.labelsize':  14,
+    'legend.fontsize':  14,
+    # Tick formatting
+    'xtick.major.width': 1.5,
+    'ytick.major.width': 1.5,
+    'xtick.major.size':  6,
+    'ytick.major.size':  6,
+    # Axes
+    'axes.linewidth':   1.5,
+    # Figure
+    'figure.dpi':       150,
+})
+
+# ===========================================================================
 # HARDCODED CONFIGURATION
 # ===========================================================================
 
@@ -322,16 +345,17 @@ def compute_selection_statistics(
 
 def format_axis(ax, max_iter: int):
     """
-    Apply consistent formatting to axes:
+    Apply consistent publication-ready formatting to axes:
     - Remove grid
     - Set x-axis ticks to integers starting from 1
+    - Apply tick styling
     """
     ax.grid(False)
-    # Set x-axis ticks to 1, 2, 3, 4, 5, ...
     tick_positions = np.arange(1, max_iter + 1)
     ax.set_xticks(tick_positions)
     ax.set_xticklabels([str(int(x)) for x in tick_positions])
     ax.set_xlim(0.5, max_iter + 0.5)
+    ax.tick_params(axis='both', which='major', width=1.5, length=6, labelsize=14)
 
 # ===========================================================================
 # PLOTTING FUNCTIONS
@@ -356,18 +380,17 @@ def plot_convergence_mean_ci(
         mean = stat['mean']
         max_iter = max(max_iter, int(iters.max()))
         
-        ax.plot(iters, mean, color=color, linewidth=2, label=label, marker='o', markersize=4)
+        ax.plot(iters, mean, color=color, linewidth=3, label=label, marker='o', markersize=7)
         ax.fill_between(iters, stat['ci_lower'], stat['ci_upper'], color=color, alpha=0.2)
     
-    ax.set_xlabel('Iteration', fontsize=14, fontweight='bold')
-    ax.set_ylabel(metric_name, fontsize=14, fontweight='bold')
+    ax.set_xlabel('Iteration', fontsize=16, fontweight='bold')
+    ax.set_ylabel('Best Hypervolume Indicator (Single Point)', fontsize=16, fontweight='bold')
+    ax.set_title(
+        'MP-D: Best Single-Point Hypervolume vs. Iteration\n(Mean ± 95% CI)',
+        fontsize=18, fontweight='bold', pad=15
+    )
     
-    title = f'Convergence: {metric_name} (Mean ± 95% CI)'
-    if n_seeds:
-        title += f' - {n_seeds} seeds'
-    ax.set_title(title, fontsize=16, fontweight='bold', pad=15)
-    
-    ax.legend(fontsize=10, loc='best', framealpha=0.9)
+    ax.legend(fontsize=14, loc='best', framealpha=0.9, edgecolor='0.3')
     format_axis(ax, max_iter)
     
     plt.tight_layout()
@@ -395,18 +418,17 @@ def plot_convergence_median_quantiles(
         median = stat['median']
         max_iter = max(max_iter, int(iters.max()))
         
-        ax.plot(iters, median, color=color, linewidth=2, label=label, marker='o', markersize=4)
+        ax.plot(iters, median, color=color, linewidth=3, label=label, marker='o', markersize=7)
         ax.fill_between(iters, stat['q_lower'], stat['q_upper'], color=color, alpha=0.2)
     
-    ax.set_xlabel('Iteration', fontsize=14, fontweight='bold')
-    ax.set_ylabel(metric_name, fontsize=14, fontweight='bold')
+    ax.set_xlabel('Iteration', fontsize=16, fontweight='bold')
+    ax.set_ylabel('Best Hypervolume Indicator (Single Point)', fontsize=16, fontweight='bold')
+    ax.set_title(
+        'MP-D: Best Single-Point Hypervolume vs. Iteration\n(Median, 2.5–97.5 Percentile Band)',
+        fontsize=18, fontweight='bold', pad=15
+    )
     
-    title = f'Convergence: {metric_name} (Median, 2.5-97.5 Quantiles)'
-    if n_seeds:
-        title += f' - {n_seeds} seeds'
-    ax.set_title(title, fontsize=16, fontweight='bold', pad=15)
-    
-    ax.legend(fontsize=10, loc='best', framealpha=0.9)
+    ax.legend(fontsize=14, loc='best', framealpha=0.9, edgecolor='0.3')
     format_axis(ax, max_iter)
     
     plt.tight_layout()
@@ -433,18 +455,17 @@ def plot_hypervolume(
         mean = stat['mean']
         max_iter = max(max_iter, int(iters.max()))
         
-        ax.plot(iters, mean, color=color, linewidth=2, label=label, marker='o', markersize=4)
+        ax.plot(iters, mean, color=color, linewidth=3, label=label, marker='o', markersize=7)
         ax.fill_between(iters, stat['ci_lower'], stat['ci_upper'], color=color, alpha=0.2)
     
-    ax.set_xlabel('Iteration', fontsize=14, fontweight='bold')
-    ax.set_ylabel('Hypervolume', fontsize=14, fontweight='bold')
+    ax.set_xlabel('Iteration', fontsize=16, fontweight='bold')
+    ax.set_ylabel('Hypervolume Indicator', fontsize=16, fontweight='bold')
+    ax.set_title(
+        'MP-D: Pareto Front Hypervolume vs. Iteration\n(Mean ± 95% CI)',
+        fontsize=18, fontweight='bold', pad=15
+    )
     
-    title = 'Hypervolume per Iteration (Mean ± 95% CI)'
-    if n_seeds:
-        title += f' - {n_seeds} seeds'
-    ax.set_title(title, fontsize=16, fontweight='bold', pad=15)
-    
-    ax.legend(fontsize=10, loc='best', framealpha=0.9)
+    ax.legend(fontsize=14, loc='best', framealpha=0.9, edgecolor='0.3')
     format_axis(ax, max_iter)
     
     plt.tight_layout()
@@ -516,28 +537,28 @@ def plot_selection_counts(
         iters = opt_stats['iterations']
         max_iter = int(iters.max())
         
-        ax.plot(iters, opt_stats['mean'], color='#E74C3C', linewidth=2, 
-                label='Optimization (n_opt)', marker='o', markersize=4)
+        ax.plot(iters, opt_stats['mean'], color='#E74C3C', linewidth=3, 
+                label=r'Exploitation ($n_\mathrm{opt}$)', marker='o', markersize=7)
         ax.fill_between(iters, opt_stats['ci_lower'], opt_stats['ci_upper'], 
                         color='#E74C3C', alpha=0.2)
         
         # Plot n_exp (exploration points)
         exp_stats = selection_stats['n_exp']
-        ax.plot(iters, exp_stats['mean'], color='#3498DB', linewidth=2, 
-                label='Exploration (n_exp)', marker='s', markersize=4)
+        ax.plot(iters, exp_stats['mean'], color='#3498DB', linewidth=3, 
+                label=r'Exploration ($n_\mathrm{exp}$)', marker='s', markersize=7)
         ax.fill_between(iters, exp_stats['ci_lower'], exp_stats['ci_upper'], 
                         color='#3498DB', alpha=0.2)
         
-        ax.set_xlabel('Iteration', fontsize=14, fontweight='bold')
-        ax.set_ylabel('Number of Points Selected', fontsize=14, fontweight='bold')
+        ax.set_xlabel('Iteration', fontsize=16, fontweight='bold')
+        ax.set_ylabel('Number of Candidates Selected', fontsize=16, fontweight='bold')
         
         display_label = LABELS.get(strategy, strategy)
-        title = f'Selection Counts: {display_label} (Mean ± 95% CI)'
-        if n_seeds:
-            title += f' - {n_seeds} seeds'
-        ax.set_title(title, fontsize=16, fontweight='bold', pad=15)
+        ax.set_title(
+            f'MP-D: {display_label} — Exploitation vs. Exploration Allocation\n(Mean ± 95% CI)',
+            fontsize=18, fontweight='bold', pad=15
+        )
         
-        ax.legend(fontsize=12, loc='best', framealpha=0.9)
+        ax.legend(fontsize=14, loc='best', framealpha=0.9, edgecolor='0.3')
         format_axis(ax, max_iter)
         
         # Set y-axis to start at 0
@@ -645,14 +666,15 @@ def plot_belief_stats(iter_data, save_path):
     expt_conf = [np.mean(iter_data[i]["expt_conf"]) for i in iterations]
 
     plt.figure(figsize=(10,6))
-    plt.plot(iterations, exp_eff, label="Exploration Effectiveness (mean)", marker="o")
-    plt.plot(iterations, exp_conf, label="Exploration Confidence (mean)", marker="o")
-    plt.plot(iterations, expt_eff, label="Exploitation Effectiveness (mean)", marker="o")
-    plt.plot(iterations, expt_conf, label="Exploitation Confidence (mean)", marker="o")
-    plt.xlabel("Iteration")
-    plt.ylabel("Mean Value")
-    plt.title("Belief Dynamics over Iterations")
-    plt.legend()
+    plt.plot(iterations, exp_eff, label="Exploration Effectiveness", marker="o", linewidth=3, markersize=7)
+    plt.plot(iterations, exp_conf, label="Exploration Confidence", marker="o", linewidth=3, markersize=7)
+    plt.plot(iterations, expt_eff, label="Exploitation Effectiveness", marker="o", linewidth=3, markersize=7)
+    plt.plot(iterations, expt_conf, label="Exploitation Confidence", marker="o", linewidth=3, markersize=7)
+    plt.xlabel("Iteration", fontsize=16, fontweight='bold')
+    plt.ylabel("Mean Value", fontsize=16, fontweight='bold')
+    plt.title("MP-D: LLM Agent Belief Dynamics vs. Iteration", fontsize=18, fontweight='bold')
+    plt.legend(fontsize=14, framealpha=0.9, edgecolor='0.3')
+    plt.tick_params(axis='both', which='major', width=1.5, length=6, labelsize=14)
     plt.tight_layout()
     plt.savefig(save_path, dpi=300)
     plt.close()
@@ -745,21 +767,11 @@ def run_analysis():
         print("Warning: No hypervolume data found in convergence files. Skipping Plot 3.")
     
     # =========================================================================
-    # PLOT 4: Total Uncertainty
+    # PLOT 4: Total Uncertainty — skipped for publication output
     # =========================================================================
     print("-" * 80)
-    print("PLOT 4: Total Uncertainty per Iteration")
+    print("PLOT 4: Skipped (Total Uncertainty not included in publication output)")
     print("-" * 80)
-    
-    stats_unc = compute_combined_uncertainty_statistics(data, confidence_level=CONFIDENCE_LEVEL)
-    if stats_unc:
-        plot_total_uncertainty(
-            stats_unc,
-            save_path=str(OUTPUT_DIR / "plot4_total_uncertainty.png"),
-            n_seeds=n_seeds
-        )
-    else:
-        print("Warning: No uncertainty data found. Skipping Plot 4.")
     
     # =========================================================================
     # PLOT 5: Selection Counts (n_opt and n_exp) per Strategy (Agent only)
@@ -779,20 +791,11 @@ def run_analysis():
         print("Warning: No selection count data found. Skipping Plot 5.")
     
     # =========================================================================
-    # PLOT 6: Exploration Points (n_exp) for All Strategies
+    # PLOT 6: Exploration Points — skipped for publication output
     # =========================================================================
     print("-" * 80)
-    print("PLOT 6: Exploration Points (n_exp) - All Strategies")
+    print("PLOT 6: Skipped (Exploration points not included in publication output)")
     print("-" * 80)
-    
-    if stats_selection:
-        plot_exploration_all_strategies(
-            stats_selection,
-            save_path=str(OUTPUT_DIR / "plot6_exploration_all_strategies.png"),
-            n_seeds=n_seeds
-        )
-    else:
-        print("Warning: No selection count data found. Skipping Plot 6.")
     
     # =========================================================================
     # PLOT 7: Belief Dynamics (Expl/Explt Effectiveness & Confidence)
