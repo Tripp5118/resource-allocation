@@ -1,4 +1,4 @@
-# ARMOTE-MultiOutput v2.2.0: Automated Regression workflow with Multi-Objective hyperparameter 
+# ARMOTE-MultiOutput v1.0.0: Automated Regression workflow with Multi-Objective hyperparameter 
 # optimization using Tree-Parzen Estimator algorithm for MULTI-OUTPUT regression
 #
 # Version: 1.0.0
