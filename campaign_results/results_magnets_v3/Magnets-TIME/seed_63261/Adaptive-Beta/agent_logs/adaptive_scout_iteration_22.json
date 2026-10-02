@@ -1,0 +1,17 @@
+{
+  "iteration": 22,
+  "beta": 2.0,
+  "option": 0,
+  "reasoning_c1": "With 94% resources consumed, HV velocity near 1.0, and declining MI, a conservative \u03b2=2 is appropriate to focus on known regions as the campaign nears completion.",
+  "reasoning_c2": "With 94% resources consumed and a focus on known regions, Option 0 maximizes qEHVI, aligning with the conservative \u03b2=2 strategy as the campaign nears completion.",
+  "signals": {
+    "velocity_ratio": 1.007,
+    "recent_hv_rate": 0.01266,
+    "baseline_hv_rate": 0.01258,
+    "mi_current": 0.05635,
+    "mi_vs_start": 0.099,
+    "resource_fraction_remaining": 0.061,
+    "iters_remaining": 3,
+    "time_pct_remaining": 6.1
+  }
+}

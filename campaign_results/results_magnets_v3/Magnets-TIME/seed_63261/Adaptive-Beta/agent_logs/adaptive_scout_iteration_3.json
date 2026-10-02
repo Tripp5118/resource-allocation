@@ -1,0 +1,14 @@
+{
+  "iteration": 3,
+  "beta": 2.0,
+  "option": 1,
+  "reasoning_c1": "Early in the campaign with only 4% resources consumed and HV actively improving, so a conservative \u03b2=2.0 is appropriate.",
+  "reasoning_c2": "Option 1 provides a balanced tradeoff with a slight preference for exploitation, aligning with the conservative \u03b2=2.0 choice early in the campaign while still gaining some exploration benefit.",
+  "signals": {
+    "mi_current": 0.40575,
+    "mi_vs_start": 0.715,
+    "resource_fraction_remaining": 0.959,
+    "iters_remaining": 47,
+    "time_pct_remaining": 95.9
+  }
+}

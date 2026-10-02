@@ -1,0 +1,14 @@
+{
+  "iteration": 2,
+  "beta": 2.0,
+  "option": 1,
+  "reasoning_c1": "Early in the campaign with only 2% resources consumed and HV actively improving, a conservative \u03b2 of 2.0 is appropriate.",
+  "reasoning_c2": "Option 1 provides a good balance with a slight emphasis on exploration, aligning with the conservative \u03b2 of 2.0, while still achieving the highest qEHVI score for potential Pareto HV improvement.",
+  "signals": {
+    "mi_current": 0.51291,
+    "mi_vs_start": 1.0,
+    "resource_fraction_remaining": 0.98,
+    "iters_remaining": 48,
+    "time_pct_remaining": 98.0
+  }
+}

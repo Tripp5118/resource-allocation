@@ -1,0 +1,17 @@
+{
+  "iteration": 8,
+  "beta": 2.0,
+  "option": 3,
+  "reasoning_c1": "With only 14% resources consumed and high MI, maintaining \u03b2 at 2.0 supports balanced exploration without risking arbitrary candidate selection.",
+  "reasoning_c2": "Option 3 offers a balanced tradeoff with significant MI gain while maintaining reasonable qEHVI, aligning with the strategy of exploration at \u03b2=2.0 given the low resource consumption.",
+  "signals": {
+    "velocity_ratio": 0.685,
+    "recent_hv_rate": 0.01387,
+    "baseline_hv_rate": 0.02024,
+    "mi_current": 1.09485,
+    "mi_vs_start": 6.525,
+    "resource_fraction_remaining": 0.857,
+    "iters_remaining": 42,
+    "time_pct_remaining": 85.7
+  }
+}

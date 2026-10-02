@@ -1,0 +1,49 @@
+\begin{frontmatter}
+
+    \title{Agentic Resource Allocation for Batch Multi-Objective Bayesian Optimization in Autonomous Materials Discovery}
+
+    \author[1]{Robert Robinson\corref{corr1}}
+    \ead{trippr5118@tamu.edu}
+    \cortext[corr1]{Corresponding author}
+    
+    \author[2]{Shakti Prasad Padhy}
+    \author[1]{Sushant Sinha}
+    
+    \author[1]{Sk Md Ahnaf Akif Alvi}
+    \author[1]{Juan Florez Coronel}
+    \author[1]{Brent Vela}
+    \author[1]{Trevor Hastings}
+    
+    \author[2]{Douglas Allaire}
+    \author[1,2,3]{Raymundo Arr\'oyave}
+
+    \affiliation[1]{organization={Department of Materials Science and Engineering, Texas A\&M University},
+                city={College Station},
+                postcode={77843}, 
+                state={TX},
+                country={USA}}
+
+    \affiliation[2]{organization={J. Mike Walker '66 Department of Mechanical Engineering, Texas A\&M University},
+                    city={College Station},
+                    postcode={77843}, 
+                    state={TX},
+                    country={USA}}
+    
+    \affiliation[3]{organization={Wm Michael Barnes '64 Department of Industrial and Systems Engineering},
+                    city={College Station},
+                    postcode={77843}, 
+                    state={TX},
+                    country={USA}}
+
+    \begin{abstract}
+    The discovery and development of advanced materials is a challenging process constrained by the high time and monetary costs associated with the synthesis, processing, and characterization. Experimentation and high-fidelity simulations are both expensive and time-intensive, and the underlying design spaces can be enormous, often with multiple competing objectives. Bayesian optimization (BO) provides a principled approach for efficiently navigating such spaces, but most workflows rely on fixed exploration–exploitation policies that lack the capacity to adapt to shifting constraints in dynamic campaigns typical of self-driving laboratories. In this work, we develop a multi-objective BO framework for alloy design under resource constraints, benchmarking strategies for adaptive policy tuning at each iteration. Our evaluation covers a septenary refractory high-entropy alloy (RHEA) system focused on maximizing melting temperature and minimizing density, and a complex Fe-Co-Ni-based soft magnetic alloy system targeting the optimization of saturation magnetization, coercivity, and hardness. We compare an exploitation-focused strategy, a fixed mixed exploratory/exploitative policy, and two distinct LLM-based adaptive strategies with different approaches to batch allocation and campaign signal interpretation, evaluated across baseline and mid-campaign resource event conditions including budget reductions, timeline cuts, and combined disruptions. Our results show that mixed allocation strategies accumulate substantially more mutual information than the exploitation-focused baseline at a proportionally smaller cost to hypervolume and optimization speed, with adaptive strategies outperforming a fixed-mixed allocation policy by adjusting their allocation in response to both evolving campaign statistics and resource constraints. These findings suggest that adaptive resource allocation offers a favorable tradeoff for materials discovery campaigns in reducing predictive uncertainty on Pareto-optimal compositions.
+    \end{abstract}
+
+    \begin{keyword}
+    Agentic resource allocation, Self-driving laboratories, Multi-objective Bayesian optimization, Large Language Models, High Entropy Alloys
+    \end{keyword}
+
+\end{frontmatter}
+
+
+

@@ -1,0 +1,17 @@
+{
+  "iteration": 14,
+  "beta": 2.0,
+  "option": 2,
+  "reasoning_c1": "HV velocity has materially slowed (0.381), MI is declining (24.7% of iteration-1 value), and resources consumed are only 24%, suggesting conservative exploration is appropriate.",
+  "reasoning_c2": "Option 2 balances exploitation and exploration by allocating 3 points to qEHVI and 2 to qUCB, providing a moderate qEHVI improvement and a significant MI gain, aligning with the conservative exploration strategy suggested by the slowed HV velocity and low resource consumption.",
+  "signals": {
+    "velocity_ratio": 0.381,
+    "recent_hv_rate": 2.05789,
+    "baseline_hv_rate": 5.40748,
+    "mi_current": 0.19896,
+    "mi_vs_start": 0.247,
+    "resource_fraction_remaining": 0.759,
+    "iters_remaining": 41,
+    "time_pct_remaining": 75.9
+  }
+}

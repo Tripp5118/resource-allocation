@@ -1,0 +1,17 @@
+{
+  "iteration": 14,
+  "beta": 3.0,
+  "option": 3,
+  "reasoning_c1": "HV velocity is on pace and MI is elevated, indicating moderate exploration is appropriate.",
+  "reasoning_c2": "Option 3 provides a balanced tradeoff with moderate exploration through 3 qUCB points, aligning with the elevated MI and the need for moderate exploration at \u03b2=3.0.",
+  "signals": {
+    "velocity_ratio": 1.0,
+    "recent_hv_rate": 0.00922,
+    "baseline_hv_rate": 0.00922,
+    "mi_current": 0.68736,
+    "mi_vs_start": 1.845,
+    "resource_fraction_remaining": 0.735,
+    "iters_remaining": 36,
+    "time_pct_remaining": 73.5
+  }
+}

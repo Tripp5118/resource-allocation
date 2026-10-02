@@ -1,0 +1,17 @@
+{
+  "iteration": 11,
+  "beta": 2.0,
+  "option": 2,
+  "reasoning_c1": "Early in the campaign with 20% resources consumed, HV is still improving, and MI is elevated, indicating unexplored territory remains.",
+  "reasoning_c2": "Option 2 offers a balanced trade-off with a relatively high qEHVI and MI, aligning with the elevated MI and unexplored territory indicated by the beta reasoning.",
+  "signals": {
+    "velocity_ratio": 0.563,
+    "recent_hv_rate": 0.01094,
+    "baseline_hv_rate": 0.01941,
+    "mi_current": 0.69221,
+    "mi_vs_start": 2.403,
+    "resource_fraction_remaining": 0.796,
+    "iters_remaining": 39,
+    "time_pct_remaining": 79.6
+  }
+}

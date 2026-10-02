@@ -1,0 +1,17 @@
+{
+  "iteration": 24,
+  "beta": 2.0,
+  "option": 0,
+  "reasoning_c1": "With 98% resources consumed and MI declining, a conservative \u03b2 of 2 is appropriate as HV progress is nearly stalled and the campaign is nearly complete.",
+  "reasoning_c2": "With 98% resources consumed and HV progress nearly stalled, maximizing qEHVI with Option 0 aligns with the conservative \u03b2 of 2, focusing on direct Pareto HV improvement as the campaign concludes.",
+  "signals": {
+    "velocity_ratio": 0.059,
+    "recent_hv_rate": 0.00044,
+    "baseline_hv_rate": 0.00753,
+    "mi_current": 0.09855,
+    "mi_vs_start": 1.135,
+    "resource_fraction_remaining": 0.02,
+    "iters_remaining": 1,
+    "time_pct_remaining": 2.0
+  }
+}

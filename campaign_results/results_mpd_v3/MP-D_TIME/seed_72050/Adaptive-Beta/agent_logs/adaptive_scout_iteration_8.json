@@ -1,0 +1,17 @@
+{
+  "iteration": 8,
+  "beta": 2.0,
+  "option": 1,
+  "reasoning_c1": "HV is actively improving (\u0394=+3.1081) and MI is elevated (135.1% of iteration-1 value), indicating continued exploration near known regions is appropriate.",
+  "reasoning_c2": "Option 1 balances qEHVI and MI, supporting exploration near known regions with a reasonable qEHVI score and elevated MI, aligning with the active HV improvement and high MI context.",
+  "signals": {
+    "velocity_ratio": 0.564,
+    "recent_hv_rate": 6.16901,
+    "baseline_hv_rate": 10.93377,
+    "mi_current": 0.34619,
+    "mi_vs_start": 1.351,
+    "resource_fraction_remaining": 0.87,
+    "iters_remaining": 47,
+    "time_pct_remaining": 87.0
+  }
+}

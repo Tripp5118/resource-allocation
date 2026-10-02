@@ -1,0 +1,17 @@
+{
+  "iteration": 42,
+  "beta": 5.0,
+  "option": 1,
+  "reasoning_c1": "Elevated MI and stalled HV suggest aggressive exploration is needed to discover new productive regions.",
+  "reasoning_c2": "Option 1 balances exploration and exploitation, providing a reasonable MI gain while still maintaining some qEHVI improvement, aligning with the need for aggressive exploration due to elevated MI and stalled HV.",
+  "signals": {
+    "velocity_ratio": 0.118,
+    "recent_hv_rate": 0.10375,
+    "baseline_hv_rate": 0.87922,
+    "mi_current": 1.07395,
+    "mi_vs_start": 4.61,
+    "resource_fraction_remaining": 0.241,
+    "iters_remaining": 13,
+    "time_pct_remaining": 24.1
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "iteration": 14,
+  "call1_assessment": "The HV/pt trend shows signs of healthy expansion, with a notable increase in HV after exploration iterations, indicating successful exploitation of newly discovered regions.",
+  "call1_beta": 2.0,
+  "call2_selected_option": 1,
+  "call2_reasoning": "The HV/pt trend shows healthy expansion, indicating successful exploitation, but the MutualInfo score for Option 1 is notably higher than the default, suggesting that adding some exploration with qUCB could further enhance the campaign without significant risk of stagnation.",
+  "budget_remaining": 18000.0,
+  "time_remaining": 36.0
+}

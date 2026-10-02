@@ -1,0 +1,17 @@
+{
+  "iteration": 21,
+  "beta": 5.0,
+  "option": 2,
+  "reasoning_c1": "Despite high resource consumption, elevated MI (143.7% of iteration-1 value) suggests unexplored territory remains, justifying continued moderate exploration with \u03b2=5.0.",
+  "reasoning_c2": "Option 2 balances moderate exploration and exploitation, aligning with the elevated MI and \u03b2=5.0 strategy, ensuring continued exploration of unexplored regions while still improving the Pareto front.",
+  "signals": {
+    "velocity_ratio": 0.44,
+    "recent_hv_rate": 0.00169,
+    "baseline_hv_rate": 0.00385,
+    "mi_current": 0.55885,
+    "mi_vs_start": 1.437,
+    "resource_fraction_remaining": 0.082,
+    "iters_remaining": 4,
+    "time_pct_remaining": 8.2
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "iteration": 10,
+  "beta": 3.0,
+  "option": 1,
+  "reasoning_c1": "Elevated MI (711.5% of iteration-1 value) and HV velocity ratio of 0.659 suggest moderate exploration is warranted to discover new productive regions.",
+  "reasoning_c2": "Option 1 balances moderate exploration with exploitation, aligning with the need for exploration indicated by the elevated MI and HV velocity ratio, while still maintaining a reasonable qEHVI score.",
+  "signals": {
+    "velocity_ratio": 0.659,
+    "recent_hv_rate": 5.31816,
+    "baseline_hv_rate": 8.06793,
+    "mi_current": 1.38164,
+    "mi_vs_start": 7.115,
+    "resource_fraction_remaining": 0.833,
+    "iters_remaining": 45,
+    "time_pct_remaining": 83.3
+  }
+}

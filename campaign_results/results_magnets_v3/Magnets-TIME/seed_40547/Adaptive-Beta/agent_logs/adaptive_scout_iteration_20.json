@@ -1,0 +1,17 @@
+{
+  "iteration": 20,
+  "beta": 2.0,
+  "option": 1,
+  "reasoning_c1": "With 90% resources consumed, HV velocity has materially slowed, and MI is declining, indicating exploration is saturated and a conservative approach is warranted.",
+  "reasoning_c2": "Option 1 balances a conservative approach with some exploration, aligning with the need to focus on exploitation as exploration is saturated, while still gaining some information with minimal resource allocation to qUCB.",
+  "signals": {
+    "velocity_ratio": 0.169,
+    "recent_hv_rate": 0.00112,
+    "baseline_hv_rate": 0.00665,
+    "mi_current": 0.17643,
+    "mi_vs_start": 0.264,
+    "resource_fraction_remaining": 0.102,
+    "iters_remaining": 5,
+    "time_pct_remaining": 10.2
+  }
+}

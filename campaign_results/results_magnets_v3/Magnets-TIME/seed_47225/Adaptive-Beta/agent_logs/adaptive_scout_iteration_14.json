@@ -1,0 +1,17 @@
+{
+  "iteration": 14,
+  "beta": 5.0,
+  "option": 1,
+  "reasoning_c1": "With 78% resources consumed and MI at 12.8% of iteration-1, moderate exploration is justified to scout remaining territory as HV progress has slowed.",
+  "reasoning_c2": "Option 1 balances moderate exploration with exploitation, aligning with the need to scout remaining territory while still achieving reasonable HV improvement, given the 78% resource consumption and slowed HV progress.",
+  "signals": {
+    "velocity_ratio": 1.047,
+    "recent_hv_rate": 0.00766,
+    "baseline_hv_rate": 0.00732,
+    "mi_current": 0.09796,
+    "mi_vs_start": 0.128,
+    "resource_fraction_remaining": 0.224,
+    "iters_remaining": 11,
+    "time_pct_remaining": 22.4
+  }
+}

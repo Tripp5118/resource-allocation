@@ -1,0 +1,17 @@
+{
+  "iteration": 19,
+  "beta": 2.0,
+  "option": 0,
+  "reasoning_c1": "With HV velocity materially slowed and MI declining significantly, a conservative \u03b2 of 2.0 is appropriate to focus on known regions as the campaign nears completion.",
+  "reasoning_c2": "With the campaign nearing completion and a conservative \u03b2 of 2.0, Option 0 maximizes qEHVI, focusing on exploiting known regions to improve the Pareto front while minimizing exploration.",
+  "signals": {
+    "velocity_ratio": 0.077,
+    "recent_hv_rate": 0.27631,
+    "baseline_hv_rate": 3.57123,
+    "mi_current": 0.05858,
+    "mi_vs_start": 0.048,
+    "resource_fraction_remaining": 0.111,
+    "iters_remaining": 6,
+    "time_pct_remaining": 11.1
+  }
+}

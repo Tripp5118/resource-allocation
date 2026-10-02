@@ -1,0 +1,17 @@
+{
+  "iteration": 16,
+  "beta": 2.0,
+  "option": 1,
+  "reasoning_c1": "With HV still improving and MI declining, a conservative \u03b2=2 is appropriate to focus on refining the known Pareto front.",
+  "reasoning_c2": "Option 1 balances a moderate qEHVI with a significant MI gain, aligning with the conservative \u03b2=2 strategy to refine the Pareto front while still exploring unexplored regions.",
+  "signals": {
+    "velocity_ratio": 0.205,
+    "recent_hv_rate": 1.49406,
+    "baseline_hv_rate": 7.30361,
+    "mi_current": 0.06899,
+    "mi_vs_start": 0.123,
+    "resource_fraction_remaining": 0.167,
+    "iters_remaining": 9,
+    "time_pct_remaining": 16.7
+  }
+}

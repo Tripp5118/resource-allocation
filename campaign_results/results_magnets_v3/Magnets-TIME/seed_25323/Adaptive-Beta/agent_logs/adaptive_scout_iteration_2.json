@@ -1,0 +1,14 @@
+{
+  "iteration": 2,
+  "beta": 2.0,
+  "option": 1,
+  "reasoning_c1": "Early in the campaign with only 2% resources consumed and elevated MI, so a conservative \u03b2 of 2 is appropriate to focus on reliable improvement.",
+  "reasoning_c2": "Option 1 balances qEHVI and MI, maintaining a strong focus on reliable improvement with 4 qEHVI points while still gaining some information with 1 qUCB point, aligning with the conservative \u03b2 of 2.0.",
+  "signals": {
+    "mi_current": 0.27551,
+    "mi_vs_start": 1.0,
+    "resource_fraction_remaining": 0.98,
+    "iters_remaining": 48,
+    "time_pct_remaining": 98.0
+  }
+}

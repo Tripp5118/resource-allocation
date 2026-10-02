@@ -1,0 +1,17 @@
+{
+  "iteration": 22,
+  "beta": 3.0,
+  "option": 2,
+  "reasoning_c1": "With HV velocity ratio at 0.673 and MI declining to 9.1% of initial value, moderate exploration is appropriate to balance exploration and exploitation as the campaign nears completion.",
+  "reasoning_c2": "Option 2 provides a balanced tradeoff with moderate exploration and exploitation, aligning with the need for moderate exploration as indicated by the declining MI and nearing campaign completion.",
+  "signals": {
+    "velocity_ratio": 0.673,
+    "recent_hv_rate": 0.00238,
+    "baseline_hv_rate": 0.00353,
+    "mi_current": 0.0871,
+    "mi_vs_start": 0.091,
+    "resource_fraction_remaining": 0.082,
+    "iters_remaining": 4,
+    "time_pct_remaining": 55.1
+  }
+}

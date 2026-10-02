@@ -1,0 +1,17 @@
+{
+  "iteration": 33,
+  "beta": 5.0,
+  "option": 2,
+  "reasoning_c1": "HV progress has materially stalled and MI is still elevated, indicating unexplored productive regions.",
+  "reasoning_c2": "Option 2 balances exploration and exploitation, maintaining a reasonable qEHVI while significantly boosting MI, aligning with the need to explore unexplored productive regions as indicated by the elevated MI.",
+  "signals": {
+    "velocity_ratio": 0.002,
+    "recent_hv_rate": 0.00284,
+    "baseline_hv_rate": 1.42516,
+    "mi_current": 0.12456,
+    "mi_vs_start": 0.265,
+    "resource_fraction_remaining": 0.407,
+    "iters_remaining": 22,
+    "time_pct_remaining": 40.7
+  }
+}

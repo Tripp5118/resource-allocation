@@ -1,0 +1,17 @@
+{
+  "iteration": 25,
+  "beta": 8.0,
+  "option": 5,
+  "reasoning_c1": "With 98% resources consumed, a low HV velocity ratio, and elevated MI, aggressive scouting with \u03b2=8 is justified to explore remaining unexplored territory.",
+  "reasoning_c2": "With 98% resources consumed and a high beta of 8.0, prioritizing exploration with 5 qUCB points maximizes MI gain, aligning with the strategy to explore remaining unexplored territory.",
+  "signals": {
+    "velocity_ratio": 0.278,
+    "recent_hv_rate": 0.00097,
+    "baseline_hv_rate": 0.0035,
+    "mi_current": 0.20217,
+    "mi_vs_start": 2.336,
+    "resource_fraction_remaining": 0.02,
+    "iters_remaining": 1,
+    "time_pct_remaining": 49.0
+  }
+}

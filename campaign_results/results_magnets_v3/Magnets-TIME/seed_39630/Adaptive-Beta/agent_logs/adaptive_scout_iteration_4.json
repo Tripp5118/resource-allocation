@@ -1,0 +1,17 @@
+{
+  "iteration": 4,
+  "beta": 2.0,
+  "option": 1,
+  "reasoning_c1": "Early in the campaign with HV actively improving and elevated MI, so a conservative \u03b2=2.0 is appropriate.",
+  "reasoning_c2": "Option 1 balances exploitation and exploration by allocating one point to qUCB, maintaining a high qEHVI score while still gaining significant MI, aligning with the conservative \u03b2=2.0 choice early in the campaign.",
+  "signals": {
+    "velocity_ratio": 1.0,
+    "recent_hv_rate": 0.05074,
+    "baseline_hv_rate": 0.05074,
+    "mi_current": 2.69336,
+    "mi_vs_start": 4.868,
+    "resource_fraction_remaining": 0.939,
+    "iters_remaining": 46,
+    "time_pct_remaining": 93.9
+  }
+}

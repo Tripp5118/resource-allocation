@@ -1,0 +1,12 @@
+{
+  "iteration": 1,
+  "beta": 2.0,
+  "option": 2,
+  "reasoning_c1": "Early in the campaign with 0% resources consumed, a conservative \u03b2 of 2 is appropriate as the GP posterior is poorly constrained and uncertainty estimates are unreliable.",
+  "reasoning_c2": "Option 2 balances exploitation and exploration with a reasonable qEHVI score and a relatively high MI score, aligning with the conservative \u03b2 of 2.0 early in the campaign.",
+  "signals": {
+    "resource_fraction_remaining": 1.0,
+    "iters_remaining": 0,
+    "time_pct_remaining": 100.0
+  }
+}

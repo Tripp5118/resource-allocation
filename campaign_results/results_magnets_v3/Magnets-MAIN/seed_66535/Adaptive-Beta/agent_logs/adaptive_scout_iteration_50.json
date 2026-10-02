@@ -1,0 +1,17 @@
+{
+  "iteration": 50,
+  "beta": 5.0,
+  "option": 1,
+  "reasoning_c1": "With HV materially stalled and MI elevated, aggressive scouting with \u03b2=5 is justified to explore remaining unexplored territory.",
+  "reasoning_c2": "Option 1 balances exploration and exploitation by allocating one point to qUCB, which aligns with the aggressive scouting strategy at \u03b2=5.0, while still maintaining a relatively high qEHVI score.",
+  "signals": {
+    "velocity_ratio": 0.015,
+    "recent_hv_rate": 3e-05,
+    "baseline_hv_rate": 0.0017,
+    "mi_current": 0.11682,
+    "mi_vs_start": 1.33,
+    "resource_fraction_remaining": 0.0,
+    "iters_remaining": 0,
+    "time_pct_remaining": 0.0
+  }
+}

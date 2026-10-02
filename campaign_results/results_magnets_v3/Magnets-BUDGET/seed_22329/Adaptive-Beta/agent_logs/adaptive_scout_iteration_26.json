@@ -1,0 +1,17 @@
+{
+  "iteration": 26,
+  "beta": 5.0,
+  "option": 1,
+  "reasoning_c1": "HV progress has materially slowed, MI is declining but still elevated, and exploration points are allocated.",
+  "reasoning_c2": "Option 1 provides a good balance between qEHVI improvement and MI gain, with the highest qEHVI score and a reasonable MI score, aligning with the need for some exploration given the declining but still elevated MI.",
+  "signals": {
+    "velocity_ratio": 0.051,
+    "recent_hv_rate": 0.0002,
+    "baseline_hv_rate": 0.00387,
+    "mi_current": 0.12529,
+    "mi_vs_start": 0.31,
+    "resource_fraction_remaining": 0.0,
+    "iters_remaining": 0,
+    "time_pct_remaining": 49.0
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "iteration": 4,
+  "beta": 2.0,
+  "option": 1,
+  "reasoning_c1": "Early in the campaign with HV actively improving and elevated MI, so a conservative \u03b2 is appropriate.",
+  "reasoning_c2": "With a conservative \u03b2 of 2.0, Option 1 balances qEHVI improvement and MI gain, maintaining exploration while still focusing on exploiting the current Pareto front.",
+  "signals": {
+    "velocity_ratio": 1.0,
+    "recent_hv_rate": 0.0453,
+    "baseline_hv_rate": 0.0453,
+    "mi_current": 1.11695,
+    "mi_vs_start": 12.907,
+    "resource_fraction_remaining": 0.939,
+    "iters_remaining": 46,
+    "time_pct_remaining": 93.9
+  }
+}

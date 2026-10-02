@@ -1,0 +1,17 @@
+{
+  "iteration": 5,
+  "beta": 2.0,
+  "option": 2,
+  "reasoning_c1": "Early campaign stage with high MI suggests unexplored territory, but conservative \u03b2=2.0 is appropriate given the 8% resource consumption and active HV improvement.",
+  "reasoning_c2": "Option 2 balances exploration and exploitation, aligning with the conservative \u03b2=2.0 while still gaining significant MI, which is suitable given the early campaign stage and active HV improvement.",
+  "signals": {
+    "velocity_ratio": 0.594,
+    "recent_hv_rate": 0.01891,
+    "baseline_hv_rate": 0.03182,
+    "mi_current": 2.35694,
+    "mi_vs_start": 4.49,
+    "resource_fraction_remaining": 0.918,
+    "iters_remaining": 45,
+    "time_pct_remaining": 91.8
+  }
+}

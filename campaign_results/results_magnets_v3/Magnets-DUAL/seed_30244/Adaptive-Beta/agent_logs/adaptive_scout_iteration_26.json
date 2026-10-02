@@ -1,0 +1,17 @@
+{
+  "iteration": 26,
+  "beta": 2.0,
+  "option": 0,
+  "reasoning_c1": "HV velocity is materially slowed, but MI is declining, indicating exploration is saturated and further scouting is not justified.",
+  "reasoning_c2": "With exploration saturated and MI declining, maximizing qEHVI with Option 0 aligns with the need to focus on exploitation for direct Pareto HV improvement.",
+  "signals": {
+    "velocity_ratio": 0.099,
+    "recent_hv_rate": 0.00061,
+    "baseline_hv_rate": 0.00617,
+    "mi_current": 0.37934,
+    "mi_vs_start": 0.402,
+    "resource_fraction_remaining": 0.0,
+    "iters_remaining": 0,
+    "time_pct_remaining": 46.9
+  }
+}

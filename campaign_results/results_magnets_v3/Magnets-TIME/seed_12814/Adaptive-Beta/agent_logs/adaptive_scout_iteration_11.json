@@ -1,0 +1,17 @@
+{
+  "iteration": 11,
+  "beta": 2.0,
+  "option": 3,
+  "reasoning_c1": "Early in the campaign with 20% resources consumed, HV is actively improving, and MI is elevated, indicating unexplored territory remains.",
+  "reasoning_c2": "With 80% of resources remaining and elevated MI, Option 3 balances exploration and exploitation, maximizing information gain while still improving HV.",
+  "signals": {
+    "velocity_ratio": 0.534,
+    "recent_hv_rate": 0.01091,
+    "baseline_hv_rate": 0.02044,
+    "mi_current": 0.6672,
+    "mi_vs_start": 1.468,
+    "resource_fraction_remaining": 0.796,
+    "iters_remaining": 39,
+    "time_pct_remaining": 79.6
+  }
+}

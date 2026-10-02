@@ -1,0 +1,17 @@
+{
+  "iteration": 38,
+  "beta": 3.0,
+  "option": 1,
+  "reasoning_c1": "Despite HV improvement, elevated MI (126.1% of iteration-1) suggests unexplored territory, justifying moderate exploration.",
+  "reasoning_c2": "Option 1 balances moderate exploration with reasonable HV improvement, aligning with the need to explore unexplored territory while still enhancing the Pareto front.",
+  "signals": {
+    "velocity_ratio": 1.72,
+    "recent_hv_rate": 0.00362,
+    "baseline_hv_rate": 0.0021,
+    "mi_current": 0.55183,
+    "mi_vs_start": 1.261,
+    "resource_fraction_remaining": 0.245,
+    "iters_remaining": 12,
+    "time_pct_remaining": 24.5
+  }
+}

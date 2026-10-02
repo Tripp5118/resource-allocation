@@ -1,0 +1,17 @@
+{
+  "iteration": 26,
+  "beta": 5.0,
+  "option": 2,
+  "reasoning_c1": "HV is accelerating with elevated MI, suggesting moderate exploration is appropriate to find new productive regions.",
+  "reasoning_c2": "Option 2 offers a balanced tradeoff with moderate exploration, aligning with the elevated MI and the need to explore new productive regions while still maintaining a reasonable qEHVI score.",
+  "signals": {
+    "velocity_ratio": 1.679,
+    "recent_hv_rate": 0.01214,
+    "baseline_hv_rate": 0.00723,
+    "mi_current": 0.14791,
+    "mi_vs_start": 0.823,
+    "resource_fraction_remaining": 0.0,
+    "iters_remaining": 0,
+    "time_pct_remaining": 46.9
+  }
+}

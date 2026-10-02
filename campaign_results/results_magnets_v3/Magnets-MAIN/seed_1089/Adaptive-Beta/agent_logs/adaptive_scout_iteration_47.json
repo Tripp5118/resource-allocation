@@ -1,0 +1,17 @@
+{
+  "iteration": 47,
+  "beta": 5.0,
+  "option": 3,
+  "reasoning_c1": "With 94% resources consumed and MI elevated at 101.7% of iteration-1 value, \u03b2=5.0 balances exploration in remaining unexplored regions as HV progress has materially slowed.",
+  "reasoning_c2": "Option 3 balances exploration and exploitation by allocating 3 points to qUCB, which aligns with the elevated MI and \u03b2=5.0, while still maintaining a reasonable qEHVI score for HV improvement.",
+  "signals": {
+    "velocity_ratio": 0.996,
+    "recent_hv_rate": 0.0015,
+    "baseline_hv_rate": 0.0015,
+    "mi_current": 0.0495,
+    "mi_vs_start": 1.017,
+    "resource_fraction_remaining": 0.061,
+    "iters_remaining": 3,
+    "time_pct_remaining": 6.1
+  }
+}

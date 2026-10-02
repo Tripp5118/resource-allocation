@@ -1,0 +1,17 @@
+{
+  "iteration": 49,
+  "beta": 5.0,
+  "option": 2,
+  "reasoning_c1": "HV has materially slowed, MI is low but not negligible, and recent success with \u03b2=5.0 suggests moderate exploration is still productive.",
+  "reasoning_c2": "Option 2 balances moderate exploration with exploitation, aligning with the reasoning that recent success with \u03b2=5.0 suggests maintaining exploration while still improving the Pareto front.",
+  "signals": {
+    "velocity_ratio": 0.116,
+    "recent_hv_rate": 0.05218,
+    "baseline_hv_rate": 0.44875,
+    "mi_current": 0.02708,
+    "mi_vs_start": 0.07,
+    "resource_fraction_remaining": 0.111,
+    "iters_remaining": 6,
+    "time_pct_remaining": 11.1
+  }
+}

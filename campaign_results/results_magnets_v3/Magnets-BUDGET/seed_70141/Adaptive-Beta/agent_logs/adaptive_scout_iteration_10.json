@@ -1,0 +1,17 @@
+{
+  "iteration": 10,
+  "beta": 2.0,
+  "option": 1,
+  "reasoning_c1": "Early in the campaign with 18% resources consumed, HV is actively improving, and MI is elevated, indicating unexplored territory remains; thus, a conservative \u03b2 of 2.0 is appropriate.",
+  "reasoning_c2": "Option 1 balances exploration and exploitation by slightly favoring qEHVI while still gaining significant MI, aligning with a conservative \u03b2 of 2.0 to explore unexplored regions early in the campaign.",
+  "signals": {
+    "velocity_ratio": 0.074,
+    "recent_hv_rate": 0.00289,
+    "baseline_hv_rate": 0.03909,
+    "mi_current": 0.35131,
+    "mi_vs_start": 1.91,
+    "resource_fraction_remaining": 0.816,
+    "iters_remaining": 40,
+    "time_pct_remaining": 81.6
+  }
+}

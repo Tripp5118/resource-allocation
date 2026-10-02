@@ -1,0 +1,17 @@
+{
+  "iteration": 10,
+  "beta": 3.0,
+  "option": 2,
+  "reasoning_c1": "Early in the campaign with elevated MI and slowed HV velocity, moderate exploration with \u03b2=3.0 is appropriate to balance exploration and exploitation.",
+  "reasoning_c2": "Option 2 provides a balanced tradeoff with moderate exploration and exploitation, aligning with the early campaign strategy and \u03b2=3.0, by offering a reasonable qEHVI improvement while gaining significant MI.",
+  "signals": {
+    "velocity_ratio": 0.398,
+    "recent_hv_rate": 0.006,
+    "baseline_hv_rate": 0.01506,
+    "mi_current": 1.08702,
+    "mi_vs_start": 2.242,
+    "resource_fraction_remaining": 0.816,
+    "iters_remaining": 40,
+    "time_pct_remaining": 81.6
+  }
+}

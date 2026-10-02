@@ -1,0 +1,17 @@
+{
+  "iteration": 41,
+  "beta": 5.0,
+  "option": 3,
+  "reasoning_c1": "HV has materially stalled with a high MI signal, indicating unexplored productive regions remain.",
+  "reasoning_c2": "Option 3 balances qEHVI and MI, leveraging the high MI signal to explore unexplored productive regions while still improving the Pareto HV.",
+  "signals": {
+    "velocity_ratio": 0.218,
+    "recent_hv_rate": 0.00037,
+    "baseline_hv_rate": 0.00172,
+    "mi_current": 0.2273,
+    "mi_vs_start": 1.611,
+    "resource_fraction_remaining": 0.184,
+    "iters_remaining": 9,
+    "time_pct_remaining": 18.4
+  }
+}

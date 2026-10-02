@@ -1,0 +1,17 @@
+{
+  "iteration": 8,
+  "beta": 2.0,
+  "option": 2,
+  "reasoning_c1": "HV is actively improving and MI is declining, indicating the design space is becoming well-characterized, so a conservative \u03b2 is appropriate.",
+  "reasoning_c2": "Option 2 balances qEHVI and MI, aligning with the conservative \u03b2=2.0 by maintaining some exploitation while still gaining significant information about unexplored regions.",
+  "signals": {
+    "velocity_ratio": 0.449,
+    "recent_hv_rate": 12.56829,
+    "baseline_hv_rate": 27.96706,
+    "mi_current": 0.30062,
+    "mi_vs_start": 0.525,
+    "resource_fraction_remaining": 0.87,
+    "iters_remaining": 47,
+    "time_pct_remaining": 87.0
+  }
+}

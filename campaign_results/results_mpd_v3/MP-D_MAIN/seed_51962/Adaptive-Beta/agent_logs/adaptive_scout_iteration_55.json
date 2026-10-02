@@ -1,0 +1,17 @@
+{
+  "iteration": 55,
+  "beta": 2.0,
+  "option": 0,
+  "reasoning_c1": "HV has materially stalled and MI is declining, indicating exploration is saturated and further exploration is unlikely to yield new productive regions.",
+  "reasoning_c2": "Since exploration is saturated and further exploration is unlikely to yield new productive regions, maximizing qEHVI with Option 0 aligns with the reasoning that exploitation should be prioritized.",
+  "signals": {
+    "velocity_ratio": 0.007,
+    "recent_hv_rate": 0.00156,
+    "baseline_hv_rate": 0.21789,
+    "mi_current": 0.00687,
+    "mi_vs_start": 0.009,
+    "resource_fraction_remaining": 0.0,
+    "iters_remaining": 0,
+    "time_pct_remaining": 0.0
+  }
+}

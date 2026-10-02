@@ -1,0 +1,17 @@
+{
+  "iteration": 20,
+  "beta": 5.0,
+  "option": 2,
+  "reasoning_c1": "Despite high HV velocity, elevated MI indicates unexplored territory remains, justifying continued moderate exploration.",
+  "reasoning_c2": "Option 2 balances exploration and exploitation, aligning with the need for moderate exploration due to high MI, while still providing a reasonable qEHVI improvement.",
+  "signals": {
+    "velocity_ratio": 3.65,
+    "recent_hv_rate": 0.03489,
+    "baseline_hv_rate": 0.00956,
+    "mi_current": 0.79335,
+    "mi_vs_start": 4.728,
+    "resource_fraction_remaining": 0.122,
+    "iters_remaining": 6,
+    "time_pct_remaining": 61.2
+  }
+}

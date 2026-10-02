@@ -1,0 +1,17 @@
+{
+  "iteration": 21,
+  "beta": 5.0,
+  "option": 1,
+  "reasoning_c1": "With HV velocity ratio > 1.0 and elevated MI, moderate exploration with \u03b2=5.0 is justified to explore remaining productive regions.",
+  "reasoning_c2": "Option 1 balances exploration and exploitation by allocating one point to qUCB, which aligns with the moderate exploration strategy justified by the elevated MI and HV velocity ratio > 1.0, while still maintaining a strong qEHVI score.",
+  "signals": {
+    "velocity_ratio": 1.062,
+    "recent_hv_rate": 0.00562,
+    "baseline_hv_rate": 0.00529,
+    "mi_current": 0.22333,
+    "mi_vs_start": 2.242,
+    "resource_fraction_remaining": 0.102,
+    "iters_remaining": 5,
+    "time_pct_remaining": 57.1
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "iteration": 1,
+  "beta": 2.0,
+  "option": 2,
+  "reasoning_c1": "Early in the campaign with no history, default to conservative \u03b2=2 to ensure exploration remains near well-known regions as HV and MI signals are not yet available.",
+  "reasoning_c2": "Option 2 balances exploration and exploitation by allocating 2 points to qUCB, providing a high MI score of 0.8753, which aligns with the conservative \u03b2=2 strategy to explore near well-known regions early in the campaign.",
+  "signals": {
+    "resource_fraction_remaining": 1.0,
+    "iters_remaining": 0,
+    "time_pct_remaining": 100.0
+  }
+}

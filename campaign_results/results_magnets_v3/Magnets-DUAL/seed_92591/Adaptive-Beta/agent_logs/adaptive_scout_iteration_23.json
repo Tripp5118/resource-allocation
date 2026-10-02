@@ -1,0 +1,17 @@
+{
+  "iteration": 23,
+  "beta": 2.0,
+  "option": 1,
+  "reasoning_c1": "With 94% resources consumed, HV velocity materially slowed, and MI declining to 1.3% of initial value, a conservative \u03b2 of 2 is appropriate to focus on known regions.",
+  "reasoning_c2": "Option 1 provides the highest qEHVI improvement while still offering a reasonable MI gain, aligning with the conservative \u03b2 of 2 to focus on known regions while slightly exploring unexplored areas.",
+  "signals": {
+    "velocity_ratio": 0.114,
+    "recent_hv_rate": 0.00045,
+    "baseline_hv_rate": 0.00392,
+    "mi_current": 0.01006,
+    "mi_vs_start": 0.013,
+    "resource_fraction_remaining": 0.061,
+    "iters_remaining": 3,
+    "time_pct_remaining": 53.1
+  }
+}

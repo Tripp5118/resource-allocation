@@ -1,0 +1,17 @@
+{
+  "iteration": 10,
+  "beta": 2.0,
+  "option": 1,
+  "reasoning_c1": "Early in the campaign with elevated MI and HV still improving, a conservative \u03b2=2.0 is appropriate.",
+  "reasoning_c2": "Option 1 provides a slight increase in qEHVI while still maintaining a reasonable MI score, aligning with the conservative \u03b2=2.0 approach early in the campaign.",
+  "signals": {
+    "velocity_ratio": 0.665,
+    "recent_hv_rate": 0.01449,
+    "baseline_hv_rate": 0.02181,
+    "mi_current": 0.88587,
+    "mi_vs_start": 1.369,
+    "resource_fraction_remaining": 0.816,
+    "iters_remaining": 40,
+    "time_pct_remaining": 81.6
+  }
+}

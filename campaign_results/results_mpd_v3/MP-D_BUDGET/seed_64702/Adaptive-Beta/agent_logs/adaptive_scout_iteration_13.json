@@ -1,0 +1,17 @@
+{
+  "iteration": 13,
+  "beta": 3.0,
+  "option": 2,
+  "reasoning_c1": "HV is improving, MI is elevated, and early campaign status suggests moderate exploration with \u03b2=3.0 is appropriate.",
+  "reasoning_c2": "Option 2 balances exploration and exploitation with a moderate qEHVI score and the highest MI score, aligning with the \u03b2=3.0 strategy for early campaign exploration.",
+  "signals": {
+    "velocity_ratio": 0.159,
+    "recent_hv_rate": 1.73513,
+    "baseline_hv_rate": 10.90811,
+    "mi_current": 0.48067,
+    "mi_vs_start": 1.596,
+    "resource_fraction_remaining": 0.778,
+    "iters_remaining": 42,
+    "time_pct_remaining": 77.8
+  }
+}

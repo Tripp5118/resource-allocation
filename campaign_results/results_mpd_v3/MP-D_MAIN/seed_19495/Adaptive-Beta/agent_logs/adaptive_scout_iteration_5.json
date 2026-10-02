@@ -1,0 +1,17 @@
+{
+  "iteration": 5,
+  "beta": 2.0,
+  "option": 1,
+  "reasoning_c1": "Early in the campaign with HV actively improving and MI declining, indicating the design space is becoming well-characterized.",
+  "reasoning_c2": "Option 1 balances exploitation and exploration, maintaining a relatively high qEHVI score while still gaining information with MI, aligning with the early campaign phase where HV is improving and MI is declining.",
+  "signals": {
+    "velocity_ratio": 0.689,
+    "recent_hv_rate": 42.54249,
+    "baseline_hv_rate": 61.71617,
+    "mi_current": 0.24953,
+    "mi_vs_start": 0.294,
+    "resource_fraction_remaining": 0.926,
+    "iters_remaining": 50,
+    "time_pct_remaining": 92.6
+  }
+}

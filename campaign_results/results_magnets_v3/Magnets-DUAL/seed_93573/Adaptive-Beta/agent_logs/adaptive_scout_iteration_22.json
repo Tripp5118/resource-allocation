@@ -1,0 +1,17 @@
+{
+  "iteration": 22,
+  "beta": 5.0,
+  "option": 2,
+  "reasoning_c1": "With HV velocity materially slowed (0.464) and elevated MI (0.5802), moderate exploration is justified to scout unexplored regions.",
+  "reasoning_c2": "Option 2 provides a balanced trade-off with moderate exploration (MI=0.6262) and reasonable exploitation (qEHVI=1.5589), aligning well with the need to scout unexplored regions given the elevated MI and slowed HV velocity.",
+  "signals": {
+    "velocity_ratio": 0.464,
+    "recent_hv_rate": 0.00285,
+    "baseline_hv_rate": 0.00616,
+    "mi_current": 0.58019,
+    "mi_vs_start": 1.757,
+    "resource_fraction_remaining": 0.082,
+    "iters_remaining": 4,
+    "time_pct_remaining": 55.1
+  }
+}

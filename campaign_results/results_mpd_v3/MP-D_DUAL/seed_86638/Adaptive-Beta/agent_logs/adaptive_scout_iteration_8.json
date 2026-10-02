@@ -1,0 +1,17 @@
+{
+  "iteration": 8,
+  "beta": 5.0,
+  "option": 0,
+  "reasoning_c1": "HV velocity has materially slowed (0.167), and MI is declining but still elevated (0.2456), indicating some unexplored territory remains; aggressive scouting with \u03b2=5.0 is justified to potentially expand the Pareto front further in the final iterations.",
+  "reasoning_c2": "With HV velocity slowing and MI still elevated, maximizing qEHVI is crucial to directly improve the Pareto front in the final iterations, making Option 0 the best choice to exploit potential gains.",
+  "signals": {
+    "velocity_ratio": 0.167,
+    "recent_hv_rate": 6.06494,
+    "baseline_hv_rate": 36.32913,
+    "mi_current": 0.24556,
+    "mi_vs_start": 0.203,
+    "resource_fraction_remaining": 0.037,
+    "iters_remaining": 2,
+    "time_pct_remaining": 22.2
+  }
+}

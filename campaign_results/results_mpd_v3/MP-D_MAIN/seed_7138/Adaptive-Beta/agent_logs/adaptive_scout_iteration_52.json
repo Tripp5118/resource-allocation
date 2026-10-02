@@ -1,0 +1,17 @@
+{
+  "iteration": 52,
+  "beta": 5.0,
+  "option": 5,
+  "reasoning_c1": "With HV materially stalled (velocity ratio 0.391) and MI still elevated (0.0924), aggressive exploration is justified to discover new productive regions.",
+  "reasoning_c2": "Option 5 maximizes MI gain at 0.2117, aligning with the aggressive exploration strategy justified by the elevated MI and stalled HV, despite the lower qEHVI improvement.",
+  "signals": {
+    "velocity_ratio": 0.391,
+    "recent_hv_rate": 0.1262,
+    "baseline_hv_rate": 0.32277,
+    "mi_current": 0.09239,
+    "mi_vs_start": 0.172,
+    "resource_fraction_remaining": 0.056,
+    "iters_remaining": 3,
+    "time_pct_remaining": 5.6
+  }
+}

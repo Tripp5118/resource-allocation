@@ -1,0 +1,17 @@
+{
+  "iteration": 8,
+  "beta": 2.0,
+  "option": 1,
+  "reasoning_c1": "Despite elevated MI indicating unexplored territory, the campaign is early with HV actively improving, justifying a conservative \u03b2.",
+  "reasoning_c2": "Option 1 balances exploitation and exploration, maintaining a conservative approach with a slight increase in MI while still focusing on improving the Pareto front early in the campaign.",
+  "signals": {
+    "velocity_ratio": 0.344,
+    "recent_hv_rate": 9.12574,
+    "baseline_hv_rate": 26.55597,
+    "mi_current": 1.28936,
+    "mi_vs_start": 6.738,
+    "resource_fraction_remaining": 0.87,
+    "iters_remaining": 47,
+    "time_pct_remaining": 87.0
+  }
+}

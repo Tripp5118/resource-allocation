@@ -1,0 +1,17 @@
+{
+  "scheduled_events": [
+    {
+      "iteration": 15,
+      "type": "budget_change",
+      "description": "Budget cut at iteration 15: only 10 iterations remain ($5000)"
+    }
+  ],
+  "triggered_events": [
+    {
+      "iteration": 15,
+      "event_type": "budget_change",
+      "description": "Budget cut at iteration 15: only 10 iterations remain ($5000)",
+      "timestamp": 15
+    }
+  ]
+}

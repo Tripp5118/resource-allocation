@@ -1,0 +1,351 @@
+% --- Styling for the prompt boxes ------------------------------------------
+\definecolor{promptblue}{HTML}{EAF2FF}
+\definecolor{promptgreen}{HTML}{ECF8F1}
+\definecolor{promptorange}{HTML}{FFF4E8}
+\definecolor{frameblue}{HTML}{2E5AAC}
+\definecolor{framegreen}{HTML}{2F7D4A}
+\definecolor{frameorange}{HTML}{B86A00}
+\definecolor{fragmentgray}{HTML}{F7F7F8}
+\definecolor{fragmentframe}{HTML}{8A8F98}
+
+\tcbset{
+  enhanced,
+  breakable,
+  boxrule=0.7pt,
+  arc=1.8mm,
+  left=2mm,right=2mm,top=1.5mm,bottom=1.5mm,
+  coltitle=white,
+  fonttitle=\bfseries,
+}
+
+\newtcolorbox{stageonebox}{%
+  colback=promptblue,
+  colframe=frameblue,
+  title={Stage 1 Prompt: Reflection},
+}
+\newtcolorbox{stagetwobox}{%
+  colback=promptgreen,
+  colframe=framegreen,
+  title={Stage 2 Prompt: Belief Update},
+}
+\newtcolorbox{stagethreebox}{%
+  colback=promptorange,
+  colframe=frameorange,
+  title={Stage 3 Prompt: Decision},
+}
+\newtcolorbox{fragmentbox}[1]{%
+  colback=fragmentgray,
+  colframe=fragmentframe,
+  title={#1},
+}
+
+\newcommand{\promptfont}{\ttfamily\small}
+\newcommand{\ph}[1]{\textit{\{#1\}}}
+
+
+% ===========================================================================
+\section{Ground Truth Model Construction}
+\label{app:armote}
+% ===========================================================================
+
+\subsection{The ARMOTE-MO Workflow}
+\label{app:armote_algorithm}
+
+\begin{algorithm}[H]
+\caption{ARMOTE-MO: automated multi-output regression with multi-objective
+         hyperparameter optimization}
+\label{alg:armote}
+\begin{algorithmic}[1]
+\Require Composition--property dataset $\mathcal{D} = \{(\mathbf{x}_i, \mathbf{y}_i)\}_{i=1}^{N}$,
+         search space $\Theta$, trial budget $T = 100$
+\State Split $\mathcal{D}$ into $\mathcal{D}_\mathrm{train}$ / $\mathcal{D}_\mathrm{test}$ (80/20)
+\State Fit standardization scalers for inputs and outputs on $\mathcal{D}_\mathrm{train}$;
+       apply them to $\mathcal{D}_\mathrm{train}$ and $\mathcal{D}_\mathrm{test}$
+\For{$t = 1$ to $T$}
+    \State Sample $\theta_t \in \Theta$ with the Tree-Parzen Estimator
+    \State Evaluate $\theta_t$ by 5-fold cross-validation on the standardized
+           $\mathcal{D}_\mathrm{train}$, recording the mean MSE (standardized targets)
+           and the mean $R^2$, each averaged across outputs
+\EndFor
+\State $\Theta^{*} \gets$ non-dominated set of $\{\theta_t\}$ in (MSE, $R^2$) space
+       (minimize MSE, maximize $R^2$)
+\State $\theta^{\dagger} \gets \arg\max_{\theta \in \Theta^{*}}$ cross-validated mean $R^2$
+       (averaged across outputs)
+\State Refit the multi-output RFR on all of the standardized $\mathcal{D}_\mathrm{train}$ at $\theta^{\dagger}$
+\State \Return model, fitted scalers, and held-out $R^2$ on $\mathcal{D}_\mathrm{test}$
+       (per output and averaged across outputs, in original target units)
+\end{algorithmic}
+\end{algorithm}
+
+\subsection{Hyperparameter Search Spaces}
+\label{app:armote_spaces}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{llc}
+\toprule
+Hyperparameter & Search range & Scale \\
+\midrule
+$n_\mathrm{trees}$           & [10, 150] & integer, uniform \\
+\texttt{max\_depth}          & [10, 150] & integer, uniform \\
+\texttt{min\_samples\_split} & [2, 20]   & integer, uniform \\
+\texttt{min\_samples\_leaf}  & [1, 20]   & integer, uniform \\
+\bottomrule
+\end{tabular}
+\caption{Hyperparameter search spaces explored by ARMOTE-MO for both alloy
+         systems. Ranges are inclusive. All other random forest settings,
+         including \texttt{max\_features}, were left at their scikit-learn
+         defaults. The selected configurations are reported in
+         Table~\ref{tab:rfr-hyperparameters}.}
+\label{tab:armote-search-space}
+\end{table}
+
+\subsection{Truth-Function Generated Datasets}
+\label{app:truth_datasets}
+
+\section{Prompts Used by the LLM Allocation Agents}
+\label{app:prompts}
+
+\noindent The two LLM-based allocation strategies used separate two-call prompt
+pipelines. Dynamic quantities inserted by the campaign code are shown in braces.
+All prompt calls used GPT-4o through LangChain. The RHEA campaigns used
+temperature $T = 0.2$, and the Fe-Co-Ni magnet campaigns used temperature
+$T = 0.3$.
+
+\subsection{Adaptive-$\beta$ Agent Prompts}
+\label{app:prompts_adaptive_beta}
+
+\begin{fragmentbox}{Adaptive-$\beta$ Call 1: $\beta$ selection}
+\promptfont
+You are selecting a beta parameter for a Bayesian Optimization campaign.
+\vspace{0.35em}
+Problem: \ph{problem\_description}\\
+Objectives: \ph{objectives\_str}
+\vspace{0.35em}
+qEHVI focuses on what the GP currently believes is near-Pareto-optimal. It is the
+reliable Pareto front improver and the right default in most situations.
+\vspace{0.35em}
+qUCB with elevated $\beta$ scouts design-space regions the GP has not characterized
+well --- regions with high posterior uncertainty. Its purpose is to find productive
+territory qEHVI has not yet been directed toward. Exploration will often produce no
+short-term HV gain. That is acceptable when it locates new productive regions faster
+than qEHVI alone would. It is NOT acceptable when exploration is saturated (MI
+declining) or when the campaign is nearly complete.
+\vspace{0.35em}
+$\beta$ controls how far into uncertain regions qUCB will probe, measured in
+posterior standard deviations. GP inputs and outputs are normalized, so $\beta$ has
+the same meaning regardless of problem scale or physical units.
+\vspace{0.35em}
+\hspace*{1em}$\beta \approx 2$: Conservative. qUCB candidates stay near regions the GP already knows well. Right default when HV is actively improving.\\
+\hspace*{1em}$\beta = 3$--$5$: Moderate exploration. Noticeably more uncertainty-seeking. Appropriate when HV progress has slowed but MI signals remaining territory.\\
+\hspace*{1em}$\beta = 5$--$8$: Aggressive scouting. Sends candidates into poorly-characterized regions. Justified when HV has materially stalled and MI is still elevated.\\
+\hspace*{1em}$\beta > 8$: Only in extreme stagnation with a strong MI signal.
+\vspace{0.35em}
+Early in the campaign (first \~{}20--25\% of resources consumed), the GP posterior is
+poorly constrained --- uncertainty estimates are unreliable and elevated beta may send
+candidates to arbitrary regions rather than genuinely informative ones. Prefer
+$\beta$ near 2 unless you observe a specific signal that justifies deviation.
+\vspace{0.35em}
+$\beta$ only has effect if the selected option also allocates exploration points.
+Choosing high $\beta$ with 0 explore points in the batch is a no-op.
+\vspace{0.35em}
+=== CAMPAIGN STATE ===\\
+Iteration: \ph{state.iteration}\\
+Resources consumed: \ph{budget\_pct}\%  |  Time remaining: \ph{time\_pct\_str}  |  Iters remaining: \~{}\ph{iters\_remaining}\\
+Pareto front HV: \ph{hv\_line}\\
+Pareto size: \ph{pareto\_size} points (\ph{pareto\_change})
+\vspace{0.35em}
+=== OPTIMIZATION SIGNALS ===\\
+HV velocity ratio: \ph{vel\_str}\\
+\hspace*{1em}(recent mean $\Delta$HV divided by historical baseline --- 1.0 = on pace, <0.5 = materially slowed, >1.0 = accelerating)\\
+MI of best explore option: \ph{mi\_line} (\ph{mi\_vs\_str})\\
+\hspace*{1em}(declining MI = design space increasingly well-characterized; elevated MI = unexplored territory remains)\\
+\ph{pareto\_coverage}\\
+=== RECENT HISTORY ===\\
+\ph{recent\_history}
+\vspace{0.35em}
+=== OUTPUT FORMAT ===\\
+Output EXACTLY these two lines (nothing else):\\
+BETA: <number>\\
+REASONING: <one sentence citing specific signals above>
+\end{fragmentbox}
+
+\begin{fragmentbox}{Adaptive-$\beta$ Call 2: allocation option selection}
+\promptfont
+You are selecting a resource allocation option for a Bayesian Optimization campaign.
+\vspace{0.35em}
+=== CONTEXT ===\\
+Beta selected: \ph{beta:.1f}\\
+Your reasoning: \ph{call1\_reasoning}\\
+Resources consumed: \ph{budget\_pct}\%  |  Time remaining: \ph{time\_pct\_str}\\
+Iters remaining: \~{}\ph{iters\_remaining}\\
+Pareto front: \ph{hv\_pts\_str} pts, HV=\ph{hv\_hv\_str}
+\vspace{0.35em}
+=== HOW TO READ THE OPTIONS TABLE ===\\
+Each option allocates the batch between qEHVI (exploitation) and qUCB (exploration) points.\\
+qEHVI score: expected direct Pareto HV improvement --- compare qEHVI values across options only.\\
+MI score: expected information gain about unexplored regions --- compare MI values across options only.\\
+Do NOT compare qEHVI against MI --- they are on different scales.\\
+Higher-index options send more points to qUCB at $\beta$=\ph{beta:.1f}.\\
+Options with more qUCB points trade qEHVI improvement for MI gain.
+\vspace{0.35em}
+\ph{options\_table}
+\vspace{0.35em}
+=== OUTPUT FORMAT ===\\
+Output EXACTLY these two lines (nothing else):\\
+SELECTED\_OPTION: <integer 0 to \ph{num\_options - 1}>\\
+REASONING: <1-2 sentences on why this option's qEHVI/MI tradeoff fits your beta reasoning>
+\end{fragmentbox}
+
+\subsection{Rule-Swap Agent Prompts}
+\label{app:prompts_rule_swap}
+
+\begin{fragmentbox}{Rule-Swap Call 1: assessment and $\beta$ selection}
+\promptfont
+You are guiding a Bayesian Optimization campaign.\\
+Problem: \ph{problem\_description}\\
+Objectives: \ph{objectives\_str}
+\vspace{0.35em}
+qEHVI already balances exploration and exploitation within the regions it believes the
+Pareto front is likely to expand into. It naturally pushes toward unexplored areas
+when those areas have high improvement potential. It is the right default in most
+situations.
+\vspace{0.35em}
+qUCB serves a different purpose: it explores regions of the design space that have not
+been evaluated much, regardless of whether the GP currently predicts them to be
+Pareto-improving. Its value is in discovering areas the model has not seen yet ---
+regions that may contain Pareto-optimal points qEHVI has never been directed toward.
+\vspace{0.35em}
+$\beta$ controls how explorative qUCB is: larger $\beta$ weights selection toward
+points with greater GP uncertainty, pushing further into unmapped territory. Default
+$\beta = 2.0$.
+\vspace{0.35em}
+MutualInfo measures how much the batch reduces GP uncertainty about the optimum. The
+absolute value is not interpretable --- only compare it across options within the same
+iteration. A higher MutualInfo option queries regions the GP understands least,
+regions qEHVI tends to skip because it follows the surrogate's existing beliefs. It
+does not directly guarantee better Pareto results, but it signals where the GP's
+knowledge is thinnest and where qEHVI is most likely to be under-sampling.
+\vspace{0.35em}
+=== ITERATION HISTORY (last \ph{n\_completed} completed) ===\\
+\ph{history\_text}
+\vspace{0.35em}
+=== RESOURCES ===\\
+Iterations completed: \ph{state.iteration}\\
+Estimated iters left: \ph{iters\_left}\\
+Budget remaining: \$\ph{state.budget\_remaining:.2f} (\$\ph{state.cost\_per\_point:.2f}/point)\\
+Time remaining: \ph{state.time\_remaining:.1f} weeks\\
+Current Pareto front: \ph{pareto\_summary}
+\vspace{0.35em}
+As fewer iterations remain, decisions should shift from probing uncertain regions
+toward acting on what the GP already knows is good: \~{}20+ iterations left allows
+low-cost exploration, \~{}10 iterations left should prioritize high-confidence
+improvements, and \~{}5 or fewer should exploit near-exclusively. If an event reduced
+remaining iterations sharply, use the new iteration count.
+\vspace{0.35em}
+=== YOUR TASK ===\\
+Examine the HV/pt column in the history above, but read it carefully in context.
+\vspace{0.35em}
+STEP 1 --- Identify which iterations were deliberate exploration. Rows where $\beta >
+2.0$ or qUCB points > 0 represent intentional exploration investments. Low or zero
+HV/pt on those rows is EXPECTED and NORMAL; do not count these rows as evidence of
+crowding or stagnation.
+\vspace{0.35em}
+STEP 2 --- Assess the trend on qEHVI-primary iterations only. Crowding means HV/pt is
+declining while Pareto points are still being added; stagnation means zero new Pareto
+points across multiple consecutive qEHVI-primary iterations; healthy expansion means
+HV/pt is stable or rising.
+\vspace{0.35em}
+STEP 3 --- Check whether past exploration paid off with a one-iteration lag. If the
+most recent iteration used high $\beta$ or qUCB, do NOT raise $\beta$ further yet; give
+qEHVI one iteration to exploit the updated model unless the row after exploration also
+shows continued stagnation or crowding.
+\vspace{0.35em}
+STEP 4 --- Factor in iterations remaining. With very few iterations left, raising
+$\beta$ is riskier. When in doubt with few iters left, prefer $\beta = 2.0$.
+\vspace{0.35em}
+Respond using EXACTLY this format:\\
+ASSESSMENT: <1-2 sentences describing what the HV/pt trend shows --- crowding, stagnation, or healthy expansion>\\
+BETA: <number 1--100; default is 2.0>\\
+REASONING: <1 sentence explaining the beta choice>
+\end{fragmentbox}
+
+\begin{fragmentbox}{Rule-Swap Call 2: allocation option selection}
+\promptfont
+You are selecting a resource allocation for a Bayesian Optimization campaign.
+\vspace{0.35em}
+=== SITUATION ASSESSMENT ===\\
+\ph{assessment}
+\vspace{0.35em}
+=== AVAILABLE OPTIONS ===\\
+\ph{options\_text}
+\vspace{0.35em}
+Note: qEHVI score and MutualInfo are on different scales --- compare each metric
+across options separately; do not compare them to each other. The MutualInfo absolute
+value is not meaningful on its own: only use it to rank options against each other. A
+notably higher MutualInfo on explore-heavy options signals those options query regions
+the GP knows least --- use this alongside the crowding/stagnation assessment when
+deciding how many qUCB points to include.
+\vspace{0.35em}
+=== DECISION RULES ===\\
+Option 0 (all qEHVI) is the DEFAULT. Choose it unless the assessment above identifies
+crowding or stagnation that warrants qUCB exploration.\\
+\hspace*{1em}$\bullet$ Crowding detected: choose an option with some qUCB points; scale the number of qUCB points to the severity of the signal.\\
+\hspace*{1em}$\bullet$ Stagnation detected: use a larger qUCB share.\\
+\hspace*{1em}$\bullet$ Estimated iters left is very low (\~{}5 or fewer): prefer Option 0 regardless of crowding.\\
+\hspace*{1em}$\bullet$ No clear signal, or early in the campaign: Option 0.
+\vspace{0.35em}
+Resources: est. iters left = \ph{iters\_left} | budget \$\ph{state.budget\_remaining:.2f}
+\vspace{0.35em}
+Respond using EXACTLY this format:\\
+SELECTED\_OPTION: <integer 0 to \ph{num\_options - 1}>\\
+REASONING: <1-2 sentences connecting the assessment to this specific choice>
+\end{fragmentbox}
+
+\subsection{Event Handling in Agent Prompts}
+\label{app:prompts_events}
+
+Resource events enter the agent prompts through the campaign-state and remaining-iterations fields above. The Rule-Swap prompt additionally instructs the model to treat an event-shortened campaign according to the new estimated iteration count rather than the original budget.
+
+
+% ===========================================================================
+\section{Supplementary Results}
+\label{app:supplementary_results}
+% ===========================================================================
+
+\subsection{Per-Experiment Cumulative Mutual Information}
+\label{app:cumulative_mi_table}
+
+\begin{table}[H]
+\centering
+\small
+\input{figures/tab_cumulative_mi_full}
+\caption{Cumulative mutual information, final normalized hypervolume, and area
+         under the hypervolume curve for every system, experiment, and strategy
+         (mean $\pm$ SEM, $n = 25$ seeds).}
+\label{tab:cumulative-mi-full}
+\end{table}
+
+\subsection{Pairwise Significance Tests}
+\label{app:significance}
+
+All strategy comparisons use the two-sided Wilcoxon signed-rank test applied to
+per-seed differences. The two strategies in a pair are matched by shared random seed,
+so each of the $n = 25$ paired observations contrasts strategies that began from the
+same initial design and the same random state. No multiple-comparison correction is
+applied: the 144 tests reported in Table~\ref{tab:significance} (six strategy pairs
+$\times$ three metrics $\times$ eight experiments) are individually uncorrected, and
+$p$-values close to the conventional $0.05$ threshold should therefore be read as
+descriptive rather than confirmatory.
+
+\begin{table}[H]
+\centering
+\footnotesize
+\input{figures/tab_significance}
+\caption{Pairwise strategy comparisons for final normalized hypervolume, AUC-HV,
+         and cumulative mutual information ($n = 25$ seeds per strategy). Two-sided
+         paired Wilcoxon signed-rank, uncorrected; markers denote
+         \textsuperscript{*}$p < 0.05$, \textsuperscript{**}$p < 0.01$,
+         \textsuperscript{***}$p < 0.001$.}
+\label{tab:significance}
+\end{table}

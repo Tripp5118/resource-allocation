@@ -1,0 +1,17 @@
+{
+  "iteration": 52,
+  "beta": 2.0,
+  "option": 1,
+  "reasoning_c1": "With 94% resources consumed, HV velocity is materially slowed, and MI is declining, indicating exploration is saturated; thus, a conservative \u03b2 is appropriate.",
+  "reasoning_c2": "Option 1 balances a conservative approach with a slight exploration benefit, aligning with the need for a conservative \u03b2 due to saturated exploration and limited resources.",
+  "signals": {
+    "velocity_ratio": 0.009,
+    "recent_hv_rate": 0.00345,
+    "baseline_hv_rate": 0.37912,
+    "mi_current": 0.00648,
+    "mi_vs_start": 0.014,
+    "resource_fraction_remaining": 0.056,
+    "iters_remaining": 3,
+    "time_pct_remaining": 5.6
+  }
+}

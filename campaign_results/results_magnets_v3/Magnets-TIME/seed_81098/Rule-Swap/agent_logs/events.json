@@ -1,0 +1,17 @@
+{
+  "scheduled_events": [
+    {
+      "iteration": 13,
+      "type": "time_change",
+      "description": "Time reduced at iteration 13 to 12 time units total"
+    }
+  ],
+  "triggered_events": [
+    {
+      "iteration": 13,
+      "event_type": "time_change",
+      "description": "Time reduced at iteration 13 to 12 time units total",
+      "timestamp": 13
+    }
+  ]
+}

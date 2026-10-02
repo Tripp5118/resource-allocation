@@ -1,0 +1,17 @@
+{
+  "iteration": 6,
+  "beta": 2.0,
+  "option": 2,
+  "reasoning_c1": "Early in the campaign with HV actively improving (HV velocity ratio 0.651) and elevated MI (0.6738) suggests maintaining conservative exploration.",
+  "reasoning_c2": "Option 2 provides a balanced trade-off between qEHVI improvement and MI gain, aligning with the conservative exploration strategy due to the early campaign stage and active HV improvement.",
+  "signals": {
+    "velocity_ratio": 0.651,
+    "recent_hv_rate": 0.04979,
+    "baseline_hv_rate": 0.07644,
+    "mi_current": 0.67383,
+    "mi_vs_start": 7.673,
+    "resource_fraction_remaining": 0.898,
+    "iters_remaining": 44,
+    "time_pct_remaining": 89.8
+  }
+}

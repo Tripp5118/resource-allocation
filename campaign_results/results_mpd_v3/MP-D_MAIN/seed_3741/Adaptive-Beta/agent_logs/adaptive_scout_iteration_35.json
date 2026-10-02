@@ -1,0 +1,17 @@
+{
+  "iteration": 35,
+  "beta": 3.0,
+  "option": 2,
+  "reasoning_c1": "HV progress has materially stalled with MI declining, indicating exploration is saturated; maintain moderate exploration with \u03b2=3.0.",
+  "reasoning_c2": "Option 2 balances moderate exploration with \u03b2=3.0 by providing a reasonable MI gain while still achieving some qEHVI improvement, aligning with the need to maintain exploration without stalling progress.",
+  "signals": {
+    "velocity_ratio": 0.547,
+    "recent_hv_rate": 0.32044,
+    "baseline_hv_rate": 0.58591,
+    "mi_current": 0.08324,
+    "mi_vs_start": 0.121,
+    "resource_fraction_remaining": 0.37,
+    "iters_remaining": 20,
+    "time_pct_remaining": 37.0
+  }
+}

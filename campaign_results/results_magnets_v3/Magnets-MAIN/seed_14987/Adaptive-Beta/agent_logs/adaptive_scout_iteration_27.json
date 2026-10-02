@@ -1,0 +1,17 @@
+{
+  "iteration": 27,
+  "beta": 2.0,
+  "option": 0,
+  "reasoning_c1": "HV has materially stalled and MI is declining, indicating the design space is well-characterized, so a conservative \u03b2 is appropriate.",
+  "reasoning_c2": "With a conservative \u03b2 of 2.0, prioritizing exploitation is appropriate since the design space is well-characterized, and Option 0 maximizes qEHVI, aligning with the goal of improving the Pareto front.",
+  "signals": {
+    "velocity_ratio": 0.029,
+    "recent_hv_rate": 0.00011,
+    "baseline_hv_rate": 0.00366,
+    "mi_current": 0.01637,
+    "mi_vs_start": 0.024,
+    "resource_fraction_remaining": 0.469,
+    "iters_remaining": 23,
+    "time_pct_remaining": 46.9
+  }
+}

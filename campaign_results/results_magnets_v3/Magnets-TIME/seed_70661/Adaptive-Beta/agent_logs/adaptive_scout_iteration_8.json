@@ -1,0 +1,17 @@
+{
+  "iteration": 8,
+  "beta": 2.0,
+  "option": 3,
+  "reasoning_c1": "Early in the campaign with high MI and moderate HV velocity ratio suggests maintaining conservative exploration.",
+  "reasoning_c2": "Option 3 balances exploration and exploitation with a moderate qEHVI and high MI, aligning with the conservative exploration strategy indicated by the high MI and moderate HV velocity ratio early in the campaign.",
+  "signals": {
+    "velocity_ratio": 0.268,
+    "recent_hv_rate": 0.00411,
+    "baseline_hv_rate": 0.01531,
+    "mi_current": 0.88471,
+    "mi_vs_start": 4.264,
+    "resource_fraction_remaining": 0.857,
+    "iters_remaining": 42,
+    "time_pct_remaining": 85.7
+  }
+}

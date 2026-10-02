@@ -1,0 +1,33 @@
+# Secrets
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+*.egg
+.eggs/
+.venv/
+venv/
+ENV/
+.pytest_cache/
+.ipynb_checkpoints/
+
+# Experiment output
+/results_magnets_v3/
+/results_mpd_v3/
+/logs/
+
+# Generated analysis output
+/figures/*.png
+/figures/*.pdf
+/figures/parity/
+/analysis/gap_stats_output*.txt
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo

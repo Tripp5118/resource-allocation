@@ -1,0 +1,17 @@
+{
+  "iteration": 44,
+  "beta": 5.0,
+  "option": 1,
+  "reasoning_c1": "With HV stalling and elevated MI, aggressive exploration with \u03b2=5.0 is justified to discover new productive regions.",
+  "reasoning_c2": "Option 1 balances exploration and exploitation, aligning with the aggressive exploration strategy justified by the elevated MI and HV stalling, while still maintaining a reasonable qEHVI score.",
+  "signals": {
+    "velocity_ratio": 0.46,
+    "recent_hv_rate": 0.17902,
+    "baseline_hv_rate": 0.38888,
+    "mi_current": 0.36558,
+    "mi_vs_start": 2.127,
+    "resource_fraction_remaining": 0.204,
+    "iters_remaining": 11,
+    "time_pct_remaining": 20.4
+  }
+}

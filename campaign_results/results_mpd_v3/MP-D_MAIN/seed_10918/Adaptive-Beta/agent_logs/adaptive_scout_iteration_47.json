@@ -1,0 +1,17 @@
+{
+  "iteration": 47,
+  "beta": 2.0,
+  "option": 1,
+  "reasoning_c1": "With HV velocity materially slowed and MI declining to 1.9% of its initial value, exploration is saturated, suggesting a conservative \u03b2 of 2.0 to focus on optimization near known regions.",
+  "reasoning_c2": "Option 1 balances a strong qEHVI score with moderate MI, aligning with the conservative \u03b2 of 2.0 to focus on optimization while maintaining some exploration.",
+  "signals": {
+    "velocity_ratio": 0.244,
+    "recent_hv_rate": 0.10425,
+    "baseline_hv_rate": 0.42662,
+    "mi_current": 0.00623,
+    "mi_vs_start": 0.019,
+    "resource_fraction_remaining": 0.148,
+    "iters_remaining": 8,
+    "time_pct_remaining": 14.8
+  }
+}

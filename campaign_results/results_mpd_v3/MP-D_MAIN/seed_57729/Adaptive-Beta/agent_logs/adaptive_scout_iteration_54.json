@@ -1,0 +1,17 @@
+{
+  "iteration": 54,
+  "beta": 5.0,
+  "option": 1,
+  "reasoning_c1": "With HV stagnation and elevated MI, aggressive exploration is justified to potentially discover new productive regions.",
+  "reasoning_c2": "Option 1 balances exploration and exploitation, providing a significant MI gain to explore new regions while still maintaining a reasonable qEHVI score, aligning with the aggressive exploration strategy justified by the high beta value.",
+  "signals": {
+    "velocity_ratio": 0.13,
+    "recent_hv_rate": 0.05241,
+    "baseline_hv_rate": 0.40462,
+    "mi_current": 0.28159,
+    "mi_vs_start": 0.404,
+    "resource_fraction_remaining": 0.019,
+    "iters_remaining": 1,
+    "time_pct_remaining": 1.9
+  }
+}

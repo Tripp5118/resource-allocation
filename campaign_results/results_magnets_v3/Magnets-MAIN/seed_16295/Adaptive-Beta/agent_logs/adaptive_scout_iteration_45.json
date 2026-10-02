@@ -1,0 +1,17 @@
+{
+  "iteration": 45,
+  "beta": 2.0,
+  "option": 1,
+  "reasoning_c1": "With 90% resources consumed and MI declining to 1.5% of iteration-1 value, exploration is saturated, justifying a conservative \u03b2 of 2.0.",
+  "reasoning_c2": "Option 1 balances exploitation and exploration, providing a reasonable qEHVI improvement while still gaining some MI, aligning with the conservative \u03b2 of 2.0 given the saturated exploration.",
+  "signals": {
+    "velocity_ratio": 4.503,
+    "recent_hv_rate": 0.00911,
+    "baseline_hv_rate": 0.00202,
+    "mi_current": 0.00603,
+    "mi_vs_start": 0.015,
+    "resource_fraction_remaining": 0.102,
+    "iters_remaining": 5,
+    "time_pct_remaining": 10.2
+  }
+}

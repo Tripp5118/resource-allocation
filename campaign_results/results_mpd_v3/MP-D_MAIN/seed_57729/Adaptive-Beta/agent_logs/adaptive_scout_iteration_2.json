@@ -1,0 +1,14 @@
+{
+  "iteration": 2,
+  "beta": 2.0,
+  "option": 2,
+  "reasoning_c1": "Early in the campaign with high MI and accelerating HV, a conservative \u03b2=2.0 balances exploration and exploitation effectively.",
+  "reasoning_c2": "Option 2 provides a balanced tradeoff with a moderate qEHVI score and the highest MI score, aligning with the conservative \u03b2=2.0 strategy to effectively balance exploration and exploitation early in the campaign.",
+  "signals": {
+    "mi_current": 0.69637,
+    "mi_vs_start": 1.0,
+    "resource_fraction_remaining": 0.981,
+    "iters_remaining": 53,
+    "time_pct_remaining": 98.1
+  }
+}

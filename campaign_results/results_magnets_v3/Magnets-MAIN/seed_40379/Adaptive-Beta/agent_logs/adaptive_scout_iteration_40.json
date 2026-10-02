@@ -1,0 +1,17 @@
+{
+  "iteration": 40,
+  "beta": 2.0,
+  "option": 1,
+  "reasoning_c1": "HV has materially stalled and MI is declining, indicating exploration is saturated and further aggressive exploration is not justified.",
+  "reasoning_c2": "Option 1 provides a good balance with a slight emphasis on exploitation, aligning with the reasoning that exploration is saturated, while still offering a significant MI gain.",
+  "signals": {
+    "velocity_ratio": 0.018,
+    "recent_hv_rate": 3e-05,
+    "baseline_hv_rate": 0.00155,
+    "mi_current": 0.03451,
+    "mi_vs_start": 0.03,
+    "resource_fraction_remaining": 0.204,
+    "iters_remaining": 10,
+    "time_pct_remaining": 20.4
+  }
+}

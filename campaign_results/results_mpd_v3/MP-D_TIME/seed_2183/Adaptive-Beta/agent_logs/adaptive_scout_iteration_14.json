@@ -1,0 +1,17 @@
+{
+  "iteration": 14,
+  "beta": 5.0,
+  "option": 1,
+  "reasoning_c1": "HV progress has materially stalled (HV velocity ratio 0.180) and MI is still elevated at 17.8% of iteration-1 value, indicating unexplored territory remains.",
+  "reasoning_c2": "Option 1 balances exploration and exploitation, providing a reasonable qEHVI improvement while significantly enhancing MI, aligning with the need to explore unexplored regions indicated by the elevated MI.",
+  "signals": {
+    "velocity_ratio": 0.18,
+    "recent_hv_rate": 1.24478,
+    "baseline_hv_rate": 6.89737,
+    "mi_current": 0.08445,
+    "mi_vs_start": 0.178,
+    "resource_fraction_remaining": 0.759,
+    "iters_remaining": 41,
+    "time_pct_remaining": 75.9
+  }
+}

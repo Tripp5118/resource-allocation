@@ -1,0 +1,17 @@
+{
+  "iteration": 25,
+  "beta": 5.0,
+  "option": 1,
+  "reasoning_c1": "The campaign is nearly complete with HV velocity materially slowed and MI still elevated, justifying moderate exploration with \u03b2=5.0.",
+  "reasoning_c2": "Option 1 offers a balanced tradeoff with moderate exploration, aligning with the chosen \u03b2=5.0, while still maintaining a reasonable qEHVI score for Pareto improvement.",
+  "signals": {
+    "velocity_ratio": 0.184,
+    "recent_hv_rate": 0.3435,
+    "baseline_hv_rate": 1.86455,
+    "mi_current": 0.12271,
+    "mi_vs_start": 3.419,
+    "resource_fraction_remaining": 0.0,
+    "iters_remaining": 0,
+    "time_pct_remaining": 0.0
+  }
+}

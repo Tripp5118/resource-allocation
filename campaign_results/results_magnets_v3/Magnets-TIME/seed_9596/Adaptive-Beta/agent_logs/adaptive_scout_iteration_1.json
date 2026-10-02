@@ -1,0 +1,12 @@
+{
+  "iteration": 1,
+  "beta": 2.0,
+  "option": 2,
+  "reasoning_c1": "Early in the campaign with no history, so prefer conservative exploration with \u03b2 \u2248 2.",
+  "reasoning_c2": "Option 2 balances exploration and exploitation with a good qEHVI score and high MI, aligning with the conservative exploration strategy early in the campaign with \u03b2=2.0.",
+  "signals": {
+    "resource_fraction_remaining": 1.0,
+    "iters_remaining": 0,
+    "time_pct_remaining": 100.0
+  }
+}

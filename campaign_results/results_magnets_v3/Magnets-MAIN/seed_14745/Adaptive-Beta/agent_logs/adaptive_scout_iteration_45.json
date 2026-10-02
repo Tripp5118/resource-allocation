@@ -1,0 +1,17 @@
+{
+  "iteration": 45,
+  "beta": 2.0,
+  "option": 1,
+  "reasoning_c1": "With 90% resources consumed and declining MI, a conservative \u03b2=2 is appropriate to focus on HV improvement as the campaign nears completion.",
+  "reasoning_c2": "Option 1 provides a balanced trade-off with a strong qEHVI score for HV improvement while still gaining some MI, aligning with the conservative \u03b2=2 focus on exploitation as the campaign nears completion.",
+  "signals": {
+    "velocity_ratio": 0.115,
+    "recent_hv_rate": 0.00028,
+    "baseline_hv_rate": 0.00239,
+    "mi_current": 0.08317,
+    "mi_vs_start": 0.162,
+    "resource_fraction_remaining": 0.102,
+    "iters_remaining": 5,
+    "time_pct_remaining": 10.2
+  }
+}

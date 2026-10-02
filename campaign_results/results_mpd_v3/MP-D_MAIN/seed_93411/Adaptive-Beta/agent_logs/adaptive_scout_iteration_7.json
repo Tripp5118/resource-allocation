@@ -1,0 +1,17 @@
+{
+  "iteration": 7,
+  "beta": 2.0,
+  "option": 2,
+  "reasoning_c1": "The campaign is early, HV is still improving, and MI indicates unexplored territory remains, justifying a conservative \u03b2.",
+  "reasoning_c2": "Option 2 balances exploration and exploitation by allocating 2 points to qUCB, which aligns with the conservative \u03b2=2.0 reasoning, as it maintains a good qEHVI score while significantly improving MI, indicating further exploration is warranted.",
+  "signals": {
+    "velocity_ratio": 0.383,
+    "recent_hv_rate": 8.78379,
+    "baseline_hv_rate": 22.94433,
+    "mi_current": 0.2539,
+    "mi_vs_start": 1.61,
+    "resource_fraction_remaining": 0.889,
+    "iters_remaining": 48,
+    "time_pct_remaining": 88.9
+  }
+}

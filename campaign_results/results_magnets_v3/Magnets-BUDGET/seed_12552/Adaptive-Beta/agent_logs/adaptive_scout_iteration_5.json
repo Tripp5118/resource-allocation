@@ -1,0 +1,17 @@
+{
+  "iteration": 5,
+  "beta": 2.0,
+  "option": 2,
+  "reasoning_c1": "Early campaign stage with high HV velocity and elevated MI suggests maintaining conservative exploration.",
+  "reasoning_c2": "Option 2 balances exploration and exploitation, aligning with the conservative exploration strategy suggested by the high HV velocity and elevated MI at this early campaign stage.",
+  "signals": {
+    "velocity_ratio": 0.962,
+    "recent_hv_rate": 0.09793,
+    "baseline_hv_rate": 0.10181,
+    "mi_current": 0.30116,
+    "mi_vs_start": 1.244,
+    "resource_fraction_remaining": 0.918,
+    "iters_remaining": 45,
+    "time_pct_remaining": 91.8
+  }
+}

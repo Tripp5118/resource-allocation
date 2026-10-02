@@ -1,0 +1,17 @@
+{
+  "iteration": 48,
+  "beta": 5.0,
+  "option": 3,
+  "reasoning_c1": "HV has materially stalled and MI is still elevated, indicating potential for discovering new productive regions with moderate exploration.",
+  "reasoning_c2": "Option 3 balances exploration and exploitation by allocating 3 points to qUCB, which provides a significant MI gain while still maintaining a reasonable qEHVI score, aligning with the elevated MI and moderate exploration strategy.",
+  "signals": {
+    "velocity_ratio": 0.027,
+    "recent_hv_rate": 0.01497,
+    "baseline_hv_rate": 0.55185,
+    "mi_current": 0.10421,
+    "mi_vs_start": 0.15,
+    "resource_fraction_remaining": 0.13,
+    "iters_remaining": 7,
+    "time_pct_remaining": 13.0
+  }
+}

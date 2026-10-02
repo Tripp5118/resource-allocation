@@ -1,0 +1,17 @@
+{
+  "iteration": 9,
+  "beta": 2.0,
+  "option": 2,
+  "reasoning_c1": "Early in the campaign with 16% resources consumed, elevated beta is not justified as HV is improving and MI is declining.",
+  "reasoning_c2": "Option 2 provides a balanced trade-off between qEHVI and MI, aligning with the early campaign stage and the current beta of 2.0, as it maintains reasonable HV improvement while gaining significant information about unexplored regions.",
+  "signals": {
+    "velocity_ratio": 0.727,
+    "recent_hv_rate": 0.01395,
+    "baseline_hv_rate": 0.01919,
+    "mi_current": 0.19948,
+    "mi_vs_start": 0.294,
+    "resource_fraction_remaining": 0.837,
+    "iters_remaining": 41,
+    "time_pct_remaining": 83.7
+  }
+}

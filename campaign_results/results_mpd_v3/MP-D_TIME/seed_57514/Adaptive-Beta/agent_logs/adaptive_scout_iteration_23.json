@@ -1,0 +1,17 @@
+{
+  "iteration": 23,
+  "beta": 3.0,
+  "option": 3,
+  "reasoning_c1": "With 96% resources consumed and MI at 51.3% of iteration-1 value, moderate exploration with \u03b2=3.0 balances exploration and exploitation to potentially uncover new productive regions before the campaign ends.",
+  "reasoning_c2": "Option 3 balances exploration and exploitation by allocating 3 points to qUCB, enhancing MI while still maintaining a reasonable qEHVI, aligning with the moderate exploration strategy at \u03b2=3.0.",
+  "signals": {
+    "velocity_ratio": 0.018,
+    "recent_hv_rate": 0.04335,
+    "baseline_hv_rate": 2.4145,
+    "mi_current": 0.28729,
+    "mi_vs_start": 0.513,
+    "resource_fraction_remaining": 0.037,
+    "iters_remaining": 2,
+    "time_pct_remaining": 3.7
+  }
+}

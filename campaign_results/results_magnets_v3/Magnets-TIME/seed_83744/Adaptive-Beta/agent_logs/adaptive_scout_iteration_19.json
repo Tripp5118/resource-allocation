@@ -1,0 +1,17 @@
+{
+  "iteration": 19,
+  "beta": 2.0,
+  "option": 1,
+  "reasoning_c1": "With HV velocity materially slowed and MI declining, a conservative \u03b2 of 2.0 is appropriate to focus on known regions as the campaign nears completion.",
+  "reasoning_c2": "Option 1 balances qEHVI and MI, providing a good tradeoff between exploitation and exploration. With a conservative \u03b2 of 2.0, it focuses on known regions while still gaining some information about unexplored areas.",
+  "signals": {
+    "velocity_ratio": 0.49,
+    "recent_hv_rate": 0.00266,
+    "baseline_hv_rate": 0.00543,
+    "mi_current": 0.06153,
+    "mi_vs_start": 0.091,
+    "resource_fraction_remaining": 0.122,
+    "iters_remaining": 6,
+    "time_pct_remaining": 12.2
+  }
+}

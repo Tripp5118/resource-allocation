@@ -1,0 +1,17 @@
+{
+  "iteration": 22,
+  "beta": 3.0,
+  "option": 1,
+  "reasoning_c1": "HV progress has materially slowed (HV velocity ratio 0.279), MI is declining (11.4% of iteration-1 value), and the campaign is nearly complete (92% resources consumed).",
+  "reasoning_c2": "Option 1 balances exploitation and exploration, providing a reasonable qEHVI improvement while significantly enhancing MI, aligning with the need for exploration as MI is declining and resources are nearly consumed.",
+  "signals": {
+    "velocity_ratio": 0.279,
+    "recent_hv_rate": 0.00151,
+    "baseline_hv_rate": 0.00539,
+    "mi_current": 0.10769,
+    "mi_vs_start": 0.114,
+    "resource_fraction_remaining": 0.082,
+    "iters_remaining": 4,
+    "time_pct_remaining": 55.1
+  }
+}

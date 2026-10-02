@@ -1,0 +1,17 @@
+{
+  "iteration": 17,
+  "beta": 5.0,
+  "option": 1,
+  "reasoning_c1": "HV has materially stalled with a low velocity ratio, and MI is low, indicating exploration is nearly saturated.",
+  "reasoning_c2": "Option 1 provides a balanced tradeoff with a significant MI gain, indicating exploration, while still maintaining a reasonable qEHVI score for exploitation, aligning with the need to slightly enhance exploration as the campaign progresses.",
+  "signals": {
+    "velocity_ratio": 0.104,
+    "recent_hv_rate": 0.00138,
+    "baseline_hv_rate": 0.01329,
+    "mi_current": 0.03611,
+    "mi_vs_start": 0.038,
+    "resource_fraction_remaining": 0.653,
+    "iters_remaining": 32,
+    "time_pct_remaining": 65.3
+  }
+}

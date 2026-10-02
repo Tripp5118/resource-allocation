@@ -1,0 +1,17 @@
+{
+  "iteration": 19,
+  "beta": 5.0,
+  "option": 1,
+  "reasoning_c1": "HV progress has materially slowed, MI is declining but still elevated, and recent history shows improved Pareto points with \u03b2=5.0.",
+  "reasoning_c2": "Option 1 balances qEHVI and MI, maintaining a focus on exploitation while still gaining some exploration, aligning with the need to improve Pareto points with \u03b2=5.0 as HV progress slows.",
+  "signals": {
+    "velocity_ratio": 0.074,
+    "recent_hv_rate": 0.18246,
+    "baseline_hv_rate": 2.47712,
+    "mi_current": 0.1481,
+    "mi_vs_start": 0.185,
+    "resource_fraction_remaining": 0.111,
+    "iters_remaining": 6,
+    "time_pct_remaining": 66.7
+  }
+}

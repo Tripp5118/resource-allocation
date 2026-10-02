@@ -1,0 +1,17 @@
+{
+  "iteration": 9,
+  "beta": 2.0,
+  "option": 1,
+  "reasoning_c1": "HV is actively improving (\u0394=+3.3708) and MI is declining (11.6% of iteration-1 value), indicating exploration is becoming less necessary.",
+  "reasoning_c2": "Option 1 balances the need for continued exploitation with a slight increase in exploration, aligning with the reasoning that exploration is becoming less necessary while still providing a good qEHVI improvement.",
+  "signals": {
+    "velocity_ratio": 0.26,
+    "recent_hv_rate": 2.55091,
+    "baseline_hv_rate": 9.82316,
+    "mi_current": 0.23157,
+    "mi_vs_start": 0.116,
+    "resource_fraction_remaining": 0.852,
+    "iters_remaining": 46,
+    "time_pct_remaining": 85.2
+  }
+}

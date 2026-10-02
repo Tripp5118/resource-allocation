@@ -1,0 +1,17 @@
+{
+  "iteration": 6,
+  "beta": 2.0,
+  "option": 1,
+  "reasoning_c1": "HV is actively improving with a high MI signal, indicating unexplored territory remains, justifying a conservative \u03b2.",
+  "reasoning_c2": "Option 1 balances qEHVI and MI, aligning with the conservative \u03b2=2.0 by allowing for exploration while still improving the Pareto front.",
+  "signals": {
+    "velocity_ratio": 0.964,
+    "recent_hv_rate": 42.08156,
+    "baseline_hv_rate": 43.65486,
+    "mi_current": 0.3611,
+    "mi_vs_start": 13.428,
+    "resource_fraction_remaining": 0.907,
+    "iters_remaining": 49,
+    "time_pct_remaining": 90.7
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "iteration": 21,
+  "beta": 2.0,
+  "option": 1,
+  "reasoning_c1": "HV is actively improving (HV velocity ratio > 1.0) and MI is declining, indicating exploration is saturated.",
+  "reasoning_c2": "Option 1 balances exploration and exploitation by slightly favoring qEHVI while still providing a significant MI gain, aligning with the need to capitalize on the improving HV while maintaining some exploration.",
+  "signals": {
+    "velocity_ratio": 1.08,
+    "recent_hv_rate": 0.01273,
+    "baseline_hv_rate": 0.01179,
+    "mi_current": 0.04838,
+    "mi_vs_start": 0.253,
+    "resource_fraction_remaining": 0.102,
+    "iters_remaining": 5,
+    "time_pct_remaining": 57.1
+  }
+}

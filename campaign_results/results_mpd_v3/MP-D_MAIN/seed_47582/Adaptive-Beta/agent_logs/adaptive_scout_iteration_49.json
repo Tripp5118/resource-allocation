@@ -1,0 +1,17 @@
+{
+  "iteration": 49,
+  "beta": 2.0,
+  "option": 0,
+  "reasoning_c1": "With HV stagnation and declining MI, a conservative \u03b2=2.0 is appropriate to focus on refining known regions rather than exploring poorly-characterized areas.",
+  "reasoning_c2": "With a conservative \u03b2=2.0 and limited time remaining, maximizing qEHVI with Option 0 focuses on refining known regions, aligning with the goal of exploiting the current Pareto front rather than exploring new areas.",
+  "signals": {
+    "velocity_ratio": 0.028,
+    "recent_hv_rate": 0.01497,
+    "baseline_hv_rate": 0.5379,
+    "mi_current": 0.03547,
+    "mi_vs_start": 0.051,
+    "resource_fraction_remaining": 0.111,
+    "iters_remaining": 6,
+    "time_pct_remaining": 11.1
+  }
+}

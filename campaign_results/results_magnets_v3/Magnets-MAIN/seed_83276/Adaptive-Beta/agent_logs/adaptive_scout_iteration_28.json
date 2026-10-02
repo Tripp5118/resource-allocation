@@ -1,0 +1,17 @@
+{
+  "iteration": 28,
+  "beta": 5.0,
+  "option": 2,
+  "reasoning_c1": "HV has materially stalled and MI is low, indicating the design space is well-characterized, justifying moderate exploration with \u03b2=5.0.",
+  "reasoning_c2": "Option 2 provides a balanced tradeoff between qEHVI and MI, aligning with the moderate exploration strategy justified by the stalled HV and low MI, while still allowing for some exploitation.",
+  "signals": {
+    "velocity_ratio": 0.017,
+    "recent_hv_rate": 4e-05,
+    "baseline_hv_rate": 0.00252,
+    "mi_current": 0.0449,
+    "mi_vs_start": 0.103,
+    "resource_fraction_remaining": 0.449,
+    "iters_remaining": 22,
+    "time_pct_remaining": 44.9
+  }
+}

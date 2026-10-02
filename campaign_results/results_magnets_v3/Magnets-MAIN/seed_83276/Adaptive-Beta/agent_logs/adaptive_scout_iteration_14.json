@@ -1,0 +1,17 @@
+{
+  "iteration": 14,
+  "beta": 3.0,
+  "option": 1,
+  "reasoning_c1": "HV velocity is accelerating and MI is elevated, indicating moderate exploration with \u03b2=3 is appropriate to explore remaining territory.",
+  "reasoning_c2": "Option 1 balances moderate exploration and exploitation, aligning with the elevated MI and accelerating HV velocity, while maintaining a relatively high qEHVI score.",
+  "signals": {
+    "velocity_ratio": 1.092,
+    "recent_hv_rate": 0.01129,
+    "baseline_hv_rate": 0.01034,
+    "mi_current": 0.273,
+    "mi_vs_start": 0.624,
+    "resource_fraction_remaining": 0.735,
+    "iters_remaining": 36,
+    "time_pct_remaining": 73.5
+  }
+}

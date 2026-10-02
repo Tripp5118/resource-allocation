@@ -1,0 +1,17 @@
+{
+  "iteration": 16,
+  "beta": 3.0,
+  "option": 1,
+  "reasoning_c1": "Moderate exploration with \u03b2=3.0 is appropriate as HV progress has slowed (HV velocity ratio 0.895) but MI remains elevated (0.3523), indicating unexplored territory.",
+  "reasoning_c2": "Option 1 balances moderate exploration and exploitation, aligning with the chosen \u03b2=3.0 by providing significant MI gain (0.3228) while still achieving a reasonable qEHVI improvement (1.4469), suitable for the current campaign status.",
+  "signals": {
+    "velocity_ratio": 0.895,
+    "recent_hv_rate": 0.00674,
+    "baseline_hv_rate": 0.00753,
+    "mi_current": 0.35234,
+    "mi_vs_start": 0.347,
+    "resource_fraction_remaining": 0.694,
+    "iters_remaining": 34,
+    "time_pct_remaining": 69.4
+  }
+}

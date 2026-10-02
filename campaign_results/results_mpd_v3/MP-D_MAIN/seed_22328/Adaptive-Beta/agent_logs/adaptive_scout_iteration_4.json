@@ -1,0 +1,17 @@
+{
+  "iteration": 4,
+  "beta": 2.0,
+  "option": 1,
+  "reasoning_c1": "HV is actively improving with elevated MI, indicating unexplored territory, justifying a conservative \u03b2 early in the campaign.",
+  "reasoning_c2": "Option 1 balances qEHVI and MI, maintaining a good level of exploration with one qUCB point while still achieving a strong qEHVI score, aligning with the conservative \u03b2=2.0 strategy early in the campaign.",
+  "signals": {
+    "velocity_ratio": 1.0,
+    "recent_hv_rate": 86.27636,
+    "baseline_hv_rate": 86.27636,
+    "mi_current": 2.03702,
+    "mi_vs_start": 5.272,
+    "resource_fraction_remaining": 0.944,
+    "iters_remaining": 51,
+    "time_pct_remaining": 94.4
+  }
+}

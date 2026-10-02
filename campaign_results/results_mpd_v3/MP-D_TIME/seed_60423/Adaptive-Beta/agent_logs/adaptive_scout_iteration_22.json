@@ -1,0 +1,17 @@
+{
+  "iteration": 22,
+  "beta": 8.0,
+  "option": 5,
+  "reasoning_c1": "With HV stalled and MI significantly elevated, aggressive exploration is justified to discover new productive regions.",
+  "reasoning_c2": "With HV stalled and MI significantly elevated, Option 5 maximizes exploration by allocating all points to qUCB, aligning with the aggressive exploration strategy justified by the high beta value.",
+  "signals": {
+    "velocity_ratio": 0.235,
+    "recent_hv_rate": 0.85401,
+    "baseline_hv_rate": 3.63726,
+    "mi_current": 0.19778,
+    "mi_vs_start": 7.355,
+    "resource_fraction_remaining": 0.056,
+    "iters_remaining": 3,
+    "time_pct_remaining": 5.6
+  }
+}

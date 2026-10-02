@@ -1,0 +1,17 @@
+{
+  "iteration": 13,
+  "beta": 3.0,
+  "option": 1,
+  "reasoning_c1": "HV is accelerating with a high MI signal, suggesting moderate exploration is appropriate.",
+  "reasoning_c2": "Option 1 balances moderate exploration with a high MI signal, aligning with the need for exploration while still maintaining a strong qEHVI score.",
+  "signals": {
+    "velocity_ratio": 1.572,
+    "recent_hv_rate": 0.03604,
+    "baseline_hv_rate": 0.02293,
+    "mi_current": 0.48188,
+    "mi_vs_start": 2.269,
+    "resource_fraction_remaining": 0.245,
+    "iters_remaining": 12,
+    "time_pct_remaining": 24.5
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "iteration": 9,
+  "beta": 2.0,
+  "option": 2,
+  "reasoning_c1": "Early campaign stage with 16% resources consumed and elevated MI suggests maintaining conservative exploration.",
+  "reasoning_c2": "Option 2 balances exploration and exploitation, aligning with the conservative exploration strategy suggested by the elevated MI and early campaign stage, while still providing a reasonable qEHVI improvement.",
+  "signals": {
+    "velocity_ratio": 0.241,
+    "recent_hv_rate": 0.00813,
+    "baseline_hv_rate": 0.03376,
+    "mi_current": 0.34711,
+    "mi_vs_start": 2.459,
+    "resource_fraction_remaining": 0.837,
+    "iters_remaining": 41,
+    "time_pct_remaining": 83.7
+  }
+}

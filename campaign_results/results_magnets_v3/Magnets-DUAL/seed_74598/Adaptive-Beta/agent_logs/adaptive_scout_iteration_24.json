@@ -1,0 +1,17 @@
+{
+  "iteration": 24,
+  "beta": 5.0,
+  "option": 1,
+  "reasoning_c1": "With HV velocity slowing (0.909) and elevated MI (0.3506), moderate exploration with \u03b2=5.0 is justified to scout unexplored regions.",
+  "reasoning_c2": "Option 1 balances exploration and exploitation by allocating one point to qUCB, which aligns with the moderate exploration strategy justified by the elevated MI and slowing HV velocity.",
+  "signals": {
+    "velocity_ratio": 0.909,
+    "recent_hv_rate": 0.00301,
+    "baseline_hv_rate": 0.00331,
+    "mi_current": 0.35059,
+    "mi_vs_start": 0.723,
+    "resource_fraction_remaining": 0.041,
+    "iters_remaining": 2,
+    "time_pct_remaining": 51.0
+  }
+}

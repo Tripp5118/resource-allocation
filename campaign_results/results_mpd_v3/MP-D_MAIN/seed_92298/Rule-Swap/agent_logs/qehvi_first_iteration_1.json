@@ -1,0 +1,9 @@
+{
+  "iteration": 1,
+  "call1_assessment": "With no completed iterations yet, there is no HV/pt trend to assess. The campaign is at the beginning stage, and exploration is crucial to map the design space effectively.",
+  "call1_beta": 2.0,
+  "call2_selected_option": 1,
+  "call2_reasoning": "The campaign is in the early stage, and exploration is crucial. Option 1 offers a good balance between exploration (qUCB) and exploitation (qEHVI), with a higher MutualInfo score indicating it queries regions the GP knows least, which is beneficial for mapping the design space effectively.",
+  "budget_remaining": 27000.0,
+  "time_remaining": 54.0
+}

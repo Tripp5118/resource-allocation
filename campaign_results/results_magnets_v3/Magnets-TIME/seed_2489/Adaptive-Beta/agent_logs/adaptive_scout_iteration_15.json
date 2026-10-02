@@ -1,0 +1,17 @@
+{
+  "iteration": 15,
+  "beta": 5.0,
+  "option": 1,
+  "reasoning_c1": "HV progress has materially slowed with a velocity ratio of 0.438, and MI is declining, indicating exploration is nearing saturation.",
+  "reasoning_c2": "Option 1 balances the need for continued exploitation with a single point for exploration, aligning with the slowing HV progress and declining MI, indicating exploration is nearing saturation.",
+  "signals": {
+    "velocity_ratio": 0.438,
+    "recent_hv_rate": 0.0059,
+    "baseline_hv_rate": 0.01347,
+    "mi_current": 0.00791,
+    "mi_vs_start": 0.057,
+    "resource_fraction_remaining": 0.204,
+    "iters_remaining": 10,
+    "time_pct_remaining": 20.4
+  }
+}

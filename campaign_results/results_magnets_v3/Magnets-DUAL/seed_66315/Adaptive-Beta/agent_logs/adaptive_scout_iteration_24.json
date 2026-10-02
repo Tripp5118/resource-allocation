@@ -1,0 +1,17 @@
+{
+  "iteration": 24,
+  "beta": 5.0,
+  "option": 1,
+  "reasoning_c1": "With HV progress materially stalled and MI elevated, moderate exploration with \u03b2=5.0 is justified to probe remaining unexplored territory.",
+  "reasoning_c2": "Option 1 provides a balanced tradeoff between qEHVI and MI, aligning with the moderate exploration strategy at \u03b2=5.0 to probe unexplored areas while still achieving significant Pareto HV improvement.",
+  "signals": {
+    "velocity_ratio": 2.131,
+    "recent_hv_rate": 0.00506,
+    "baseline_hv_rate": 0.00237,
+    "mi_current": 0.56437,
+    "mi_vs_start": 1.472,
+    "resource_fraction_remaining": 0.041,
+    "iters_remaining": 2,
+    "time_pct_remaining": 51.0
+  }
+}

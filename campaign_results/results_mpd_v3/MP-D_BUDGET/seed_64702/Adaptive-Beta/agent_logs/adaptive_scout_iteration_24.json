@@ -1,0 +1,17 @@
+{
+  "iteration": 24,
+  "beta": 2.0,
+  "option": 0,
+  "reasoning_c1": "With 98% resources consumed, HV velocity has materially slowed, and MI has significantly declined, indicating exploration is saturated and further exploration is unlikely to yield new productive regions.",
+  "reasoning_c2": "With 98% resources consumed and exploration saturated, maximizing qEHVI with Option 0 is ideal as it offers the highest expected direct Pareto HV improvement, aligning with the need for exploitation over further exploration.",
+  "signals": {
+    "velocity_ratio": 0.061,
+    "recent_hv_rate": 0.10633,
+    "baseline_hv_rate": 1.72974,
+    "mi_current": 0.08021,
+    "mi_vs_start": 0.266,
+    "resource_fraction_remaining": 0.019,
+    "iters_remaining": 1,
+    "time_pct_remaining": 57.4
+  }
+}

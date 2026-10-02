@@ -1,0 +1,17 @@
+{
+  "iteration": 11,
+  "beta": 2.0,
+  "option": 2,
+  "reasoning_c1": "Early in the campaign with HV still improving, prefer \u03b2=2.0 as MI is elevated, indicating unexplored territory remains.",
+  "reasoning_c2": "Option 2 balances exploration and exploitation effectively, with a good MI score indicating unexplored potential, aligning with the elevated MI reasoning for \u03b2=2.0.",
+  "signals": {
+    "velocity_ratio": 0.402,
+    "recent_hv_rate": 0.00813,
+    "baseline_hv_rate": 0.0202,
+    "mi_current": 0.61795,
+    "mi_vs_start": 6.203,
+    "resource_fraction_remaining": 0.796,
+    "iters_remaining": 39,
+    "time_pct_remaining": 79.6
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "iteration": 8,
+  "beta": 2.0,
+  "option": 1,
+  "reasoning_c1": "HV velocity is on pace and MI is declining, indicating the design space is becoming well-characterized; early in the campaign, so conservative exploration is appropriate.",
+  "reasoning_c2": "Option 1 provides a balanced tradeoff with a slight emphasis on exploration, aligning with the conservative exploration strategy due to the early stage of the campaign and declining MI.",
+  "signals": {
+    "velocity_ratio": 1.0,
+    "recent_hv_rate": 0.02763,
+    "baseline_hv_rate": 0.02763,
+    "mi_current": 0.23019,
+    "mi_vs_start": 0.477,
+    "resource_fraction_remaining": 0.857,
+    "iters_remaining": 42,
+    "time_pct_remaining": 85.7
+  }
+}

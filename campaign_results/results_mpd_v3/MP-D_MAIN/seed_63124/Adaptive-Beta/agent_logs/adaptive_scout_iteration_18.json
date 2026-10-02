@@ -1,0 +1,17 @@
+{
+  "iteration": 18,
+  "beta": 3.0,
+  "option": 2,
+  "reasoning_c1": "HV velocity is materially slowed (0.311), and MI remains elevated (0.3476), indicating moderate exploration is appropriate.",
+  "reasoning_c2": "Option 2 balances moderate exploration with exploitation, aligning with the need for exploration due to elevated MI and slowed HV velocity.",
+  "signals": {
+    "velocity_ratio": 0.311,
+    "recent_hv_rate": 1.72898,
+    "baseline_hv_rate": 5.55058,
+    "mi_current": 0.34761,
+    "mi_vs_start": 0.623,
+    "resource_fraction_remaining": 0.685,
+    "iters_remaining": 37,
+    "time_pct_remaining": 68.5
+  }
+}

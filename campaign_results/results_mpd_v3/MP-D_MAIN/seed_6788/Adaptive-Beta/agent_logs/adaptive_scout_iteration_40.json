@@ -1,0 +1,17 @@
+{
+  "iteration": 40,
+  "beta": 2.0,
+  "option": 1,
+  "reasoning_c1": "With HV velocity materially slowed and MI declining, a conservative \u03b2=2.0 is appropriate to focus on reliable Pareto front improvement as the campaign nears completion.",
+  "reasoning_c2": "Option 1 balances a conservative focus on reliable Pareto front improvement with a slight increase in information gain, aligning with the strategy of maintaining steady progress as the campaign nears completion.",
+  "signals": {
+    "velocity_ratio": 0.291,
+    "recent_hv_rate": 0.21072,
+    "baseline_hv_rate": 0.7246,
+    "mi_current": 0.04424,
+    "mi_vs_start": 0.05,
+    "resource_fraction_remaining": 0.278,
+    "iters_remaining": 15,
+    "time_pct_remaining": 27.8
+  }
+}

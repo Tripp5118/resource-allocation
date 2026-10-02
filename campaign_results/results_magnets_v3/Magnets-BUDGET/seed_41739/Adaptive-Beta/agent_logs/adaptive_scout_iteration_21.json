@@ -1,0 +1,17 @@
+{
+  "iteration": 21,
+  "beta": 3.0,
+  "option": 2,
+  "reasoning_c1": "HV is accelerating (HV velocity ratio > 1.0) and MI is still elevated, indicating moderate exploration is appropriate.",
+  "reasoning_c2": "Option 2 balances moderate exploration and exploitation, aligning with the elevated MI and accelerating HV, by allocating 2 points to qUCB while still maintaining a relatively high qEHVI score.",
+  "signals": {
+    "velocity_ratio": 2.793,
+    "recent_hv_rate": 0.0388,
+    "baseline_hv_rate": 0.01389,
+    "mi_current": 0.24152,
+    "mi_vs_start": 0.891,
+    "resource_fraction_remaining": 0.102,
+    "iters_remaining": 5,
+    "time_pct_remaining": 59.2
+  }
+}

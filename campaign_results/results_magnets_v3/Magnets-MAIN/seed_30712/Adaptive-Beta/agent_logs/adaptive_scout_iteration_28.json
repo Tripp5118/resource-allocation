@@ -1,0 +1,17 @@
+{
+  "iteration": 28,
+  "beta": 3.0,
+  "option": 2,
+  "reasoning_c1": "HV is accelerating with a high velocity ratio and MI is elevated, indicating unexplored territory remains, justifying moderate exploration.",
+  "reasoning_c2": "Option 2 balances moderate exploration and exploitation, aligning with the elevated MI and high velocity ratio, suggesting unexplored territory remains.",
+  "signals": {
+    "velocity_ratio": 2.422,
+    "recent_hv_rate": 0.03325,
+    "baseline_hv_rate": 0.01373,
+    "mi_current": 0.17549,
+    "mi_vs_start": 0.941,
+    "resource_fraction_remaining": 0.449,
+    "iters_remaining": 22,
+    "time_pct_remaining": 44.9
+  }
+}

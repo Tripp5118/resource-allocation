@@ -1,0 +1,17 @@
+{
+  "iteration": 47,
+  "beta": 5.0,
+  "option": 1,
+  "reasoning_c1": "HV has materially stalled with a low velocity ratio, and MI is declining, indicating a well-characterized space; maintain moderate exploration to maximize remaining potential.",
+  "reasoning_c2": "Option 1 balances moderate exploration with exploitation, aligning with the need to maintain exploration while the space is well-characterized and HV has stalled.",
+  "signals": {
+    "velocity_ratio": 0.065,
+    "recent_hv_rate": 0.00012,
+    "baseline_hv_rate": 0.00182,
+    "mi_current": 0.0448,
+    "mi_vs_start": 0.059,
+    "resource_fraction_remaining": 0.061,
+    "iters_remaining": 3,
+    "time_pct_remaining": 6.1
+  }
+}

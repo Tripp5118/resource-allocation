@@ -1,0 +1,12 @@
+{
+  "iteration": 1,
+  "beta": 2.0,
+  "option": 2,
+  "reasoning_c1": "Early in the campaign with 0% resources consumed, so a conservative \u03b2 of 2 is appropriate given the lack of history and high uncertainty in GP posterior estimates.",
+  "reasoning_c2": "Option 2 provides a balanced tradeoff between qEHVI and MI, with a reasonable qEHVI score and the highest MI gain, aligning well with the conservative \u03b2=2 approach to explore unexplored regions early in the campaign.",
+  "signals": {
+    "resource_fraction_remaining": 1.0,
+    "iters_remaining": 0,
+    "time_pct_remaining": 100.0
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "iteration": 23,
+  "beta": 5.0,
+  "option": 2,
+  "reasoning_c1": "With 94% resources consumed, HV velocity materially slowed, and MI elevated, moderate exploration with \u03b2=5.0 is justified to scout unexplored regions.",
+  "reasoning_c2": "Option 2 balances moderate exploration and exploitation, aligning with the \u03b2=5.0 strategy to explore unexplored regions while still achieving a reasonable qEHVI score.",
+  "signals": {
+    "velocity_ratio": 0.457,
+    "recent_hv_rate": 0.00653,
+    "baseline_hv_rate": 0.01429,
+    "mi_current": 0.40291,
+    "mi_vs_start": 1.664,
+    "resource_fraction_remaining": 0.061,
+    "iters_remaining": 3,
+    "time_pct_remaining": 55.1
+  }
+}

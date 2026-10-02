@@ -1,0 +1,17 @@
+{
+  "iteration": 19,
+  "beta": 5.0,
+  "option": 5,
+  "reasoning_c1": "HV has materially stalled (HV velocity ratio 0.154) and MI is still elevated (0.1156), indicating unexplored productive regions.",
+  "reasoning_c2": "With HV stalling and MI still elevated, Option 5 maximizes exploration by allocating all points to qUCB, which is crucial for discovering unexplored productive regions.",
+  "signals": {
+    "velocity_ratio": 0.154,
+    "recent_hv_rate": 0.20079,
+    "baseline_hv_rate": 1.30118,
+    "mi_current": 0.1156,
+    "mi_vs_start": 0.158,
+    "resource_fraction_remaining": 0.111,
+    "iters_remaining": 6,
+    "time_pct_remaining": 11.1
+  }
+}

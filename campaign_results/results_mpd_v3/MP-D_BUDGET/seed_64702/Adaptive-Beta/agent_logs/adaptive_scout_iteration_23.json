@@ -1,0 +1,17 @@
+{
+  "iteration": 23,
+  "beta": 5.0,
+  "option": 2,
+  "reasoning_c1": "HV has materially stalled, MI is elevated, and with only ~2 iterations remaining, aggressive exploration is justified to discover new productive regions.",
+  "reasoning_c2": "Option 2 offers a strong MI gain while still providing some qEHVI improvement, aligning well with the aggressive exploration strategy justified by the elevated MI and limited iterations remaining.",
+  "signals": {
+    "velocity_ratio": 0.075,
+    "recent_hv_rate": 0.12997,
+    "baseline_hv_rate": 1.73243,
+    "mi_current": 0.38354,
+    "mi_vs_start": 1.274,
+    "resource_fraction_remaining": 0.037,
+    "iters_remaining": 2,
+    "time_pct_remaining": 59.3
+  }
+}

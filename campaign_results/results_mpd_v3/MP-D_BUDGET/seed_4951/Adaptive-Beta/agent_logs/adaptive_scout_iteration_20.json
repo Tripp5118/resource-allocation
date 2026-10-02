@@ -1,0 +1,17 @@
+{
+  "iteration": 20,
+  "beta": 5.0,
+  "option": 3,
+  "reasoning_c1": "HV progress has materially slowed, MI is still elevated, and exploration has been productive, justifying continued moderate exploration.",
+  "reasoning_c2": "Option 3 provides a balanced tradeoff with moderate exploration (3 qUCB points) and maintains a reasonable qEHVI score, aligning with the reasoning to continue moderate exploration due to slowed HV progress and elevated MI.",
+  "signals": {
+    "velocity_ratio": 0.289,
+    "recent_hv_rate": 0.61435,
+    "baseline_hv_rate": 2.12386,
+    "mi_current": 0.26636,
+    "mi_vs_start": 0.429,
+    "resource_fraction_remaining": 0.093,
+    "iters_remaining": 5,
+    "time_pct_remaining": 64.8
+  }
+}

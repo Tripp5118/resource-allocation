@@ -1,0 +1,17 @@
+{
+  "iteration": 42,
+  "beta": 5.0,
+  "option": 1,
+  "reasoning_c1": "HV has materially stalled and MI is declining, indicating moderate exploration with \u03b2=5.0 is appropriate to potentially uncover new productive regions.",
+  "reasoning_c2": "Option 1 balances moderate exploration and exploitation, aligning with the \u03b2=5.0 strategy to uncover new productive regions while still improving the Pareto front.",
+  "signals": {
+    "velocity_ratio": 0.014,
+    "recent_hv_rate": 0.00935,
+    "baseline_hv_rate": 0.67051,
+    "mi_current": 0.11819,
+    "mi_vs_start": 0.132,
+    "resource_fraction_remaining": 0.241,
+    "iters_remaining": 13,
+    "time_pct_remaining": 24.1
+  }
+}

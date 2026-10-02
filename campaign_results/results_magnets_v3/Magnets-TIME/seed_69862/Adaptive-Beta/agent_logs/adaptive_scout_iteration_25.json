@@ -1,0 +1,17 @@
+{
+  "iteration": 25,
+  "beta": 2.0,
+  "option": 1,
+  "reasoning_c1": "The campaign is nearly complete with a declining MI and HV velocity ratio indicating material slowdown, suggesting conservative exploration is appropriate.",
+  "reasoning_c2": "With the campaign nearly complete and a conservative exploration approach warranted, Option 1 balances qEHVI improvement and MI gain, providing some exploration without significantly sacrificing exploitation.",
+  "signals": {
+    "velocity_ratio": 0.027,
+    "recent_hv_rate": 0.00027,
+    "baseline_hv_rate": 0.01004,
+    "mi_current": 0.36985,
+    "mi_vs_start": 0.362,
+    "resource_fraction_remaining": 0.0,
+    "iters_remaining": 0,
+    "time_pct_remaining": 0.0
+  }
+}

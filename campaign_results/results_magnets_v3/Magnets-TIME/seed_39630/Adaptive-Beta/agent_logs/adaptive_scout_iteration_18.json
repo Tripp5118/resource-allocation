@@ -1,0 +1,17 @@
+{
+  "iteration": 18,
+  "beta": 2.0,
+  "option": 1,
+  "reasoning_c1": "With HV velocity materially slowed and MI declining, a conservative \u03b2 of 2.0 is appropriate to focus on known regions as the campaign nears completion.",
+  "reasoning_c2": "Option 1 provides the highest qEHVI score while still contributing to MI, aligning with the conservative \u03b2 of 2.0 to focus on known regions as the campaign nears completion.",
+  "signals": {
+    "velocity_ratio": 0.151,
+    "recent_hv_rate": 0.0011,
+    "baseline_hv_rate": 0.00728,
+    "mi_current": 0.03721,
+    "mi_vs_start": 0.067,
+    "resource_fraction_remaining": 0.143,
+    "iters_remaining": 7,
+    "time_pct_remaining": 14.3
+  }
+}

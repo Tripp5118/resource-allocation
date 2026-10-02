@@ -1,0 +1,17 @@
+{
+  "iteration": 48,
+  "beta": 5.0,
+  "option": 1,
+  "reasoning_c1": "HV has materially stalled with a velocity ratio of 0.098, and MI is low at 5.2% of iteration-1 value, indicating exploration is saturated.",
+  "reasoning_c2": "Option 1 provides a balanced trade-off with a slight focus on exploitation, aligning with the stalled HV and low MI, while still allowing for some exploration to address any remaining uncertainty.",
+  "signals": {
+    "velocity_ratio": 0.098,
+    "recent_hv_rate": 0.04536,
+    "baseline_hv_rate": 0.46387,
+    "mi_current": 0.02018,
+    "mi_vs_start": 0.052,
+    "resource_fraction_remaining": 0.13,
+    "iters_remaining": 7,
+    "time_pct_remaining": 13.0
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "iteration": 3,
+  "beta": 2.0,
+  "option": 1,
+  "reasoning_c1": "Early campaign stage with high MI and active HV improvement suggests maintaining conservative exploration.",
+  "reasoning_c2": "Option 1 balances exploration and exploitation, aligning with the conservative exploration approach due to its high MI score while maintaining a reasonable qEHVI improvement.",
+  "signals": {
+    "mi_current": 0.28799,
+    "mi_vs_start": 1.09,
+    "resource_fraction_remaining": 0.963,
+    "iters_remaining": 52,
+    "time_pct_remaining": 96.3
+  }
+}

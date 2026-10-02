@@ -1,0 +1,17 @@
+{
+  "iteration": 22,
+  "beta": 5.0,
+  "option": 1,
+  "reasoning_c1": "With HV progress materially slowed and MI declining, a moderate \u03b2 of 5.0 balances exploration and optimization to potentially discover new productive regions in the limited remaining iterations.",
+  "reasoning_c2": "Option 1 offers a balanced tradeoff with a moderate increase in MI while still maintaining a reasonable qEHVI, aligning with the chosen \u03b2 of 5.0 to explore new regions without sacrificing too much on optimization.",
+  "signals": {
+    "velocity_ratio": 0.179,
+    "recent_hv_rate": 0.57966,
+    "baseline_hv_rate": 3.2438,
+    "mi_current": 0.01978,
+    "mi_vs_start": 0.155,
+    "resource_fraction_remaining": 0.056,
+    "iters_remaining": 3,
+    "time_pct_remaining": 5.6
+  }
+}

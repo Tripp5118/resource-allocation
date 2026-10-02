@@ -1,0 +1,17 @@
+{
+  "iteration": 51,
+  "beta": 2.0,
+  "option": 0,
+  "reasoning_c1": "With 93% resources consumed and MI declining to 10.8% of its initial value, exploration is saturated, and HV progress has materially stalled, so a conservative \u03b2 is appropriate to focus on refining known regions.",
+  "reasoning_c2": "With 93% of resources consumed and exploration saturated, focusing on exploitation with Option 0 maximizes qEHVI, aligning with the conservative \u03b2=2.0 to refine known regions.",
+  "signals": {
+    "velocity_ratio": 0.375,
+    "recent_hv_rate": 0.13476,
+    "baseline_hv_rate": 0.35909,
+    "mi_current": 0.06582,
+    "mi_vs_start": 0.108,
+    "resource_fraction_remaining": 0.074,
+    "iters_remaining": 4,
+    "time_pct_remaining": 7.4
+  }
+}

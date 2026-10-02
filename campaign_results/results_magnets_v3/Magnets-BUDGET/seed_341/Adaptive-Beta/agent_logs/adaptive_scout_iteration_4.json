@@ -1,0 +1,17 @@
+{
+  "iteration": 4,
+  "beta": 2.0,
+  "option": 2,
+  "reasoning_c1": "Early in the campaign with HV actively improving and elevated MI, so conservative exploration is appropriate.",
+  "reasoning_c2": "Option 2 provides a balanced tradeoff with a moderate amount of exploration (2 qUCB points) while still maintaining a relatively high qEHVI score, aligning with the conservative exploration strategy early in the campaign.",
+  "signals": {
+    "velocity_ratio": 1.0,
+    "recent_hv_rate": 0.13807,
+    "baseline_hv_rate": 0.13807,
+    "mi_current": 1.0836,
+    "mi_vs_start": 3.314,
+    "resource_fraction_remaining": 0.939,
+    "iters_remaining": 46,
+    "time_pct_remaining": 93.9
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "iteration": 24,
+  "beta": 2.0,
+  "option": 0,
+  "reasoning_c1": "With 98% resources consumed and declining MI, a conservative \u03b2 of 2.0 is appropriate to focus on refining known regions for final HV improvement.",
+  "reasoning_c2": "With 98% resources consumed and a conservative \u03b2 of 2.0, Option 0 maximizes qEHVI to refine known regions for final HV improvement, aligning with the focus on exploitation.",
+  "signals": {
+    "velocity_ratio": 0.537,
+    "recent_hv_rate": 0.58447,
+    "baseline_hv_rate": 1.08766,
+    "mi_current": 0.05595,
+    "mi_vs_start": 0.077,
+    "resource_fraction_remaining": 0.019,
+    "iters_remaining": 1,
+    "time_pct_remaining": 1.9
+  }
+}

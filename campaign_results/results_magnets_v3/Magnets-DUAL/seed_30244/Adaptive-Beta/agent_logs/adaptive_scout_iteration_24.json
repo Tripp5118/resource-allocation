@@ -1,0 +1,17 @@
+{
+  "iteration": 24,
+  "beta": 2.0,
+  "option": 1,
+  "reasoning_c1": "HV is actively improving (HV velocity ratio > 1) and MI is declining, indicating the design space is well-characterized.",
+  "reasoning_c2": "With HV actively improving and MI declining, Option 1 balances exploitation and exploration, maintaining high qEHVI while gaining significant MI, aligning with the well-characterized design space.",
+  "signals": {
+    "velocity_ratio": 1.034,
+    "recent_hv_rate": 0.00638,
+    "baseline_hv_rate": 0.00617,
+    "mi_current": 0.09205,
+    "mi_vs_start": 0.098,
+    "resource_fraction_remaining": 0.041,
+    "iters_remaining": 2,
+    "time_pct_remaining": 51.0
+  }
+}

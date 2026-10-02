@@ -1,0 +1,17 @@
+{
+  "iteration": 5,
+  "beta": 2.0,
+  "option": 2,
+  "reasoning_c1": "HV is accelerating and MI is elevated, indicating unexplored territory, but early campaign stage suggests conservative exploration.",
+  "reasoning_c2": "Option 2 balances exploration and exploitation with a moderate qEHVI score and the highest MI score, aligning with the need for conservative exploration at this early campaign stage.",
+  "signals": {
+    "velocity_ratio": 1.103,
+    "recent_hv_rate": 0.11411,
+    "baseline_hv_rate": 0.10347,
+    "mi_current": 0.84576,
+    "mi_vs_start": 3.07,
+    "resource_fraction_remaining": 0.918,
+    "iters_remaining": 45,
+    "time_pct_remaining": 91.8
+  }
+}

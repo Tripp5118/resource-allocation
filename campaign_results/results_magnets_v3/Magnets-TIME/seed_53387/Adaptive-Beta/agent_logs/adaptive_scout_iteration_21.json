@@ -1,0 +1,17 @@
+{
+  "iteration": 21,
+  "beta": 5.0,
+  "option": 2,
+  "reasoning_c1": "Despite high resource consumption, the elevated MI (0.6303) suggests unexplored territory remains, justifying continued moderate exploration with \u03b2=5.0.",
+  "reasoning_c2": "Option 2 balances exploration and exploitation, providing a reasonable qEHVI improvement while maintaining a moderate MI gain, aligning with the strategy of continued moderate exploration given the high beta value.",
+  "signals": {
+    "velocity_ratio": 0.134,
+    "recent_hv_rate": 0.00106,
+    "baseline_hv_rate": 0.0079,
+    "mi_current": 0.63029,
+    "mi_vs_start": 7.258,
+    "resource_fraction_remaining": 0.082,
+    "iters_remaining": 4,
+    "time_pct_remaining": 8.2
+  }
+}

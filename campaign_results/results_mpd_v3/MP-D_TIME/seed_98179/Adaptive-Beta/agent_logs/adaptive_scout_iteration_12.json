@@ -1,0 +1,17 @@
+{
+  "iteration": 12,
+  "beta": 2.0,
+  "option": 1,
+  "reasoning_c1": "With 20% resources consumed and HV actively improving (HV velocity ratio 0.080), a conservative \u03b2 of 2.0 is appropriate to maintain focus near well-characterized regions.",
+  "reasoning_c2": "Option 1 balances exploitation and exploration, maintaining a strong qEHVI score while significantly increasing MI, aligning with a conservative \u03b2 of 2.0 to explore well-characterized regions.",
+  "signals": {
+    "velocity_ratio": 0.08,
+    "recent_hv_rate": 0.80604,
+    "baseline_hv_rate": 10.06729,
+    "mi_current": 0.1174,
+    "mi_vs_start": 0.87,
+    "resource_fraction_remaining": 0.796,
+    "iters_remaining": 43,
+    "time_pct_remaining": 79.6
+  }
+}

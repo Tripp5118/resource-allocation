@@ -1,0 +1,17 @@
+{
+  "iteration": 15,
+  "beta": 5.0,
+  "option": 2,
+  "reasoning_c1": "HV progress has materially stalled (HV velocity ratio 0.769) and MI is low (0.0249), indicating exploration is saturated.",
+  "reasoning_c2": "Option 2 balances qEHVI and MI, providing a moderate qEHVI improvement while significantly enhancing MI, aligning with the need to boost exploration given the stalled HV progress and low MI.",
+  "signals": {
+    "velocity_ratio": 0.769,
+    "recent_hv_rate": 0.00695,
+    "baseline_hv_rate": 0.00904,
+    "mi_current": 0.02492,
+    "mi_vs_start": 0.071,
+    "resource_fraction_remaining": 0.694,
+    "iters_remaining": 34,
+    "time_pct_remaining": 69.4
+  }
+}

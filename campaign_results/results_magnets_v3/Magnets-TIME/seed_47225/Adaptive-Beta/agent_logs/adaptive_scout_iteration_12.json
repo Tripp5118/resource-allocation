@@ -1,0 +1,17 @@
+{
+  "iteration": 12,
+  "beta": 2.0,
+  "option": 1,
+  "reasoning_c1": "HV is accelerating (velocity ratio 1.130) and MI is declining (8.5% of iteration-1 value), suggesting conservative exploration is appropriate.",
+  "reasoning_c2": "Option 1 balances exploitation and exploration, aligning with the conservative exploration strategy suggested by the accelerating HV and declining MI.",
+  "signals": {
+    "velocity_ratio": 1.13,
+    "recent_hv_rate": 0.00743,
+    "baseline_hv_rate": 0.00658,
+    "mi_current": 0.06449,
+    "mi_vs_start": 0.085,
+    "resource_fraction_remaining": 0.776,
+    "iters_remaining": 38,
+    "time_pct_remaining": 77.6
+  }
+}

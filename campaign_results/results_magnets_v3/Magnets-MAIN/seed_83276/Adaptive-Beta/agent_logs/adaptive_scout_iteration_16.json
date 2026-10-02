@@ -1,0 +1,17 @@
+{
+  "iteration": 16,
+  "beta": 3.0,
+  "option": 2,
+  "reasoning_c1": "HV is accelerating with elevated MI, indicating moderate exploration is appropriate to discover new productive regions.",
+  "reasoning_c2": "Option 2 provides a balanced tradeoff with moderate exploration and exploitation, aligning with the elevated MI and accelerating HV, which suggests exploring new productive regions is beneficial.",
+  "signals": {
+    "velocity_ratio": 1.712,
+    "recent_hv_rate": 0.01933,
+    "baseline_hv_rate": 0.01129,
+    "mi_current": 0.71903,
+    "mi_vs_start": 1.643,
+    "resource_fraction_remaining": 0.694,
+    "iters_remaining": 34,
+    "time_pct_remaining": 69.4
+  }
+}

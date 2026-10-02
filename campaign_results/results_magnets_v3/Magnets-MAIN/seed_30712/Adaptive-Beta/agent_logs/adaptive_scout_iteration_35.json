@@ -1,0 +1,17 @@
+{
+  "iteration": 35,
+  "beta": 5.0,
+  "option": 2,
+  "reasoning_c1": "With HV velocity ratio at 0.047 indicating material slowing and MI at 0.0790 suggesting some unexplored territory remains, moderate exploration with \u03b2=5.0 is appropriate.",
+  "reasoning_c2": "Option 2 balances moderate exploration with \u03b2=5.0 by allocating 2 qUCB points, achieving a significant MI gain of 0.2058 while maintaining a reasonable qEHVI improvement of 1.4486.",
+  "signals": {
+    "velocity_ratio": 0.047,
+    "recent_hv_rate": 0.00047,
+    "baseline_hv_rate": 0.00999,
+    "mi_current": 0.07902,
+    "mi_vs_start": 0.424,
+    "resource_fraction_remaining": 0.306,
+    "iters_remaining": 15,
+    "time_pct_remaining": 30.6
+  }
+}

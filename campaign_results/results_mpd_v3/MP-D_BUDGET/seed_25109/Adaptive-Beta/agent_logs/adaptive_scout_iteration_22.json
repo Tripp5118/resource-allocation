@@ -1,0 +1,17 @@
+{
+  "iteration": 22,
+  "beta": 2.0,
+  "option": 1,
+  "reasoning_c1": "With HV velocity materially slowed and MI declining significantly, a conservative \u03b2=2.0 is appropriate to focus on refining known regions and maximizing HV gains in the remaining iterations.",
+  "reasoning_c2": "Option 1 balances the need for exploitation with some exploration, providing a reasonable qEHVI improvement while still gaining MI, aligning with the conservative \u03b2=2.0 focus on refining known regions and maximizing HV gains.",
+  "signals": {
+    "velocity_ratio": 0.244,
+    "recent_hv_rate": 0.54092,
+    "baseline_hv_rate": 2.21595,
+    "mi_current": 0.07213,
+    "mi_vs_start": 0.09,
+    "resource_fraction_remaining": 0.056,
+    "iters_remaining": 3,
+    "time_pct_remaining": 61.1
+  }
+}

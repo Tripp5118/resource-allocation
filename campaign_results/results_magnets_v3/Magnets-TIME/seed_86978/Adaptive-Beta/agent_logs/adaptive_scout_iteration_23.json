@@ -1,0 +1,17 @@
+{
+  "iteration": 23,
+  "beta": 5.0,
+  "option": 1,
+  "reasoning_c1": "With 96% resources consumed and MI at 41% of iteration-1 value, moderate exploration (\u03b2=5.0) is justified to probe remaining unexplored regions.",
+  "reasoning_c2": "Option 1 balances moderate exploration with exploitation, aligning with the selected \u03b2=5.0, by providing a significant MI gain while maintaining a relatively high qEHVI score.",
+  "signals": {
+    "velocity_ratio": 0.403,
+    "recent_hv_rate": 0.0049,
+    "baseline_hv_rate": 0.01218,
+    "mi_current": 0.20188,
+    "mi_vs_start": 0.41,
+    "resource_fraction_remaining": 0.041,
+    "iters_remaining": 2,
+    "time_pct_remaining": 4.1
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "iteration": 18,
+  "beta": 5.0,
+  "option": 2,
+  "reasoning_c1": "HV is actively improving with recent acceleration, and MI remains elevated, justifying continued moderate exploration.",
+  "reasoning_c2": "Option 2 balances moderate exploration and exploitation, aligning with the elevated MI and recent HV acceleration, while still maintaining a reasonable qEHVI score.",
+  "signals": {
+    "velocity_ratio": 1.0,
+    "recent_hv_rate": 3.20859,
+    "baseline_hv_rate": 3.20859,
+    "mi_current": 0.14293,
+    "mi_vs_start": 0.509,
+    "resource_fraction_remaining": 0.13,
+    "iters_remaining": 7,
+    "time_pct_remaining": 13.0
+  }
+}

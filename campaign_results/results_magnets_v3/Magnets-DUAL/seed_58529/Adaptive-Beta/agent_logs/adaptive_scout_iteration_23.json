@@ -1,0 +1,17 @@
+{
+  "iteration": 23,
+  "beta": 5.0,
+  "option": 3,
+  "reasoning_c1": "Despite high resource consumption, elevated MI (303.7% of iteration-1 value) justifies continued moderate exploration with \u03b2=5.0 to discover new productive regions.",
+  "reasoning_c2": "Option 3 provides a balanced tradeoff with significant MI gain (0.6711) while still maintaining a reasonable qEHVI score (0.6162), aligning with the strategy to continue moderate exploration given the elevated MI and high resource consumption.",
+  "signals": {
+    "velocity_ratio": 0.719,
+    "recent_hv_rate": 0.00305,
+    "baseline_hv_rate": 0.00424,
+    "mi_current": 0.26277,
+    "mi_vs_start": 3.037,
+    "resource_fraction_remaining": 0.061,
+    "iters_remaining": 3,
+    "time_pct_remaining": 53.1
+  }
+}

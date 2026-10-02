@@ -1,0 +1,17 @@
+{
+  "iteration": 27,
+  "beta": 2.0,
+  "option": 2,
+  "reasoning_c1": "HV has materially stalled with a low MI signal indicating exploration is saturated, so a conservative \u03b2 is appropriate.",
+  "reasoning_c2": "Option 2 provides a balanced tradeoff between qEHVI and MI, aligning with the conservative \u03b2=2.0 reasoning by maintaining some exploitation while gaining significant exploration benefits.",
+  "signals": {
+    "velocity_ratio": 0.013,
+    "recent_hv_rate": 0.02772,
+    "baseline_hv_rate": 2.18024,
+    "mi_current": 0.01558,
+    "mi_vs_start": 0.028,
+    "resource_fraction_remaining": 0.519,
+    "iters_remaining": 28,
+    "time_pct_remaining": 51.9
+  }
+}

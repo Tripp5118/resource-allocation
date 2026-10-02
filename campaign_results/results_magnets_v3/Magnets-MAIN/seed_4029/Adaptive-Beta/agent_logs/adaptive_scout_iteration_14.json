@@ -1,0 +1,17 @@
+{
+  "iteration": 14,
+  "beta": 5.0,
+  "option": 3,
+  "reasoning_c1": "HV velocity has materially slowed (0.364) and MI is declining but still indicates some unexplored territory (15.3% of iteration-1 value).",
+  "reasoning_c2": "Option 3 balances qEHVI and MI, providing a good tradeoff between exploitation and exploration, which aligns with the need to explore unexplored territory while still improving the Pareto front given the slowed HV velocity and declining MI.",
+  "signals": {
+    "velocity_ratio": 0.364,
+    "recent_hv_rate": 0.00825,
+    "baseline_hv_rate": 0.02268,
+    "mi_current": 0.06421,
+    "mi_vs_start": 0.153,
+    "resource_fraction_remaining": 0.735,
+    "iters_remaining": 36,
+    "time_pct_remaining": 73.5
+  }
+}

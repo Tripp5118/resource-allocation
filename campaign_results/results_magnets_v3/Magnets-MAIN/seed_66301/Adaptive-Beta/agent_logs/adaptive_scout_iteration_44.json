@@ -1,0 +1,17 @@
+{
+  "iteration": 44,
+  "beta": 5.0,
+  "option": 4,
+  "reasoning_c1": "HV has materially stalled with a strong MI signal, justifying aggressive scouting.",
+  "reasoning_c2": "With HV stalling and a strong MI signal, Option 4 provides a balanced tradeoff by significantly increasing MI gain while still maintaining some qEHVI improvement, aligning with the aggressive scouting strategy.",
+  "signals": {
+    "velocity_ratio": 0.064,
+    "recent_hv_rate": 0.00015,
+    "baseline_hv_rate": 0.00231,
+    "mi_current": 0.12719,
+    "mi_vs_start": 0.22,
+    "resource_fraction_remaining": 0.122,
+    "iters_remaining": 6,
+    "time_pct_remaining": 12.2
+  }
+}

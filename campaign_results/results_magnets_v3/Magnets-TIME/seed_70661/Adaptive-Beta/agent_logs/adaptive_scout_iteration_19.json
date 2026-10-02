@@ -1,0 +1,17 @@
+{
+  "iteration": 19,
+  "beta": 3.0,
+  "option": 1,
+  "reasoning_c1": "With HV velocity materially slowed (0.485) and MI declining (8.4% of iteration-1 value), moderate exploration with \u03b2=3.0 is appropriate to balance exploration and exploitation in the final campaign stages.",
+  "reasoning_c2": "Option 1 balances exploration and exploitation by allocating one point to qUCB, which provides a moderate MI gain while maintaining a high qEHVI score, aligning with the strategy of moderate exploration with \u03b2=3.0 in the final campaign stages.",
+  "signals": {
+    "velocity_ratio": 0.485,
+    "recent_hv_rate": 0.00236,
+    "baseline_hv_rate": 0.00486,
+    "mi_current": 0.01743,
+    "mi_vs_start": 0.084,
+    "resource_fraction_remaining": 0.122,
+    "iters_remaining": 6,
+    "time_pct_remaining": 12.2
+  }
+}

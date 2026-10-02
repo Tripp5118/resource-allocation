@@ -1,0 +1,17 @@
+{
+  "iteration": 24,
+  "beta": 8.0,
+  "option": 5,
+  "reasoning_c1": "With 98% resources consumed and MI still elevated at 0.2040, an aggressive \u03b2=8.0 is justified to explore remaining unexplored regions despite slowed HV progress.",
+  "reasoning_c2": "With 98% resources consumed and MI still elevated, selecting Option 5 maximizes exploration (MI=1.2044) at \u03b2=8.0 to uncover unexplored regions, aligning with the aggressive exploration strategy.",
+  "signals": {
+    "velocity_ratio": 0.112,
+    "recent_hv_rate": 0.18508,
+    "baseline_hv_rate": 1.65677,
+    "mi_current": 0.20403,
+    "mi_vs_start": 0.44,
+    "resource_fraction_remaining": 0.019,
+    "iters_remaining": 1,
+    "time_pct_remaining": 57.4
+  }
+}

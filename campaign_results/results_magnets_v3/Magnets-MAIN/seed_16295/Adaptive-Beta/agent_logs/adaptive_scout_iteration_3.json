@@ -1,0 +1,14 @@
+{
+  "iteration": 3,
+  "beta": 2.0,
+  "option": 3,
+  "reasoning_c1": "Early in the campaign with only 4% resources consumed and elevated MI, indicating unexplored territory remains, justifying a conservative \u03b2.",
+  "reasoning_c2": "Option 3 balances qEHVI and MI, aligning with the conservative \u03b2=2.0 by maintaining exploration with 3 qUCB points while still achieving a reasonable qEHVI score.",
+  "signals": {
+    "mi_current": 0.90561,
+    "mi_vs_start": 2.247,
+    "resource_fraction_remaining": 0.959,
+    "iters_remaining": 47,
+    "time_pct_remaining": 95.9
+  }
+}

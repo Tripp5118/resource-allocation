@@ -1,0 +1,17 @@
+{
+  "iteration": 22,
+  "beta": 2.0,
+  "option": 0,
+  "reasoning_c1": "With 94% resources consumed, HV is accelerating (1.480) and MI is declining (29.7%), indicating qEHVI should dominate to refine the Pareto front without aggressive exploration.",
+  "reasoning_c2": "With 94% resources consumed and HV accelerating, maximizing qEHVI is crucial to refine the Pareto front further, making Option 0 the best choice as it offers the highest expected direct Pareto HV improvement.",
+  "signals": {
+    "velocity_ratio": 1.48,
+    "recent_hv_rate": 2.93311,
+    "baseline_hv_rate": 1.98126,
+    "mi_current": 0.39061,
+    "mi_vs_start": 0.297,
+    "resource_fraction_remaining": 0.056,
+    "iters_remaining": 3,
+    "time_pct_remaining": 5.6
+  }
+}

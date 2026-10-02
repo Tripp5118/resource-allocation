@@ -1,0 +1,14 @@
+{
+  "iteration": 3,
+  "beta": 2.0,
+  "option": 0,
+  "reasoning_c1": "Early in the campaign with elevated MI indicating unexplored territory, maintaining \u03b2=2.0 ensures balanced exploration without risking arbitrary candidate selection.",
+  "reasoning_c2": "With \u03b2=2.0 and early in the campaign, prioritizing qEHVI maximizes immediate Pareto improvement while still leveraging the elevated MI to explore effectively without additional qUCB points.",
+  "signals": {
+    "mi_current": 0.9856,
+    "mi_vs_start": 18.742,
+    "resource_fraction_remaining": 0.963,
+    "iters_remaining": 52,
+    "time_pct_remaining": 96.3
+  }
+}

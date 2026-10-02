@@ -1,0 +1,17 @@
+{
+  "iteration": 54,
+  "beta": 2.0,
+  "option": 0,
+  "reasoning_c1": "With 98% resources consumed, HV is stalled and MI is declining, indicating a well-characterized space where aggressive exploration is not justified.",
+  "reasoning_c2": "With 98% resources consumed and a stalled HV, maximizing qEHVI is prioritized to exploit the well-characterized space, as further exploration is unlikely to yield significant gains.",
+  "signals": {
+    "velocity_ratio": 0.246,
+    "recent_hv_rate": 0.05074,
+    "baseline_hv_rate": 0.20639,
+    "mi_current": 0.08637,
+    "mi_vs_start": 0.451,
+    "resource_fraction_remaining": 0.019,
+    "iters_remaining": 1,
+    "time_pct_remaining": 1.9
+  }
+}

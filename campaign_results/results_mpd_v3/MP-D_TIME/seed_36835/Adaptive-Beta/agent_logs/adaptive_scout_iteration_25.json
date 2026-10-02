@@ -1,0 +1,17 @@
+{
+  "iteration": 25,
+  "beta": 2.0,
+  "option": 0,
+  "reasoning_c1": "HV is actively improving and MI is declining, indicating exploration is saturated and further exploration is unnecessary.",
+  "reasoning_c2": "Since exploration is saturated and further exploration is unnecessary, selecting Option 0 maximizes qEHVI for direct Pareto HV improvement without allocating resources to exploration.",
+  "signals": {
+    "velocity_ratio": 0.501,
+    "recent_hv_rate": 0.76062,
+    "baseline_hv_rate": 1.51959,
+    "mi_current": 0.16621,
+    "mi_vs_start": 0.358,
+    "resource_fraction_remaining": 0.0,
+    "iters_remaining": 0,
+    "time_pct_remaining": 0.0
+  }
+}

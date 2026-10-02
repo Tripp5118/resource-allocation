@@ -1,0 +1,17 @@
+{
+  "iteration": 36,
+  "beta": 2.0,
+  "option": 0,
+  "reasoning_c1": "With HV velocity ratio at 0.178 and MI at 1.6% of iteration-1 value, exploration is saturated, suggesting a conservative \u03b2 of 2.0 to focus on known regions.",
+  "reasoning_c2": "With exploration saturated and a conservative \u03b2 of 2.0, Option 0 maximizes qEHVI, focusing on exploitation to improve the known Pareto front.",
+  "signals": {
+    "velocity_ratio": 0.178,
+    "recent_hv_rate": 0.17284,
+    "baseline_hv_rate": 0.9726,
+    "mi_current": 0.0145,
+    "mi_vs_start": 0.016,
+    "resource_fraction_remaining": 0.352,
+    "iters_remaining": 19,
+    "time_pct_remaining": 35.2
+  }
+}

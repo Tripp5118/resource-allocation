@@ -1,0 +1,17 @@
+{
+  "iteration": 25,
+  "beta": 2.0,
+  "option": 0,
+  "reasoning_c1": "HV has materially slowed with low MI, indicating exploration is saturated and aggressive scouting is unnecessary.",
+  "reasoning_c2": "With exploration saturated and aggressive scouting unnecessary, Option 0 maximizes qEHVI, focusing on exploitation to improve the Pareto front without allocating resources to exploration.",
+  "signals": {
+    "velocity_ratio": 0.082,
+    "recent_hv_rate": 0.1312,
+    "baseline_hv_rate": 1.59487,
+    "mi_current": 0.05387,
+    "mi_vs_start": 0.027,
+    "resource_fraction_remaining": 0.0,
+    "iters_remaining": 0,
+    "time_pct_remaining": 0.0
+  }
+}

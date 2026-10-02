@@ -1,0 +1,17 @@
+{
+  "iteration": 6,
+  "beta": 2.0,
+  "option": 2,
+  "reasoning_c1": "Early in the campaign with elevated MI and HV velocity ratio > 0.5, indicating sufficient exploration with current \u03b2.",
+  "reasoning_c2": "Option 2 offers a balanced tradeoff with substantial MI gain and reasonable qEHVI, aligning with the need for exploration early in the campaign with \u03b2=2.0.",
+  "signals": {
+    "velocity_ratio": 0.519,
+    "recent_hv_rate": 0.03359,
+    "baseline_hv_rate": 0.0647,
+    "mi_current": 1.13985,
+    "mi_vs_start": 8.077,
+    "resource_fraction_remaining": 0.898,
+    "iters_remaining": 44,
+    "time_pct_remaining": 89.8
+  }
+}

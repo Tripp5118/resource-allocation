@@ -1,0 +1,17 @@
+{
+  "iteration": 7,
+  "beta": 2.0,
+  "option": 2,
+  "reasoning_c1": "Early in the campaign with 12% resources consumed, HV progress is slowing but not stalled, and MI is declining, indicating a conservative \u03b2 is appropriate.",
+  "reasoning_c2": "Option 2 balances exploration and exploitation with a moderate qEHVI score and a relatively high MI score, aligning with the conservative \u03b2 of 2.0 given the early stage of the campaign and the need for more information gain.",
+  "signals": {
+    "velocity_ratio": 0.49,
+    "recent_hv_rate": 0.01698,
+    "baseline_hv_rate": 0.03467,
+    "mi_current": 0.4003,
+    "mi_vs_start": 0.595,
+    "resource_fraction_remaining": 0.878,
+    "iters_remaining": 43,
+    "time_pct_remaining": 87.8
+  }
+}

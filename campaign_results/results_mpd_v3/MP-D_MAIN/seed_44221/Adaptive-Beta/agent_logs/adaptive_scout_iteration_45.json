@@ -1,0 +1,17 @@
+{
+  "iteration": 45,
+  "beta": 2.0,
+  "option": 1,
+  "reasoning_c1": "With HV velocity materially slowed and MI declining to 9% of iteration-1 value, exploration is saturated, suggesting a conservative \u03b2 to focus on optimizing known regions.",
+  "reasoning_c2": "Option 1 balances exploitation and exploration with a conservative \u03b2, maintaining a focus on optimizing known regions while still gaining some information about unexplored areas.",
+  "signals": {
+    "velocity_ratio": 0.287,
+    "recent_hv_rate": 0.12851,
+    "baseline_hv_rate": 0.44848,
+    "mi_current": 0.00557,
+    "mi_vs_start": 0.09,
+    "resource_fraction_remaining": 0.185,
+    "iters_remaining": 10,
+    "time_pct_remaining": 18.5
+  }
+}

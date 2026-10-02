@@ -1,0 +1,17 @@
+{
+  "iteration": 39,
+  "beta": 2.0,
+  "option": 1,
+  "reasoning_c1": "HV velocity is materially slowed and MI is declining, indicating exploration is saturated and the campaign is nearly complete.",
+  "reasoning_c2": "Option 1 balances exploitation and exploration, with a strong qEHVI score and moderate MI gain, aligning with the reasoning that exploration is nearly saturated and the campaign is close to completion.",
+  "signals": {
+    "velocity_ratio": 0.144,
+    "recent_hv_rate": 0.00025,
+    "baseline_hv_rate": 0.00172,
+    "mi_current": 0.03022,
+    "mi_vs_start": 0.049,
+    "resource_fraction_remaining": 0.224,
+    "iters_remaining": 11,
+    "time_pct_remaining": 22.4
+  }
+}

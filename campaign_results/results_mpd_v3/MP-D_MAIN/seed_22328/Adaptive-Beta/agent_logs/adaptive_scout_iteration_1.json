@@ -1,0 +1,12 @@
+{
+  "iteration": 1,
+  "beta": 2.0,
+  "option": 2,
+  "reasoning_c1": "Early in the campaign with no history, default to conservative exploration as uncertainty estimates are unreliable.",
+  "reasoning_c2": "Option 2 balances exploration and exploitation by allocating 2 points to qUCB, aligning with the conservative exploration strategy due to high MI gain, while still maintaining a reasonable qEHVI score early in the campaign.",
+  "signals": {
+    "resource_fraction_remaining": 1.0,
+    "iters_remaining": 0,
+    "time_pct_remaining": 100.0
+  }
+}

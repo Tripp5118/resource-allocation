@@ -1,0 +1,14 @@
+{
+  "iteration": 3,
+  "beta": 2.0,
+  "option": 1,
+  "reasoning_c1": "Early in the campaign with elevated MI and rapid HV improvement, indicating exploration is not yet necessary.",
+  "reasoning_c2": "Option 1 balances qEHVI and MI, maintaining strong exploitation while slightly increasing exploration, aligning with the early campaign phase and elevated MI.",
+  "signals": {
+    "mi_current": 0.9212,
+    "mi_vs_start": 2.441,
+    "resource_fraction_remaining": 0.959,
+    "iters_remaining": 47,
+    "time_pct_remaining": 95.9
+  }
+}

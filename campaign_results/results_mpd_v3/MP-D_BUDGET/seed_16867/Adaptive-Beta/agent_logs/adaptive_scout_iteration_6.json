@@ -1,0 +1,17 @@
+{
+  "iteration": 6,
+  "beta": 2.0,
+  "option": 2,
+  "reasoning_c1": "Early in the campaign with only 9% resources consumed, HV is slowing but MI is declining, indicating the design space is becoming well-characterized; thus, conservative exploration is appropriate.",
+  "reasoning_c2": "With the campaign still early and the design space becoming well-characterized, Option 2 offers a balanced tradeoff, providing a reasonable qEHVI improvement while significantly enhancing MI, aligning with the conservative exploration strategy.",
+  "signals": {
+    "velocity_ratio": 0.475,
+    "recent_hv_rate": 17.46993,
+    "baseline_hv_rate": 36.80417,
+    "mi_current": 0.2795,
+    "mi_vs_start": 0.365,
+    "resource_fraction_remaining": 0.907,
+    "iters_remaining": 49,
+    "time_pct_remaining": 90.7
+  }
+}

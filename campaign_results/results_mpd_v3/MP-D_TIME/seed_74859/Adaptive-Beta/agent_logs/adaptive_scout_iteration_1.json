@@ -1,0 +1,12 @@
+{
+  "iteration": 1,
+  "beta": 2.0,
+  "option": 3,
+  "reasoning_c1": "Early in the campaign with no history, so a conservative \u03b2 of 2 is appropriate to ensure qUCB candidates stay near regions the GP already knows well.",
+  "reasoning_c2": "Option 3 balances qEHVI and MI well, aligning with the conservative \u03b2 of 2 by ensuring exploration near known regions while still improving the Pareto front.",
+  "signals": {
+    "resource_fraction_remaining": 1.0,
+    "iters_remaining": 0,
+    "time_pct_remaining": 100.0
+  }
+}

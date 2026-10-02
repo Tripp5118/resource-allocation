@@ -1,0 +1,9 @@
+{
+  "iteration": 51,
+  "call1_assessment": "The HV/pt trend shows signs of stagnation, with zero new Pareto points across multiple consecutive qEHVI-primary iterations (e.g., Iter 47 and Iter 48), indicating that qEHVI is stuck entirely.",
+  "call1_beta": 3.0,
+  "call2_selected_option": 0,
+  "call2_reasoning": "Despite the stagnation, the estimated iterations left are very low (~4), which makes Option 0 preferable as qEHVI is more reliable when evaluations are limited.",
+  "budget_remaining": 2000.0,
+  "time_remaining": 4.0
+}

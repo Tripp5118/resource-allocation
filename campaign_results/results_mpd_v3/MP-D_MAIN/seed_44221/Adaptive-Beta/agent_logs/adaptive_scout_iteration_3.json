@@ -1,0 +1,14 @@
+{
+  "iteration": 3,
+  "beta": 2.0,
+  "option": 2,
+  "reasoning_c1": "Early in the campaign with elevated MI and active HV improvement, a conservative \u03b2=2 is appropriate to balance exploration and exploitation.",
+  "reasoning_c2": "Option 2 provides a balanced trade-off between qEHVI and MI, aligning with the conservative \u03b2=2 approach by maintaining a good level of exploration with 2 qUCB points while still achieving a reasonable qEHVI score.",
+  "signals": {
+    "mi_current": 0.58231,
+    "mi_vs_start": 9.398,
+    "resource_fraction_remaining": 0.963,
+    "iters_remaining": 52,
+    "time_pct_remaining": 96.3
+  }
+}

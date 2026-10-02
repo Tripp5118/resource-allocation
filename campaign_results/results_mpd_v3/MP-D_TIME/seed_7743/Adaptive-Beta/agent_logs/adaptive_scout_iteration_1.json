@@ -1,0 +1,12 @@
+{
+  "iteration": 1,
+  "beta": 2.0,
+  "option": 1,
+  "reasoning_c1": "Early in the campaign with no historical data, a conservative \u03b2 of 2 is appropriate to stay near well-known regions.",
+  "reasoning_c2": "Option 1 balances exploration and exploitation early in the campaign, maintaining a high qEHVI score while slightly increasing MI, aligning with the conservative \u03b2 of 2 to explore near well-known regions.",
+  "signals": {
+    "resource_fraction_remaining": 1.0,
+    "iters_remaining": 0,
+    "time_pct_remaining": 100.0
+  }
+}

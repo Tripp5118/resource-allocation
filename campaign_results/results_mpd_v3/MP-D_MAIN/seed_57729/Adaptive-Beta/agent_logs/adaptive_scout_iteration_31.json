@@ -1,0 +1,17 @@
+{
+  "iteration": 31,
+  "beta": 3.0,
+  "option": 2,
+  "reasoning_c1": "HV progress has materially slowed, MI is declining, and resources are over halfway consumed, indicating moderate exploration is appropriate.",
+  "reasoning_c2": "Option 2 balances moderate exploration and exploitation, aligning with the beta reasoning as it provides a reasonable tradeoff between qEHVI improvement and MI gain, suitable for the current campaign phase.",
+  "signals": {
+    "velocity_ratio": 0.168,
+    "recent_hv_rate": 0.25295,
+    "baseline_hv_rate": 1.50857,
+    "mi_current": 0.06096,
+    "mi_vs_start": 0.088,
+    "resource_fraction_remaining": 0.444,
+    "iters_remaining": 24,
+    "time_pct_remaining": 44.4
+  }
+}

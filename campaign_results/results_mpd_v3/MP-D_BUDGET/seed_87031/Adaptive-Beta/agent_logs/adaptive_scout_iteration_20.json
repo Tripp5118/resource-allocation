@@ -1,0 +1,17 @@
+{
+  "iteration": 20,
+  "beta": 5.0,
+  "option": 2,
+  "reasoning_c1": "HV progress has materially slowed, MI remains elevated, and aggressive scouting is justified to explore remaining productive regions.",
+  "reasoning_c2": "Option 2 balances exploration and exploitation effectively, offering significant MI gain while maintaining reasonable qEHVI improvement, aligning with the need for aggressive scouting given the high beta value.",
+  "signals": {
+    "velocity_ratio": 0.254,
+    "recent_hv_rate": 0.71032,
+    "baseline_hv_rate": 2.79578,
+    "mi_current": 0.42616,
+    "mi_vs_start": 0.683,
+    "resource_fraction_remaining": 0.093,
+    "iters_remaining": 5,
+    "time_pct_remaining": 64.8
+  }
+}

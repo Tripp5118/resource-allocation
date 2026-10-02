@@ -1,0 +1,17 @@
+{
+  "iteration": 10,
+  "beta": 3.0,
+  "option": 1,
+  "reasoning_c1": "HV velocity has materially slowed, but MI indicates some unexplored territory remains, suggesting moderate exploration is appropriate.",
+  "reasoning_c2": "Option 1 balances moderate exploration and exploitation, aligning with the slowed HV velocity and remaining unexplored territory, as indicated by the MI score.",
+  "signals": {
+    "velocity_ratio": 0.37,
+    "recent_hv_rate": 5.50407,
+    "baseline_hv_rate": 14.86216,
+    "mi_current": 0.27173,
+    "mi_vs_start": 0.374,
+    "resource_fraction_remaining": 0.833,
+    "iters_remaining": 45,
+    "time_pct_remaining": 83.3
+  }
+}

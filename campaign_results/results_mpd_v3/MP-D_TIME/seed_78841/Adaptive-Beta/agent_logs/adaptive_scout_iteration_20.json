@@ -1,0 +1,17 @@
+{
+  "iteration": 20,
+  "beta": 5.0,
+  "option": 1,
+  "reasoning_c1": "With HV stalled and MI still elevated, moderate exploration with \u03b2=5.0 is justified to scout unexplored regions.",
+  "reasoning_c2": "Option 1 balances moderate exploration with \u03b2=5.0 by allocating one point to qUCB, maintaining a reasonable qEHVI score while significantly increasing MI, aligning with the need to explore unexplored regions.",
+  "signals": {
+    "velocity_ratio": 0.081,
+    "recent_hv_rate": 0.10242,
+    "baseline_hv_rate": 1.2626,
+    "mi_current": 0.24928,
+    "mi_vs_start": 0.341,
+    "resource_fraction_remaining": 0.093,
+    "iters_remaining": 5,
+    "time_pct_remaining": 9.3
+  }
+}

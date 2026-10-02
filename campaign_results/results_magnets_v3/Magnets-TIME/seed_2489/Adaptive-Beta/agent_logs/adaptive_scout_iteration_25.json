@@ -1,0 +1,17 @@
+{
+  "iteration": 25,
+  "beta": 5.0,
+  "option": 5,
+  "reasoning_c1": "HV velocity materially slowed with elevated MI, indicating unexplored territory remains; aggressive scouting is justified.",
+  "reasoning_c2": "With a high beta value of 5.0 and the indication that unexplored territory remains, prioritizing exploration with maximum qUCB points is justified to gain the most information about the unexplored regions.",
+  "signals": {
+    "velocity_ratio": 0.473,
+    "recent_hv_rate": 0.00253,
+    "baseline_hv_rate": 0.00535,
+    "mi_current": 0.21534,
+    "mi_vs_start": 1.545,
+    "resource_fraction_remaining": 0.0,
+    "iters_remaining": 0,
+    "time_pct_remaining": 0.0
+  }
+}

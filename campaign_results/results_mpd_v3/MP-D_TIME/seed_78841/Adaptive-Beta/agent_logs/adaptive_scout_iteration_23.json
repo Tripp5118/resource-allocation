@@ -1,0 +1,17 @@
+{
+  "iteration": 23,
+  "beta": 5.0,
+  "option": 3,
+  "reasoning_c1": "With 96% resources consumed, HV velocity slowing, and MI still elevated, moderate exploration is justified to potentially uncover new productive regions.",
+  "reasoning_c2": "Option 3 balances moderate exploration and exploitation, aligning with the elevated MI and slowing HV velocity, which is suitable given the high beta value and limited resources remaining.",
+  "signals": {
+    "velocity_ratio": 0.975,
+    "recent_hv_rate": 1.08766,
+    "baseline_hv_rate": 1.11585,
+    "mi_current": 0.09052,
+    "mi_vs_start": 0.124,
+    "resource_fraction_remaining": 0.037,
+    "iters_remaining": 2,
+    "time_pct_remaining": 3.7
+  }
+}

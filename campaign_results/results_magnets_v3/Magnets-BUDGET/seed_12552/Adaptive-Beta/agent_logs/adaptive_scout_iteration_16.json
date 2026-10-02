@@ -1,0 +1,17 @@
+{
+  "iteration": 16,
+  "beta": 2.0,
+  "option": 3,
+  "reasoning_c1": "HV velocity has materially slowed (0.666), and MI is declining (7.0% of iteration-1 value), indicating exploration is saturated.",
+  "reasoning_c2": "Option 3 balances qEHVI and MI, providing a reasonable qEHVI improvement while significantly boosting MI, aligning with the need for exploration given the saturated exploration indicated by the declining MI.",
+  "signals": {
+    "velocity_ratio": 0.666,
+    "recent_hv_rate": 0.01144,
+    "baseline_hv_rate": 0.01717,
+    "mi_current": 0.01683,
+    "mi_vs_start": 0.07,
+    "resource_fraction_remaining": 0.694,
+    "iters_remaining": 34,
+    "time_pct_remaining": 69.4
+  }
+}

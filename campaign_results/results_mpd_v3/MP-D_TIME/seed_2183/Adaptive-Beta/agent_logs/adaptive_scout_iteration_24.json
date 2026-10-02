@@ -1,0 +1,17 @@
+{
+  "iteration": 24,
+  "beta": 2.0,
+  "option": 0,
+  "reasoning_c1": "With 98% resources consumed and declining MI, focus on qEHVI to consolidate known regions as HV progress is materially slowed.",
+  "reasoning_c2": "With 98% resources consumed and declining MI, Option 0 maximizes qEHVI to consolidate known regions, aligning with the focus on exploitation as HV progress is materially slowed.",
+  "signals": {
+    "velocity_ratio": 0.244,
+    "recent_hv_rate": 0.43285,
+    "baseline_hv_rate": 1.7725,
+    "mi_current": 0.28426,
+    "mi_vs_start": 0.598,
+    "resource_fraction_remaining": 0.019,
+    "iters_remaining": 1,
+    "time_pct_remaining": 1.9
+  }
+}

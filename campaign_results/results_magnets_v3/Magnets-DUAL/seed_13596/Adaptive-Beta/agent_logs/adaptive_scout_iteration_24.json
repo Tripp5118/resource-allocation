@@ -1,0 +1,17 @@
+{
+  "iteration": 24,
+  "beta": 3.0,
+  "option": 1,
+  "reasoning_c1": "HV progress has materially slowed with a velocity ratio of 0.395, and MI is declining, indicating exploration is becoming saturated.",
+  "reasoning_c2": "Option 1 balances the need for continued exploitation with 4 qEHVI points while still addressing exploration saturation by allocating 1 qUCB point, providing a reasonable MI gain without significantly sacrificing qEHVI improvement.",
+  "signals": {
+    "velocity_ratio": 0.395,
+    "recent_hv_rate": 0.00196,
+    "baseline_hv_rate": 0.00496,
+    "mi_current": 0.0351,
+    "mi_vs_start": 0.352,
+    "resource_fraction_remaining": 0.041,
+    "iters_remaining": 2,
+    "time_pct_remaining": 51.0
+  }
+}

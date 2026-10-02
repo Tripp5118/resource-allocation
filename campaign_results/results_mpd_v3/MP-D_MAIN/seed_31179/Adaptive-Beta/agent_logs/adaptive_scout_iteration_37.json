@@ -1,0 +1,17 @@
+{
+  "iteration": 37,
+  "beta": 3.0,
+  "option": 1,
+  "reasoning_c1": "HV progress has materially slowed, MI is low indicating exploration saturation, and campaign resources are 67% consumed, suggesting moderate exploration is appropriate.",
+  "reasoning_c2": "Option 1 provides a balanced tradeoff with moderate exploration (MI=0.1980) and reasonable exploitation (qEHVI=0.0123), aligning with the need for moderate exploration as campaign resources are 67% consumed.",
+  "signals": {
+    "velocity_ratio": 0.02,
+    "recent_hv_rate": 0.0125,
+    "baseline_hv_rate": 0.63846,
+    "mi_current": 0.03713,
+    "mi_vs_start": 0.078,
+    "resource_fraction_remaining": 0.333,
+    "iters_remaining": 18,
+    "time_pct_remaining": 33.3
+  }
+}

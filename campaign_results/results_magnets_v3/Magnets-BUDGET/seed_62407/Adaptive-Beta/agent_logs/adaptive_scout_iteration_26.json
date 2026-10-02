@@ -1,0 +1,17 @@
+{
+  "iteration": 26,
+  "beta": 5.0,
+  "option": 0,
+  "reasoning_c1": "HV has materially stalled with a low velocity ratio, and MI is declining, indicating exploration is saturated.",
+  "reasoning_c2": "Since exploration is saturated and HV has stalled, focusing entirely on exploitation with Option 0 maximizes qEHVI improvement, aligning with the need to enhance the Pareto front.",
+  "signals": {
+    "velocity_ratio": 0.044,
+    "recent_hv_rate": 0.00023,
+    "baseline_hv_rate": 0.00526,
+    "mi_current": 0.02206,
+    "mi_vs_start": 0.068,
+    "resource_fraction_remaining": 0.0,
+    "iters_remaining": 0,
+    "time_pct_remaining": 49.0
+  }
+}

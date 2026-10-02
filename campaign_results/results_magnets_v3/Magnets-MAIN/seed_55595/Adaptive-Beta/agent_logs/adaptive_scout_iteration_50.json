@@ -1,0 +1,17 @@
+{
+  "iteration": 50,
+  "beta": 2.0,
+  "option": 0,
+  "reasoning_c1": "The campaign is nearly complete with no HV improvement and declining MI, indicating exploration is saturated.",
+  "reasoning_c2": "With the campaign nearly complete and exploration saturated, maximizing qEHVI for direct Pareto HV improvement aligns best with the current state, as indicated by the high beta value.",
+  "signals": {
+    "velocity_ratio": 0.479,
+    "recent_hv_rate": 0.00034,
+    "baseline_hv_rate": 0.00072,
+    "mi_current": 0.0315,
+    "mi_vs_start": 0.085,
+    "resource_fraction_remaining": 0.0,
+    "iters_remaining": 0,
+    "time_pct_remaining": 0.0
+  }
+}

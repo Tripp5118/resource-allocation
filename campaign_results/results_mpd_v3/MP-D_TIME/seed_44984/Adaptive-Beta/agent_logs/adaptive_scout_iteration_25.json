@@ -1,0 +1,17 @@
+{
+  "iteration": 25,
+  "beta": 2.0,
+  "option": 0,
+  "reasoning_c1": "HV velocity is materially slowed, MI is declining, and resources are fully consumed, indicating no need for further exploration.",
+  "reasoning_c2": "With resources fully consumed and no time remaining, further exploration is unnecessary, so maximizing qEHVI with Option 0 aligns with the need to exploit the current Pareto front.",
+  "signals": {
+    "velocity_ratio": 0.118,
+    "recent_hv_rate": 0.28897,
+    "baseline_hv_rate": 2.45899,
+    "mi_current": 0.19367,
+    "mi_vs_start": 0.585,
+    "resource_fraction_remaining": 0.0,
+    "iters_remaining": 0,
+    "time_pct_remaining": 0.0
+  }
+}

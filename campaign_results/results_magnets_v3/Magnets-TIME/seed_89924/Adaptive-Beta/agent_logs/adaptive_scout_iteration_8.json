@@ -1,0 +1,17 @@
+{
+  "iteration": 8,
+  "beta": 2.0,
+  "option": 1,
+  "reasoning_c1": "With only 14% resources consumed and HV still improving, a conservative \u03b2=2.0 is appropriate to maintain focus on known productive regions.",
+  "reasoning_c2": "Option 1 balances exploitation and exploration by allowing some exploration with 1 qUCB point, while still maintaining a strong focus on exploitation with 4 qEHVI points, aligning with the conservative \u03b2=2.0 approach.",
+  "signals": {
+    "velocity_ratio": 0.258,
+    "recent_hv_rate": 0.01861,
+    "baseline_hv_rate": 0.07218,
+    "mi_current": 0.18802,
+    "mi_vs_start": 0.472,
+    "resource_fraction_remaining": 0.857,
+    "iters_remaining": 42,
+    "time_pct_remaining": 85.7
+  }
+}

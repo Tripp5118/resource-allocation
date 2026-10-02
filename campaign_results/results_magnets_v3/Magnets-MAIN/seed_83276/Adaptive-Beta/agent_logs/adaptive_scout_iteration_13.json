@@ -1,0 +1,17 @@
+{
+  "iteration": 13,
+  "beta": 2.0,
+  "option": 1,
+  "reasoning_c1": "MI is low (0.0054) indicating well-characterized space, and HV velocity ratio (0.288) suggests slowed progress, but early in campaign (24% resources used) justifies conservative exploration.",
+  "reasoning_c2": "Option 1 balances qEHVI and MI, maintaining a strong focus on exploitation while slightly enhancing exploration, aligning with the conservative exploration justified by early campaign status and low MI.",
+  "signals": {
+    "velocity_ratio": 0.288,
+    "recent_hv_rate": 0.00245,
+    "baseline_hv_rate": 0.00849,
+    "mi_current": 0.00539,
+    "mi_vs_start": 0.012,
+    "resource_fraction_remaining": 0.755,
+    "iters_remaining": 37,
+    "time_pct_remaining": 75.5
+  }
+}

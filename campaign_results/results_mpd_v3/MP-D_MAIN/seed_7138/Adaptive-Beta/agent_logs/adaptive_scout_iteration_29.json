@@ -1,0 +1,17 @@
+{
+  "iteration": 29,
+  "beta": 2.0,
+  "option": 0,
+  "reasoning_c1": "HV velocity has materially slowed and MI is low, indicating exploration is saturated; thus, a conservative \u03b2 is appropriate to focus on refining known regions.",
+  "reasoning_c2": "With exploration saturated and a conservative \u03b2 selected, Option 0 maximizes qEHVI, focusing on refining known regions and improving the Pareto front without further exploration.",
+  "signals": {
+    "velocity_ratio": 0.503,
+    "recent_hv_rate": 0.39922,
+    "baseline_hv_rate": 0.793,
+    "mi_current": 0.02433,
+    "mi_vs_start": 0.045,
+    "resource_fraction_remaining": 0.481,
+    "iters_remaining": 26,
+    "time_pct_remaining": 48.1
+  }
+}

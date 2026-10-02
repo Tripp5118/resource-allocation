@@ -1,0 +1,17 @@
+{
+  "iteration": 42,
+  "beta": 3.0,
+  "option": 1,
+  "reasoning_c1": "With HV velocity materially slowed and MI declining, a moderate exploration beta of 3.0 balances exploration and exploitation as the campaign nears completion.",
+  "reasoning_c2": "Option 1 provides a balanced tradeoff with a moderate exploration focus, aligning with the beta of 3.0, by slightly sacrificing qEHVI for a significant MI gain, which is suitable as the campaign nears completion.",
+  "signals": {
+    "velocity_ratio": 0.317,
+    "recent_hv_rate": 0.00027,
+    "baseline_hv_rate": 0.00085,
+    "mi_current": 0.04801,
+    "mi_vs_start": 0.129,
+    "resource_fraction_remaining": 0.163,
+    "iters_remaining": 8,
+    "time_pct_remaining": 16.3
+  }
+}

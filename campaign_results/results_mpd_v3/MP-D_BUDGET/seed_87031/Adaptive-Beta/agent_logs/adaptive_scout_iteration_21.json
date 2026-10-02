@@ -1,0 +1,17 @@
+{
+  "iteration": 21,
+  "beta": 2.0,
+  "option": 1,
+  "reasoning_c1": "With 93% resources consumed, HV velocity materially slowed, and MI declining, a conservative \u03b2 of 2.0 is appropriate to focus on known regions and maximize HV gain in the remaining iterations.",
+  "reasoning_c2": "Option 1 balances exploitation and exploration by allocating one point to qUCB, which provides a good MI score of 0.3815 while maintaining a reasonable qEHVI of 0.0349, aligning with the conservative \u03b2 of 2.0 to maximize HV gain in known regions.",
+  "signals": {
+    "velocity_ratio": 0.107,
+    "recent_hv_rate": 0.27567,
+    "baseline_hv_rate": 2.5759,
+    "mi_current": 0.04061,
+    "mi_vs_start": 0.065,
+    "resource_fraction_remaining": 0.074,
+    "iters_remaining": 4,
+    "time_pct_remaining": 63.0
+  }
+}

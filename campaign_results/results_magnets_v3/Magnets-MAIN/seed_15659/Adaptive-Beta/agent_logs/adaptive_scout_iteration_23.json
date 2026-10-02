@@ -1,0 +1,17 @@
+{
+  "iteration": 23,
+  "beta": 2.0,
+  "option": 2,
+  "reasoning_c1": "HV velocity is materially slowed, MI is declining, and 45% of resources are consumed, indicating exploration saturation.",
+  "reasoning_c2": "Option 2 balances exploration and exploitation, aligning with the need to manage exploration saturation while still improving the Pareto front, given that HV velocity is slowed and MI is declining.",
+  "signals": {
+    "velocity_ratio": 0.781,
+    "recent_hv_rate": 0.00468,
+    "baseline_hv_rate": 0.00599,
+    "mi_current": 0.04801,
+    "mi_vs_start": 0.094,
+    "resource_fraction_remaining": 0.551,
+    "iters_remaining": 27,
+    "time_pct_remaining": 55.1
+  }
+}

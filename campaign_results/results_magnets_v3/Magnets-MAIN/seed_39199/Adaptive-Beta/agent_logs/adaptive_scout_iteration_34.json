@@ -1,0 +1,17 @@
+{
+  "iteration": 34,
+  "beta": 5.0,
+  "option": 3,
+  "reasoning_c1": "HV has materially stalled with a velocity ratio of 0.021, while MI remains elevated at 0.4809, indicating unexplored territory.",
+  "reasoning_c2": "Option 3 balances exploration and exploitation by allocating 3 qUCB points, significantly boosting MI to 0.1514, which aligns with the need to explore unexplored territory given the elevated MI and stalled HV.",
+  "signals": {
+    "velocity_ratio": 0.021,
+    "recent_hv_rate": 0.0001,
+    "baseline_hv_rate": 0.0047,
+    "mi_current": 0.48086,
+    "mi_vs_start": 0.74,
+    "resource_fraction_remaining": 0.327,
+    "iters_remaining": 16,
+    "time_pct_remaining": 32.7
+  }
+}

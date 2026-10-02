@@ -1,0 +1,17 @@
+{
+  "iteration": 19,
+  "beta": 2.0,
+  "option": 0,
+  "reasoning_c1": "HV velocity has materially slowed and MI is declining, indicating exploration is saturated and further exploration is unlikely to yield significant gains.",
+  "reasoning_c2": "Given the saturation in exploration and the decline in MI, focusing entirely on exploitation with Option 0 maximizes expected Pareto HV improvement, aligning with the reasoning that further exploration is unlikely to yield significant gains.",
+  "signals": {
+    "velocity_ratio": 0.332,
+    "recent_hv_rate": 1.86506,
+    "baseline_hv_rate": 5.61319,
+    "mi_current": 0.03674,
+    "mi_vs_start": 0.288,
+    "resource_fraction_remaining": 0.111,
+    "iters_remaining": 6,
+    "time_pct_remaining": 11.1
+  }
+}

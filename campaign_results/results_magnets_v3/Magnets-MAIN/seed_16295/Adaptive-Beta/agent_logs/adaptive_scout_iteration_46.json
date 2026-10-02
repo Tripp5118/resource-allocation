@@ -1,0 +1,17 @@
+{
+  "iteration": 46,
+  "beta": 2.0,
+  "option": 0,
+  "reasoning_c1": "With 92% resources consumed, HV nearly stalled, and MI declining, a conservative \u03b2=2.0 is appropriate to focus on known regions for final improvements.",
+  "reasoning_c2": "With 92% resources consumed and a conservative \u03b2=2.0, maximizing qEHVI with Option 0 focuses on exploiting known regions for final improvements, aligning with the goal of refining the Pareto front as time runs out.",
+  "signals": {
+    "velocity_ratio": 4.517,
+    "recent_hv_rate": 0.00915,
+    "baseline_hv_rate": 0.00202,
+    "mi_current": 0.0669,
+    "mi_vs_start": 0.166,
+    "resource_fraction_remaining": 0.082,
+    "iters_remaining": 4,
+    "time_pct_remaining": 8.2
+  }
+}

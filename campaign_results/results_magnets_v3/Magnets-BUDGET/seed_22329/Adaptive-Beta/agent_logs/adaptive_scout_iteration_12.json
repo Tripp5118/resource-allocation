@@ -1,0 +1,17 @@
+{
+  "iteration": 12,
+  "beta": 2.0,
+  "option": 3,
+  "reasoning_c1": "Early in the campaign with 22% resources consumed, HV velocity has materially slowed, but MI is declining, indicating the design space is becoming well-characterized.",
+  "reasoning_c2": "With 22% resources consumed and a slowing HV velocity, Option 3 balances exploration and exploitation, providing a reasonable qEHVI improvement while gaining significant MI, aligning with the need to further explore the design space.",
+  "signals": {
+    "velocity_ratio": 0.134,
+    "recent_hv_rate": 0.00877,
+    "baseline_hv_rate": 0.06522,
+    "mi_current": 0.2231,
+    "mi_vs_start": 0.552,
+    "resource_fraction_remaining": 0.776,
+    "iters_remaining": 38,
+    "time_pct_remaining": 77.6
+  }
+}

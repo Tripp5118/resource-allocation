@@ -1,0 +1,17 @@
+{
+  "iteration": 17,
+  "beta": 5.0,
+  "option": 1,
+  "reasoning_c1": "HV progress has materially slowed (HV velocity ratio 0.283) and MI remains elevated (94.7% of iteration-1 value), indicating unexplored territory.",
+  "reasoning_c2": "Option 1 balances qEHVI improvement and MI gain, aligning with the need to explore unexplored regions while still enhancing the Pareto front, as indicated by the elevated MI and slowed HV progress.",
+  "signals": {
+    "velocity_ratio": 0.283,
+    "recent_hv_rate": 0.00155,
+    "baseline_hv_rate": 0.0055,
+    "mi_current": 0.17418,
+    "mi_vs_start": 0.947,
+    "resource_fraction_remaining": 0.673,
+    "iters_remaining": 33,
+    "time_pct_remaining": 67.3
+  }
+}

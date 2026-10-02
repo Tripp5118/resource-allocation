@@ -1,0 +1,17 @@
+{
+  "iteration": 4,
+  "beta": 2.0,
+  "option": 1,
+  "reasoning_c1": "HV velocity is on pace and MI is elevated, indicating unexplored territory remains; maintain conservative exploration with \u03b2=2.0.",
+  "reasoning_c2": "Option 1 balances exploration and exploitation, maintaining a conservative exploration approach with \u03b2=2.0, while achieving a good qEHVI score and slightly improving MI.",
+  "signals": {
+    "velocity_ratio": 1.0,
+    "recent_hv_rate": 86.2144,
+    "baseline_hv_rate": 86.2144,
+    "mi_current": 1.20424,
+    "mi_vs_start": 2.455,
+    "resource_fraction_remaining": 0.944,
+    "iters_remaining": 51,
+    "time_pct_remaining": 94.4
+  }
+}

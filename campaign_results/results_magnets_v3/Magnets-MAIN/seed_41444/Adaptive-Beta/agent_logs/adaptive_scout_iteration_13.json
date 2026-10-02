@@ -1,0 +1,17 @@
+{
+  "iteration": 13,
+  "beta": 3.0,
+  "option": 1,
+  "reasoning_c1": "HV progress has accelerated, but MI is declining, suggesting moderate exploration is appropriate to further explore remaining territory.",
+  "reasoning_c2": "Option 1 balances moderate exploration with exploitation, aligning with the need to explore remaining territory while maintaining good HV progress.",
+  "signals": {
+    "velocity_ratio": 0.721,
+    "recent_hv_rate": 0.01501,
+    "baseline_hv_rate": 0.02082,
+    "mi_current": 0.069,
+    "mi_vs_start": 0.489,
+    "resource_fraction_remaining": 0.755,
+    "iters_remaining": 37,
+    "time_pct_remaining": 75.5
+  }
+}

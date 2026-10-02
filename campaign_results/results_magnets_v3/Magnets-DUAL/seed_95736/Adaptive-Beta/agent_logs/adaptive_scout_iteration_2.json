@@ -1,0 +1,14 @@
+{
+  "iteration": 2,
+  "beta": 2.0,
+  "option": 2,
+  "reasoning_c1": "Early in the campaign with only 2% resources consumed, \u03b2=2.0 is appropriate as HV is actively improving and MI is elevated, indicating unexplored territory remains.",
+  "reasoning_c2": "Option 2 offers a balanced tradeoff with a strong MI score of 0.9533, indicating significant exploration potential, while maintaining a relatively high qEHVI of 10.3289, aligning with the early campaign strategy of exploring unexplored regions.",
+  "signals": {
+    "mi_current": 0.46435,
+    "mi_vs_start": 1.0,
+    "resource_fraction_remaining": 0.98,
+    "iters_remaining": 48,
+    "time_pct_remaining": 98.0
+  }
+}

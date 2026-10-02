@@ -1,0 +1,17 @@
+{
+  "iteration": 51,
+  "beta": 5.0,
+  "option": 1,
+  "reasoning_c1": "HV has materially stalled with MI declining, indicating exploration is saturated and aggressive scouting is not justified.",
+  "reasoning_c2": "Option 1 balances the need for some exploration with a single qUCB point while maintaining a relatively high qEHVI score, aligning with the reasoning that aggressive exploration is not justified.",
+  "signals": {
+    "velocity_ratio": 0.0,
+    "recent_hv_rate": 0.0,
+    "baseline_hv_rate": 0.54569,
+    "mi_current": 0.07754,
+    "mi_vs_start": 0.369,
+    "resource_fraction_remaining": 0.074,
+    "iters_remaining": 4,
+    "time_pct_remaining": 7.4
+  }
+}

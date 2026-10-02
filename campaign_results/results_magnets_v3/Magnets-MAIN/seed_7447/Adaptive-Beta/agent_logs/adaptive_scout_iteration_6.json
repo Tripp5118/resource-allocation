@@ -1,0 +1,17 @@
+{
+  "iteration": 6,
+  "beta": 2.0,
+  "option": 3,
+  "reasoning_c1": "Early in the campaign with only 10% resources consumed and elevated MI, a conservative \u03b2=2.0 is appropriate to avoid arbitrary exploration.",
+  "reasoning_c2": "Option 3 provides a balanced tradeoff with a moderate qEHVI score and the highest MI, aligning with the conservative \u03b2=2.0 strategy to cautiously explore while still improving the Pareto front.",
+  "signals": {
+    "velocity_ratio": 0.281,
+    "recent_hv_rate": 0.02752,
+    "baseline_hv_rate": 0.09806,
+    "mi_current": 1.50024,
+    "mi_vs_start": 18.633,
+    "resource_fraction_remaining": 0.898,
+    "iters_remaining": 44,
+    "time_pct_remaining": 89.8
+  }
+}

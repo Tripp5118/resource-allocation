@@ -1,0 +1,17 @@
+{
+  "iteration": 20,
+  "beta": 8.0,
+  "option": 4,
+  "reasoning_c1": "HV has materially stalled (HV velocity ratio 0.127) and MI is still elevated (232.0% of iteration-1 value), justifying aggressive exploration.",
+  "reasoning_c2": "Option 4 provides a strong MI score, aligning with the need for aggressive exploration due to elevated MI and stalled HV, while still offering some qEHVI improvement.",
+  "signals": {
+    "velocity_ratio": 0.127,
+    "recent_hv_rate": 0.0018,
+    "baseline_hv_rate": 0.01421,
+    "mi_current": 0.45212,
+    "mi_vs_start": 2.32,
+    "resource_fraction_remaining": 0.102,
+    "iters_remaining": 5,
+    "time_pct_remaining": 10.2
+  }
+}

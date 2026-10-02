@@ -1,0 +1,17 @@
+{
+  "iteration": 50,
+  "beta": 2.0,
+  "option": 0,
+  "reasoning_c1": "The campaign is nearly complete with declining MI and recent HV improvement, indicating exploration is saturated and aggressive scouting is unnecessary.",
+  "reasoning_c2": "With the campaign nearly complete and exploration saturated, maximizing direct Pareto HV improvement with Option 0 aligns with the need for exploitation over exploration.",
+  "signals": {
+    "velocity_ratio": 1.69,
+    "recent_hv_rate": 0.00345,
+    "baseline_hv_rate": 0.00204,
+    "mi_current": 0.01282,
+    "mi_vs_start": 0.032,
+    "resource_fraction_remaining": 0.0,
+    "iters_remaining": 0,
+    "time_pct_remaining": 0.0
+  }
+}

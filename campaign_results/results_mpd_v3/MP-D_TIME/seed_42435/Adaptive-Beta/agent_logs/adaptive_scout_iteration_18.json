@@ -1,0 +1,17 @@
+{
+  "iteration": 18,
+  "beta": 5.0,
+  "option": 2,
+  "reasoning_c1": "HV progress has materially slowed (HV velocity ratio 0.433), and MI remains slightly elevated (11.3% of iteration-1 value), justifying moderate exploration with \u03b2=5.0.",
+  "reasoning_c2": "Option 2 balances moderate exploration and exploitation, aligning with the \u03b2=5.0 strategy, by providing a reasonable qEHVI improvement while maintaining a significant MI gain.",
+  "signals": {
+    "velocity_ratio": 0.433,
+    "recent_hv_rate": 1.27364,
+    "baseline_hv_rate": 2.9415,
+    "mi_current": 0.14513,
+    "mi_vs_start": 0.113,
+    "resource_fraction_remaining": 0.13,
+    "iters_remaining": 7,
+    "time_pct_remaining": 13.0
+  }
+}

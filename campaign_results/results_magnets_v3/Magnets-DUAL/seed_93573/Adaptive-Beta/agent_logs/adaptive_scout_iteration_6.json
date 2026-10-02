@@ -1,0 +1,17 @@
+{
+  "iteration": 6,
+  "beta": 2.0,
+  "option": 1,
+  "reasoning_c1": "With 90% of resources remaining and a still elevated MI of 0.2621, a conservative \u03b2=2.0 is appropriate to continue leveraging known regions while exploring effectively.",
+  "reasoning_c2": "Option 1 balances qEHVI and MI effectively, maintaining a strong qEHVI score while still gaining significant MI, aligning with the conservative \u03b2=2.0 strategy to leverage known regions and explore effectively.",
+  "signals": {
+    "velocity_ratio": 0.71,
+    "recent_hv_rate": 0.06236,
+    "baseline_hv_rate": 0.0878,
+    "mi_current": 0.26207,
+    "mi_vs_start": 0.794,
+    "resource_fraction_remaining": 0.898,
+    "iters_remaining": 44,
+    "time_pct_remaining": 89.8
+  }
+}

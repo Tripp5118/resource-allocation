@@ -1,0 +1,17 @@
+{
+  "iteration": 6,
+  "beta": 2.0,
+  "option": 1,
+  "reasoning_c1": "The campaign is early with only 9% resources consumed and HV is actively improving with a velocity ratio of 0.929, indicating that a conservative exploration approach is appropriate.",
+  "reasoning_c2": "Option 1 balances exploration and exploitation with a single qUCB point, aligning with the conservative exploration approach suitable for the early campaign stage and the current velocity ratio.",
+  "signals": {
+    "velocity_ratio": 0.929,
+    "recent_hv_rate": 47.23321,
+    "baseline_hv_rate": 50.81655,
+    "mi_current": 0.42449,
+    "mi_vs_start": 4.38,
+    "resource_fraction_remaining": 0.907,
+    "iters_remaining": 49,
+    "time_pct_remaining": 90.7
+  }
+}

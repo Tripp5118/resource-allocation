@@ -1,0 +1,17 @@
+{
+  "iteration": 6,
+  "beta": 2.0,
+  "option": 1,
+  "reasoning_c1": "HV velocity is on pace and MI is elevated, suggesting continued exploration with moderate \u03b2 is appropriate.",
+  "reasoning_c2": "Option 1 balances exploitation and exploration, maintaining strong qEHVI while enhancing MI, aligning with the moderate \u03b2=2.0 strategy for continued exploration.",
+  "signals": {
+    "velocity_ratio": 1.0,
+    "recent_hv_rate": 0.02774,
+    "baseline_hv_rate": 0.02774,
+    "mi_current": 0.5098,
+    "mi_vs_start": 2.616,
+    "resource_fraction_remaining": 0.898,
+    "iters_remaining": 44,
+    "time_pct_remaining": 89.8
+  }
+}

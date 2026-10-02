@@ -1,0 +1,12 @@
+{
+  "iteration": 1,
+  "beta": 2.0,
+  "option": 1,
+  "reasoning_c1": "Early in the campaign with 0% resources consumed, prefer \u03b2 near 2 as uncertainty estimates are unreliable without specific signals to justify deviation.",
+  "reasoning_c2": "Option 1 balances exploration and exploitation early in the campaign, slightly favoring qEHVI for immediate improvement while still gaining significant MI to explore uncertain regions, aligning with the strategy of using \u03b2=2.0 for balanced exploration.",
+  "signals": {
+    "resource_fraction_remaining": 1.0,
+    "iters_remaining": 0,
+    "time_pct_remaining": 100.0
+  }
+}

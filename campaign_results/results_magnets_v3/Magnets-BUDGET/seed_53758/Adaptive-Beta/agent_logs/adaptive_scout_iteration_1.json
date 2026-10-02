@@ -1,0 +1,12 @@
+{
+  "iteration": 1,
+  "beta": 2.0,
+  "option": 3,
+  "reasoning_c1": "Early in the campaign with 0% resources consumed, uncertainty estimates are unreliable; thus, a conservative \u03b2 of 2 is appropriate.",
+  "reasoning_c2": "Option 3 balances exploration and exploitation well, with a significant MI gain at \u03b2=2.0, aligning with the conservative approach needed early in the campaign.",
+  "signals": {
+    "resource_fraction_remaining": 1.0,
+    "iters_remaining": 0,
+    "time_pct_remaining": 100.0
+  }
+}

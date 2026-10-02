@@ -1,0 +1,17 @@
+{
+  "iteration": 28,
+  "beta": 2.0,
+  "option": 1,
+  "reasoning_c1": "With MI declining to 4.1% of iteration-1 value and HV velocity ratio at 0.288, exploration is saturated, so a conservative \u03b2=2.0 is appropriate to focus on improving HV.",
+  "reasoning_c2": "Option 1 balances exploitation and exploration with a focus on improving HV while still gaining some information, aligning with the conservative \u03b2=2.0 to enhance HV given the saturated exploration.",
+  "signals": {
+    "velocity_ratio": 0.288,
+    "recent_hv_rate": 0.41702,
+    "baseline_hv_rate": 1.44729,
+    "mi_current": 0.03459,
+    "mi_vs_start": 0.041,
+    "resource_fraction_remaining": 0.5,
+    "iters_remaining": 27,
+    "time_pct_remaining": 50.0
+  }
+}

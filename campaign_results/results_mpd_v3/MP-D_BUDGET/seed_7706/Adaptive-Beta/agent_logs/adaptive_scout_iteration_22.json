@@ -1,0 +1,17 @@
+{
+  "iteration": 22,
+  "beta": 2.0,
+  "option": 1,
+  "reasoning_c1": "With 94% resources consumed, a low MI, and a slowing HV velocity, a conservative \u03b2 of 2.0 is appropriate to focus on refining known regions.",
+  "reasoning_c2": "Option 1 balances exploitation and exploration by allocating one point to qUCB, slightly increasing MI while maintaining a reasonable qEHVI, aligning with the conservative \u03b2 of 2.0 to refine known regions with minimal exploration.",
+  "signals": {
+    "velocity_ratio": 0.085,
+    "recent_hv_rate": 0.31925,
+    "baseline_hv_rate": 3.73941,
+    "mi_current": 0.03845,
+    "mi_vs_start": 0.087,
+    "resource_fraction_remaining": 0.056,
+    "iters_remaining": 3,
+    "time_pct_remaining": 61.1
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "iteration": 12,
+  "beta": 2.0,
+  "option": 2,
+  "reasoning_c1": "HV velocity is materially slowed and MI is declining, indicating exploration is saturated, so a conservative \u03b2=2.0 is appropriate.",
+  "reasoning_c2": "Option 2 provides a balanced trade-off with a reasonable qEHVI improvement and a significant MI gain, aligning with the conservative \u03b2=2.0 strategy to cautiously explore while still enhancing the Pareto front.",
+  "signals": {
+    "velocity_ratio": 0.557,
+    "recent_hv_rate": 5.55058,
+    "baseline_hv_rate": 9.95967,
+    "mi_current": 0.17541,
+    "mi_vs_start": 0.314,
+    "resource_fraction_remaining": 0.796,
+    "iters_remaining": 43,
+    "time_pct_remaining": 79.6
+  }
+}

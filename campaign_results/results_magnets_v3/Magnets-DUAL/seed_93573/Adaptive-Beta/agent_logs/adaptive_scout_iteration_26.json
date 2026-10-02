@@ -1,0 +1,17 @@
+{
+  "iteration": 26,
+  "beta": 5.0,
+  "option": 1,
+  "reasoning_c1": "HV progress has materially slowed with MI still elevated, justifying moderate exploration.",
+  "reasoning_c2": "Option 1 balances moderate exploration with exploitation, aligning with the high MI and slowed HV progress, suitable for \u03b2=5.0.",
+  "signals": {
+    "velocity_ratio": 0.064,
+    "recent_hv_rate": 0.00039,
+    "baseline_hv_rate": 0.0061,
+    "mi_current": 0.08315,
+    "mi_vs_start": 0.252,
+    "resource_fraction_remaining": 0.0,
+    "iters_remaining": 0,
+    "time_pct_remaining": 46.9
+  }
+}

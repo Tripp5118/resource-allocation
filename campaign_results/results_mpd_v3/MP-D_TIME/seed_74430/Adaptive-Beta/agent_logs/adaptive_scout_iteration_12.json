@@ -1,0 +1,17 @@
+{
+  "iteration": 12,
+  "beta": 2.0,
+  "option": 1,
+  "reasoning_c1": "HV is actively improving with a velocity ratio of 0.747, and MI is declining, indicating the design space is becoming well-characterized, justifying a conservative \u03b2.",
+  "reasoning_c2": "Option 1 balances exploration and exploitation, aligning with the conservative \u03b2 of 2.0 by maintaining HV improvement while slightly enhancing MI, which is consistent with the design space becoming well-characterized.",
+  "signals": {
+    "velocity_ratio": 0.747,
+    "recent_hv_rate": 6.69146,
+    "baseline_hv_rate": 8.96354,
+    "mi_current": 0.3622,
+    "mi_vs_start": 0.671,
+    "resource_fraction_remaining": 0.796,
+    "iters_remaining": 43,
+    "time_pct_remaining": 79.6
+  }
+}

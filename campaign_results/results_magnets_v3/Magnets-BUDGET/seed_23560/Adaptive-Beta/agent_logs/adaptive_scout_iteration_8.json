@@ -1,0 +1,17 @@
+{
+  "iteration": 8,
+  "beta": 2.0,
+  "option": 1,
+  "reasoning_c1": "Early in the campaign with 14% resources consumed, HV is actively improving (HV velocity ratio 0.652), so a conservative \u03b2 of 2.0 is appropriate.",
+  "reasoning_c2": "With a conservative \u03b2 of 2.0 and early in the campaign, Option 1 balances exploitation and exploration by slightly favoring qEHVI while still gaining significant MI, aligning with the need for continued HV improvement.",
+  "signals": {
+    "velocity_ratio": 0.652,
+    "recent_hv_rate": 0.00465,
+    "baseline_hv_rate": 0.00713,
+    "mi_current": 0.4347,
+    "mi_vs_start": 1.1,
+    "resource_fraction_remaining": 0.857,
+    "iters_remaining": 42,
+    "time_pct_remaining": 85.7
+  }
+}

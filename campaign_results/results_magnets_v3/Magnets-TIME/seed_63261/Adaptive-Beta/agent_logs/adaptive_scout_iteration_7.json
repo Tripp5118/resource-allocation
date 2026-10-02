@@ -1,0 +1,17 @@
+{
+  "iteration": 7,
+  "beta": 2.0,
+  "option": 2,
+  "reasoning_c1": "Early in the campaign with 12% resources consumed, HV is improving, and MI is declining, indicating conservative exploration is appropriate.",
+  "reasoning_c2": "Option 2 balances exploration and exploitation, aligning with the conservative exploration approach due to declining MI and improving HV, while still maintaining reasonable qEHVI improvement.",
+  "signals": {
+    "velocity_ratio": 0.741,
+    "recent_hv_rate": 0.02058,
+    "baseline_hv_rate": 0.02778,
+    "mi_current": 0.15509,
+    "mi_vs_start": 0.273,
+    "resource_fraction_remaining": 0.878,
+    "iters_remaining": 43,
+    "time_pct_remaining": 87.8
+  }
+}

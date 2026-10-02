@@ -1,0 +1,17 @@
+{
+  "iteration": 43,
+  "beta": 5.0,
+  "option": 3,
+  "reasoning_c1": "HV progress has materially stalled, MI is elevated, and aggressive exploration is justified to locate new productive regions.",
+  "reasoning_c2": "Option 3 provides a strong MI score, indicating significant exploration potential, which aligns with the need for aggressive exploration due to stalled HV progress and elevated MI.",
+  "signals": {
+    "velocity_ratio": 0.017,
+    "recent_hv_rate": 0.01497,
+    "baseline_hv_rate": 0.86625,
+    "mi_current": 0.26109,
+    "mi_vs_start": 0.375,
+    "resource_fraction_remaining": 0.222,
+    "iters_remaining": 12,
+    "time_pct_remaining": 22.2
+  }
+}

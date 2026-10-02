@@ -1,0 +1,17 @@
+{
+  "iteration": 37,
+  "beta": 2.0,
+  "option": 1,
+  "reasoning_c1": "HV progress has materially slowed, MI is declining, and resources are 74% consumed, indicating exploration is saturated.",
+  "reasoning_c2": "Option 1 balances exploitation and exploration by allocating one point to qUCB, providing a good MI gain while maintaining a strong qEHVI score, aligning with the need for more exploration as indicated by the declining MI and saturated exploration.",
+  "signals": {
+    "velocity_ratio": 0.169,
+    "recent_hv_rate": 0.00059,
+    "baseline_hv_rate": 0.00347,
+    "mi_current": 0.01607,
+    "mi_vs_start": 0.021,
+    "resource_fraction_remaining": 0.265,
+    "iters_remaining": 13,
+    "time_pct_remaining": 26.5
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "iteration": 45,
+  "beta": 5.0,
+  "option": 1,
+  "reasoning_c1": "HV has materially stalled with a velocity ratio of 0.188, and MI is declining at 9.6% of iteration-1 value, indicating exploration is saturated.",
+  "reasoning_c2": "Option 1 balances a reasonable qEHVI score with a higher MI score, aligning with the need to slightly enhance exploration as exploration is saturated and resources are nearly consumed.",
+  "signals": {
+    "velocity_ratio": 0.188,
+    "recent_hv_rate": 0.00039,
+    "baseline_hv_rate": 0.00208,
+    "mi_current": 0.04195,
+    "mi_vs_start": 0.096,
+    "resource_fraction_remaining": 0.102,
+    "iters_remaining": 5,
+    "time_pct_remaining": 10.2
+  }
+}

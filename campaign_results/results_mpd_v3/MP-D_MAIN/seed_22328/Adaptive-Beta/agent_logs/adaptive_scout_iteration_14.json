@@ -1,0 +1,17 @@
+{
+  "iteration": 14,
+  "beta": 2.0,
+  "option": 0,
+  "reasoning_c1": "HV is actively improving with a velocity ratio of 0.508, and MI is declining, indicating exploration is not yet necessary.",
+  "reasoning_c2": "Since HV is actively improving and MI is declining, focusing on exploitation with the highest qEHVI score is appropriate to maximize direct Pareto HV improvement.",
+  "signals": {
+    "velocity_ratio": 0.508,
+    "recent_hv_rate": 2.34584,
+    "baseline_hv_rate": 4.61618,
+    "mi_current": 0.30473,
+    "mi_vs_start": 0.789,
+    "resource_fraction_remaining": 0.759,
+    "iters_remaining": 41,
+    "time_pct_remaining": 75.9
+  }
+}

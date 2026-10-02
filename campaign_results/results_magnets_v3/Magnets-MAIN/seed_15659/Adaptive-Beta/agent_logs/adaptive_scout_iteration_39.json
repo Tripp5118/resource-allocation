@@ -1,0 +1,17 @@
+{
+  "iteration": 39,
+  "beta": 2.0,
+  "option": 0,
+  "reasoning_c1": "With HV velocity ratio at 0.123 and MI at 1.4% of iteration-1 value, exploration is saturated and campaign is nearly complete, justifying a conservative \u03b2.",
+  "reasoning_c2": "With exploration saturated and the campaign nearly complete, maximizing direct Pareto HV improvement with Option 0 aligns with the conservative \u03b2=2.0, prioritizing exploitation over exploration.",
+  "signals": {
+    "velocity_ratio": 0.123,
+    "recent_hv_rate": 0.0003,
+    "baseline_hv_rate": 0.00243,
+    "mi_current": 0.00717,
+    "mi_vs_start": 0.014,
+    "resource_fraction_remaining": 0.224,
+    "iters_remaining": 11,
+    "time_pct_remaining": 22.4
+  }
+}

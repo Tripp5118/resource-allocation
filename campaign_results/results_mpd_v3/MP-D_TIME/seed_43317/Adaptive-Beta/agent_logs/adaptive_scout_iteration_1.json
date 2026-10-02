@@ -1,0 +1,12 @@
+{
+  "iteration": 1,
+  "beta": 2.0,
+  "option": 2,
+  "reasoning_c1": "Early in the campaign with 0% resources consumed, prefer \u03b2 near 2 to avoid arbitrary exploration due to poorly constrained GP posterior.",
+  "reasoning_c2": "Option 2 provides a balanced tradeoff with a reasonable qEHVI score and a significant MI gain, aligning with the early campaign strategy to explore while maintaining some exploitation.",
+  "signals": {
+    "resource_fraction_remaining": 1.0,
+    "iters_remaining": 0,
+    "time_pct_remaining": 100.0
+  }
+}

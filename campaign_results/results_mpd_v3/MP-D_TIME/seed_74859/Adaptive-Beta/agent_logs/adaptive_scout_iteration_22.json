@@ -1,0 +1,17 @@
+{
+  "iteration": 22,
+  "beta": 2.0,
+  "option": 0,
+  "reasoning_c1": "With only 6% time remaining and MI declining to 10.7% of its initial value, exploration is saturated, so a conservative \u03b2=2.0 is appropriate to focus on HV improvement.",
+  "reasoning_c2": "With only 6% time remaining and a focus on HV improvement, Option 0 maximizes qEHVI for direct Pareto front enhancement, aligning with the conservative \u03b2=2.0 to prioritize exploitation over exploration.",
+  "signals": {
+    "velocity_ratio": 0.276,
+    "recent_hv_rate": 0.89307,
+    "baseline_hv_rate": 3.23322,
+    "mi_current": 0.12915,
+    "mi_vs_start": 0.107,
+    "resource_fraction_remaining": 0.056,
+    "iters_remaining": 3,
+    "time_pct_remaining": 5.6
+  }
+}

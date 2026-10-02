@@ -1,0 +1,12 @@
+{
+  "iteration": 1,
+  "beta": 2.0,
+  "option": 1,
+  "reasoning_c1": "Early in the campaign with 0% resources consumed, so a conservative \u03b2 of 2 is appropriate to avoid arbitrary exploration.",
+  "reasoning_c2": "With a conservative \u03b2 of 2 early in the campaign, Option 1 balances exploitation and exploration by slightly favoring qEHVI while still gaining some MI, aligning with the need to avoid arbitrary exploration.",
+  "signals": {
+    "resource_fraction_remaining": 1.0,
+    "iters_remaining": 0,
+    "time_pct_remaining": 100.0
+  }
+}

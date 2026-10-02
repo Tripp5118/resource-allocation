@@ -1,0 +1,17 @@
+{
+  "iteration": 10,
+  "beta": 3.0,
+  "option": 1,
+  "reasoning_c1": "HV is still improving but MI has declined significantly, suggesting moderate exploration is appropriate to continue discovering new Pareto points.",
+  "reasoning_c2": "Option 1 balances moderate exploration and exploitation, with a significant MI gain compared to Option 0, aligning with the strategy of moderate exploration as HV is still improving.",
+  "signals": {
+    "velocity_ratio": 0.132,
+    "recent_hv_rate": 2.97228,
+    "baseline_hv_rate": 22.4623,
+    "mi_current": 0.20871,
+    "mi_vs_start": 0.335,
+    "resource_fraction_remaining": 0.833,
+    "iters_remaining": 45,
+    "time_pct_remaining": 83.3
+  }
+}

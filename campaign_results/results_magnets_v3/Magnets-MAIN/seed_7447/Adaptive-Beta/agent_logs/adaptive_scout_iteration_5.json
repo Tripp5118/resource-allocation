@@ -1,0 +1,17 @@
+{
+  "iteration": 5,
+  "beta": 2.0,
+  "option": 1,
+  "reasoning_c1": "Early in the campaign with active HV improvement and elevated MI, so conservative exploration is appropriate.",
+  "reasoning_c2": "Option 1 balances exploration and exploitation by allocating one point to qUCB, which aligns with the conservative exploration strategy appropriate for the early campaign phase with active HV improvement and elevated MI.",
+  "signals": {
+    "velocity_ratio": 0.844,
+    "recent_hv_rate": 0.09806,
+    "baseline_hv_rate": 0.11621,
+    "mi_current": 0.79094,
+    "mi_vs_start": 9.823,
+    "resource_fraction_remaining": 0.918,
+    "iters_remaining": 45,
+    "time_pct_remaining": 91.8
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "iteration": 33,
+  "beta": 2.0,
+  "option": 1,
+  "reasoning_c1": "With HV velocity ratio at 0.365 and MI at 0.0069, exploration is saturated and \u03b2 should remain conservative.",
+  "reasoning_c2": "Option 1 balances exploration and exploitation, maintaining a conservative \u03b2 with a slight MI gain while preserving high qEHVI, aligning with the saturated exploration context.",
+  "signals": {
+    "velocity_ratio": 0.365,
+    "recent_hv_rate": 0.00118,
+    "baseline_hv_rate": 0.00324,
+    "mi_current": 0.00686,
+    "mi_vs_start": 0.01,
+    "resource_fraction_remaining": 0.347,
+    "iters_remaining": 17,
+    "time_pct_remaining": 34.7
+  }
+}

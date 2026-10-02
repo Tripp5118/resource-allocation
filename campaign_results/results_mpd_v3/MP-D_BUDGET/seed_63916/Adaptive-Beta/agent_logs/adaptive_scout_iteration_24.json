@@ -1,0 +1,17 @@
+{
+  "iteration": 24,
+  "beta": 2.0,
+  "option": 0,
+  "reasoning_c1": "With 98% resources consumed, declining MI, and HV velocity ratio indicating slowed progress, a conservative \u03b2=2.0 is appropriate to focus on reliable Pareto front improvement.",
+  "reasoning_c2": "With 98% resources consumed and a focus on reliable Pareto front improvement, Option 0 maximizes qEHVI, aligning with the conservative \u03b2=2.0 to ensure the best possible exploitation outcome.",
+  "signals": {
+    "velocity_ratio": 0.646,
+    "recent_hv_rate": 0.92308,
+    "baseline_hv_rate": 1.42998,
+    "mi_current": 0.01948,
+    "mi_vs_start": 0.1,
+    "resource_fraction_remaining": 0.019,
+    "iters_remaining": 1,
+    "time_pct_remaining": 57.4
+  }
+}

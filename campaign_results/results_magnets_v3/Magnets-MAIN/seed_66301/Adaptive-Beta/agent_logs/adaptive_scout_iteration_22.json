@@ -1,0 +1,17 @@
+{
+  "iteration": 22,
+  "beta": 5.0,
+  "option": 2,
+  "reasoning_c1": "HV progress has materially stalled (HV velocity ratio = 0.963) with elevated MI (0.2894), justifying moderate exploration.",
+  "reasoning_c2": "Option 2 balances moderate exploration with exploitation, aligning with the need for exploration due to stalled HV progress and elevated MI, while still providing reasonable qEHVI improvement.",
+  "signals": {
+    "velocity_ratio": 0.963,
+    "recent_hv_rate": 0.01026,
+    "baseline_hv_rate": 0.01066,
+    "mi_current": 0.28944,
+    "mi_vs_start": 0.5,
+    "resource_fraction_remaining": 0.571,
+    "iters_remaining": 28,
+    "time_pct_remaining": 57.1
+  }
+}

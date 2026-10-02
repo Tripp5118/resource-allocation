@@ -1,0 +1,17 @@
+{
+  "iteration": 46,
+  "beta": 2.0,
+  "option": 1,
+  "reasoning_c1": "HV is improving, MI is low, and resources are nearly consumed, suggesting a focus on exploitation with minimal exploration.",
+  "reasoning_c2": "Option 1 balances exploitation and exploration, providing a reasonable qEHVI improvement while gaining more MI than Option 0, aligning with the focus on exploitation but allowing some exploration due to the remaining resources.",
+  "signals": {
+    "velocity_ratio": 0.196,
+    "recent_hv_rate": 0.09068,
+    "baseline_hv_rate": 0.46212,
+    "mi_current": 0.03447,
+    "mi_vs_start": 0.18,
+    "resource_fraction_remaining": 0.167,
+    "iters_remaining": 9,
+    "time_pct_remaining": 16.7
+  }
+}

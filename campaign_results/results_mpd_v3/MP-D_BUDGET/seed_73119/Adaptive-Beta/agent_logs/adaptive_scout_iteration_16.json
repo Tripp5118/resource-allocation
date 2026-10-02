@@ -1,0 +1,17 @@
+{
+  "iteration": 16,
+  "beta": 2.0,
+  "option": 1,
+  "reasoning_c1": "With HV actively improving and MI declining, a conservative \u03b2 of 2.0 is appropriate to maintain focus on known productive regions.",
+  "reasoning_c2": "Option 1 balances the need for exploitation and exploration, maintaining a conservative focus on known productive regions with a reasonable qEHVI score while slightly enhancing MI to explore new areas.",
+  "signals": {
+    "velocity_ratio": 0.926,
+    "recent_hv_rate": 4.95294,
+    "baseline_hv_rate": 5.35061,
+    "mi_current": 0.03454,
+    "mi_vs_start": 0.086,
+    "resource_fraction_remaining": 0.167,
+    "iters_remaining": 9,
+    "time_pct_remaining": 72.2
+  }
+}

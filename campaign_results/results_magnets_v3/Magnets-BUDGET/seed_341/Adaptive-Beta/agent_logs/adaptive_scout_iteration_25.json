@@ -1,0 +1,17 @@
+{
+  "iteration": 25,
+  "beta": 2.0,
+  "option": 0,
+  "reasoning_c1": "With 98% resources consumed, HV has materially slowed, and MI is declining, indicating the design space is well-characterized; thus, a conservative \u03b2 of 2.0 is appropriate.",
+  "reasoning_c2": "With 98% of resources consumed and the design space well-characterized, prioritizing exploitation with 5 qEHVI points maximizes direct Pareto HV improvement, aligning with the conservative \u03b2 of 2.0.",
+  "signals": {
+    "velocity_ratio": 0.254,
+    "recent_hv_rate": 0.0009,
+    "baseline_hv_rate": 0.00353,
+    "mi_current": 0.02536,
+    "mi_vs_start": 0.078,
+    "resource_fraction_remaining": 0.02,
+    "iters_remaining": 1,
+    "time_pct_remaining": 51.0
+  }
+}

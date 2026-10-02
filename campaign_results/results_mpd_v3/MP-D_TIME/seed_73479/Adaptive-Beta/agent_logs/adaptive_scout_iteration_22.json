@@ -1,0 +1,17 @@
+{
+  "iteration": 22,
+  "beta": 5.0,
+  "option": 2,
+  "reasoning_c1": "With HV velocity materially slowed and MI elevated, aggressive scouting with \u03b2=5.0 is justified to explore remaining productive regions.",
+  "reasoning_c2": "Option 2 balances exploration and exploitation by allocating 2 points to qUCB, providing a good MI score of 0.2359 while still maintaining a reasonable qEHVI of 0.0302, aligning with the aggressive scouting strategy justified by the high beta.",
+  "signals": {
+    "velocity_ratio": 0.296,
+    "recent_hv_rate": 0.58659,
+    "baseline_hv_rate": 1.98149,
+    "mi_current": 0.71224,
+    "mi_vs_start": 1.422,
+    "resource_fraction_remaining": 0.056,
+    "iters_remaining": 3,
+    "time_pct_remaining": 5.6
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "iteration": 16,
+  "beta": 5.0,
+  "option": 2,
+  "reasoning_c1": "HV has materially improved, MI is elevated, and resources are 31% consumed, justifying moderate exploration.",
+  "reasoning_c2": "Option 2 balances moderate exploration with exploitation, aligning with the elevated MI and improved HV, while still maintaining a reasonable qEHVI score given the 31% resource consumption and 69% time remaining.",
+  "signals": {
+    "velocity_ratio": 1.0,
+    "recent_hv_rate": 0.01098,
+    "baseline_hv_rate": 0.01098,
+    "mi_current": 0.48728,
+    "mi_vs_start": 1.814,
+    "resource_fraction_remaining": 0.694,
+    "iters_remaining": 34,
+    "time_pct_remaining": 69.4
+  }
+}

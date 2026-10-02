@@ -1,0 +1,17 @@
+{
+  "iteration": 22,
+  "beta": 2.0,
+  "option": 1,
+  "reasoning_c1": "With HV velocity materially slowed and MI declining, a conservative \u03b2 of 2.0 is appropriate to focus on reliable Pareto front improvement.",
+  "reasoning_c2": "Option 1 balances a conservative approach with a slight exploration, aligning with the \u03b2 of 2.0 by prioritizing reliable Pareto front improvement while gaining some information about unexplored regions.",
+  "signals": {
+    "velocity_ratio": 0.219,
+    "recent_hv_rate": 0.56381,
+    "baseline_hv_rate": 2.57539,
+    "mi_current": 0.1385,
+    "mi_vs_start": 0.133,
+    "resource_fraction_remaining": 0.056,
+    "iters_remaining": 3,
+    "time_pct_remaining": 61.1
+  }
+}

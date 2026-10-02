@@ -1,0 +1,17 @@
+{
+  "iteration": 6,
+  "beta": 2.0,
+  "option": 3,
+  "reasoning_c1": "Early in the campaign with 10% resources consumed, HV is actively improving, and MI is elevated, indicating unexplored territory remains.",
+  "reasoning_c2": "Option 3 balances qEHVI and MI, leveraging early exploration with 3 qUCB points to capitalize on elevated MI while still improving HV.",
+  "signals": {
+    "velocity_ratio": 0.326,
+    "recent_hv_rate": 0.03067,
+    "baseline_hv_rate": 0.09421,
+    "mi_current": 0.80585,
+    "mi_vs_start": 3.0,
+    "resource_fraction_remaining": 0.898,
+    "iters_remaining": 44,
+    "time_pct_remaining": 89.8
+  }
+}

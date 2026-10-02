@@ -1,0 +1,14 @@
+{
+  "iteration": 2,
+  "beta": 2.0,
+  "option": 2,
+  "reasoning_c1": "Early in the campaign with high MI and significant HV gain, indicating exploration is not yet saturated.",
+  "reasoning_c2": "Option 2 provides a balanced trade-off with a strong MI score of 0.6381, supporting exploration early in the campaign while still maintaining a reasonable qEHVI improvement.",
+  "signals": {
+    "mi_current": 0.47512,
+    "mi_vs_start": 1.0,
+    "resource_fraction_remaining": 0.981,
+    "iters_remaining": 53,
+    "time_pct_remaining": 98.1
+  }
+}

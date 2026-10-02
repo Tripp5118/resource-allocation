@@ -1,0 +1,14 @@
+{
+  "iteration": 3,
+  "beta": 3.0,
+  "option": 1,
+  "reasoning_c1": "HV is actively improving, but MI has declined significantly, suggesting moderate exploration to identify remaining productive regions.",
+  "reasoning_c2": "Option 1 offers a balanced tradeoff with moderate exploration, as indicated by its MI score, while still maintaining a relatively high qEHVI score, aligning with the need to explore remaining productive regions.",
+  "signals": {
+    "mi_current": 0.30849,
+    "mi_vs_start": 0.155,
+    "resource_fraction_remaining": 0.963,
+    "iters_remaining": 52,
+    "time_pct_remaining": 96.3
+  }
+}

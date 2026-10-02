@@ -1,0 +1,17 @@
+{
+  "iteration": 13,
+  "beta": 2.0,
+  "option": 1,
+  "reasoning_c1": "HV velocity is accelerating and MI is elevated, indicating productive exploration with current conservative \u03b2.",
+  "reasoning_c2": "Option 1 balances exploration and exploitation, maintaining productive exploration with elevated MI while still achieving a good qEHVI score, aligning with the current conservative \u03b2 of 2.0.",
+  "signals": {
+    "velocity_ratio": 1.492,
+    "recent_hv_rate": 0.01703,
+    "baseline_hv_rate": 0.01141,
+    "mi_current": 0.35072,
+    "mi_vs_start": 2.25,
+    "resource_fraction_remaining": 0.755,
+    "iters_remaining": 37,
+    "time_pct_remaining": 75.5
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "iteration": 50,
+  "beta": 5.0,
+  "option": 5,
+  "reasoning_c1": "HV has materially stalled, MI is still elevated, and the campaign is complete, justifying aggressive scouting.",
+  "reasoning_c2": "With the campaign complete and HV stalled, the focus should be on maximizing information gain about unexplored regions, which Option 5 achieves with the highest MI score.",
+  "signals": {
+    "velocity_ratio": 0.016,
+    "recent_hv_rate": 4e-05,
+    "baseline_hv_rate": 0.0025,
+    "mi_current": 0.22858,
+    "mi_vs_start": 0.395,
+    "resource_fraction_remaining": 0.0,
+    "iters_remaining": 0,
+    "time_pct_remaining": 0.0
+  }
+}

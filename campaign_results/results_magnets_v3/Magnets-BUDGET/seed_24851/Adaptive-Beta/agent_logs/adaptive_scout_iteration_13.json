@@ -1,0 +1,17 @@
+{
+  "iteration": 13,
+  "beta": 3.0,
+  "option": 1,
+  "reasoning_c1": "HV progress has slowed, MI indicates remaining unexplored territory, and early campaign status suggests moderate exploration is appropriate.",
+  "reasoning_c2": "Option 1 provides a balance between qEHVI and MI, aligning with the moderate exploration strategy suggested by the early campaign status and the need to explore unexplored regions indicated by the MI score.",
+  "signals": {
+    "velocity_ratio": 0.586,
+    "recent_hv_rate": 0.00297,
+    "baseline_hv_rate": 0.00507,
+    "mi_current": 0.19218,
+    "mi_vs_start": 0.607,
+    "resource_fraction_remaining": 0.755,
+    "iters_remaining": 37,
+    "time_pct_remaining": 75.5
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "iteration": 21,
+  "beta": 5.0,
+  "option": 3,
+  "reasoning_c1": "With 92% resources consumed, HV velocity slowed, and MI still elevated at 86.7% of iteration-1, a \u03b2 of 5.0 is justified for aggressive exploration in remaining iterations.",
+  "reasoning_c2": "Option 3 balances exploration and exploitation, leveraging the aggressive exploration strategy with a \u03b2 of 5.0 by allocating 3 qUCB points, which maximizes MI gain while still maintaining a reasonable qEHVI improvement.",
+  "signals": {
+    "velocity_ratio": 0.814,
+    "recent_hv_rate": 0.00443,
+    "baseline_hv_rate": 0.00544,
+    "mi_current": 0.24174,
+    "mi_vs_start": 0.867,
+    "resource_fraction_remaining": 0.082,
+    "iters_remaining": 4,
+    "time_pct_remaining": 8.2
+  }
+}

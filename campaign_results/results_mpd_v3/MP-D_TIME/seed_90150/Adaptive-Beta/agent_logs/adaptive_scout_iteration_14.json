@@ -1,0 +1,17 @@
+{
+  "iteration": 14,
+  "beta": 5.0,
+  "option": 5,
+  "reasoning_c1": "HV progress has materially slowed, MI remains elevated, and exploration is needed to discover new productive regions.",
+  "reasoning_c2": "With HV progress slowing and MI remaining elevated, maximizing exploration with 5 qUCB points is appropriate to discover new productive regions, aligning with the need for exploration at \u03b2=5.0.",
+  "signals": {
+    "velocity_ratio": 0.035,
+    "recent_hv_rate": 0.36915,
+    "baseline_hv_rate": 10.56034,
+    "mi_current": 0.10062,
+    "mi_vs_start": 0.138,
+    "resource_fraction_remaining": 0.759,
+    "iters_remaining": 41,
+    "time_pct_remaining": 75.9
+  }
+}

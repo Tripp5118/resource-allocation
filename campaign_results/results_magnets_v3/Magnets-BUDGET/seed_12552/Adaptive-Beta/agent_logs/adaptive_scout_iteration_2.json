@@ -1,0 +1,14 @@
+{
+  "iteration": 2,
+  "beta": 2.0,
+  "option": 2,
+  "reasoning_c1": "With only 2% of resources consumed and elevated MI indicating unexplored territory, a conservative \u03b2 of 2.0 is appropriate to balance exploration and exploitation early in the campaign.",
+  "reasoning_c2": "Option 2 provides a balanced tradeoff with a strong MI score of 0.8600, reflecting significant exploration potential, while maintaining a relatively high qEHVI score of 8.9612, aligning with the conservative \u03b2 of 2.0 to balance exploration and exploitation.",
+  "signals": {
+    "mi_current": 0.2421,
+    "mi_vs_start": 1.0,
+    "resource_fraction_remaining": 0.98,
+    "iters_remaining": 48,
+    "time_pct_remaining": 98.0
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "iteration": 23,
+  "beta": 5.0,
+  "option": 2,
+  "reasoning_c1": "HV is actively improving and MI is elevated, indicating unexplored territory remains, justifying continued moderate exploration.",
+  "reasoning_c2": "Option 2 offers a balanced tradeoff with moderate qEHVI improvement and elevated MI, aligning with the need for continued exploration in unexplored regions while still enhancing the Pareto front.",
+  "signals": {
+    "velocity_ratio": 1.182,
+    "recent_hv_rate": 3.75876,
+    "baseline_hv_rate": 3.17915,
+    "mi_current": 0.37606,
+    "mi_vs_start": 1.787,
+    "resource_fraction_remaining": 0.593,
+    "iters_remaining": 32,
+    "time_pct_remaining": 59.3
+  }
+}

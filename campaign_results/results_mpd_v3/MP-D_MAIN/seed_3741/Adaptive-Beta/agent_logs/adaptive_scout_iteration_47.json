@@ -1,0 +1,17 @@
+{
+  "iteration": 47,
+  "beta": 5.0,
+  "option": 2,
+  "reasoning_c1": "HV has materially stalled, MI is elevated indicating unexplored territory, justifying aggressive scouting with \u03b2=5.0.",
+  "reasoning_c2": "Option 2 balances exploration and exploitation, providing a significant MI gain while still maintaining a reasonable qEHVI score, aligning with the aggressive scouting strategy justified by the elevated MI and stalled HV.",
+  "signals": {
+    "velocity_ratio": 0.0,
+    "recent_hv_rate": 0.0,
+    "baseline_hv_rate": 0.35717,
+    "mi_current": 0.93597,
+    "mi_vs_start": 1.355,
+    "resource_fraction_remaining": 0.148,
+    "iters_remaining": 8,
+    "time_pct_remaining": 14.8
+  }
+}

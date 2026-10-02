@@ -1,0 +1,17 @@
+{
+  "iteration": 8,
+  "beta": 2.0,
+  "option": 2,
+  "reasoning_c1": "Early in the campaign with 14% resources consumed, HV is improving and MI is elevated, indicating unexplored territory remains; thus, a conservative \u03b2=2 is appropriate.",
+  "reasoning_c2": "Option 2 balances qEHVI improvement and MI gain, aligning with the conservative \u03b2=2 approach to explore unexplored regions while still enhancing the Pareto front early in the campaign.",
+  "signals": {
+    "velocity_ratio": 0.417,
+    "recent_hv_rate": 0.02273,
+    "baseline_hv_rate": 0.05456,
+    "mi_current": 0.45471,
+    "mi_vs_start": 4.482,
+    "resource_fraction_remaining": 0.857,
+    "iters_remaining": 42,
+    "time_pct_remaining": 85.7
+  }
+}

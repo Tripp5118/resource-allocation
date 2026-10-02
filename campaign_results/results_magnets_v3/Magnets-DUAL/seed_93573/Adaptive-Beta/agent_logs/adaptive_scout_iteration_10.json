@@ -1,0 +1,17 @@
+{
+  "iteration": 10,
+  "beta": 2.0,
+  "option": 1,
+  "reasoning_c1": "Early in the campaign with 18% resources consumed and HV velocity ratio of 0.304, indicating slowed progress, but MI is still elevated at 0.2578, suggesting unexplored territory remains; thus, a conservative \u03b2=2.0 is appropriate.",
+  "reasoning_c2": "Option 1 balances exploitation and exploration by allocating 1 point to qUCB, achieving a significant MI of 0.5970 while maintaining a high qEHVI of 3.9736, aligning with the conservative \u03b2=2.0 choice to explore unexplored regions.",
+  "signals": {
+    "velocity_ratio": 0.304,
+    "recent_hv_rate": 0.00611,
+    "baseline_hv_rate": 0.02012,
+    "mi_current": 0.25777,
+    "mi_vs_start": 0.781,
+    "resource_fraction_remaining": 0.816,
+    "iters_remaining": 40,
+    "time_pct_remaining": 81.6
+  }
+}

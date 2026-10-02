@@ -1,0 +1,17 @@
+{
+  "iteration": 25,
+  "beta": 2.0,
+  "option": 0,
+  "reasoning_c1": "With resources fully consumed and MI declining, a conservative \u03b2=2.0 is appropriate to focus on refining the current Pareto front.",
+  "reasoning_c2": "With a conservative \u03b2=2.0 and resources fully consumed, focusing on refining the current Pareto front is key, making Option 0's highest qEHVI score the best fit.",
+  "signals": {
+    "velocity_ratio": 0.264,
+    "recent_hv_rate": 0.7155,
+    "baseline_hv_rate": 2.714,
+    "mi_current": 0.03592,
+    "mi_vs_start": 0.266,
+    "resource_fraction_remaining": 0.0,
+    "iters_remaining": 0,
+    "time_pct_remaining": 0.0
+  }
+}

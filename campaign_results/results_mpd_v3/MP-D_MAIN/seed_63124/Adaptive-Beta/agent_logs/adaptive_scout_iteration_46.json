@@ -1,0 +1,17 @@
+{
+  "iteration": 46,
+  "beta": 2.0,
+  "option": 1,
+  "reasoning_c1": "With HV velocity materially slowed and MI declining, a conservative \u03b2 of 2.0 is appropriate as exploration is saturated and campaign completion is near.",
+  "reasoning_c2": "Option 1 provides a balanced tradeoff with a slight focus on exploitation, aligning with the conservative \u03b2 of 2.0 and the nearing campaign completion, while still gaining some information with one qUCB point.",
+  "signals": {
+    "velocity_ratio": 0.633,
+    "recent_hv_rate": 0.34948,
+    "baseline_hv_rate": 0.55191,
+    "mi_current": 0.03212,
+    "mi_vs_start": 0.058,
+    "resource_fraction_remaining": 0.167,
+    "iters_remaining": 9,
+    "time_pct_remaining": 16.7
+  }
+}

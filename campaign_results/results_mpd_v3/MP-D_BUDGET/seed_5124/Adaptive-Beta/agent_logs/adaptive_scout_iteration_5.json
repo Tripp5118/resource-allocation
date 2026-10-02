@@ -1,0 +1,17 @@
+{
+  "iteration": 5,
+  "beta": 2.0,
+  "option": 3,
+  "reasoning_c1": "HV is actively improving with a high MI signal, indicating unexplored territory remains, justifying continued conservative exploration.",
+  "reasoning_c2": "Option 3 balances qEHVI and MI, supporting conservative exploration with a moderate MI gain while still improving HV, aligning with the high MI signal and unexplored territory justification.",
+  "signals": {
+    "velocity_ratio": 0.767,
+    "recent_hv_rate": 29.56208,
+    "baseline_hv_rate": 38.52929,
+    "mi_current": 0.90625,
+    "mi_vs_start": 1.894,
+    "resource_fraction_remaining": 0.926,
+    "iters_remaining": 50,
+    "time_pct_remaining": 92.6
+  }
+}

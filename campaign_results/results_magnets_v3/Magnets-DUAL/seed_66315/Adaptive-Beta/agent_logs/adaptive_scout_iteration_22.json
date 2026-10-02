@@ -1,0 +1,17 @@
+{
+  "iteration": 22,
+  "beta": 5.0,
+  "option": 3,
+  "reasoning_c1": "With HV velocity materially slowed (0.696) and MI elevated (0.8262), a \u03b2 of 5.0 is justified for aggressive exploration into unexplored regions.",
+  "reasoning_c2": "Option 3 balances qEHVI and MI effectively, providing a strong MI gain (0.2782) while maintaining a reasonable qEHVI (1.1473), aligning with the aggressive exploration strategy justified by the elevated MI and slowed HV velocity.",
+  "signals": {
+    "velocity_ratio": 0.696,
+    "recent_hv_rate": 0.00151,
+    "baseline_hv_rate": 0.00217,
+    "mi_current": 0.82616,
+    "mi_vs_start": 2.155,
+    "resource_fraction_remaining": 0.082,
+    "iters_remaining": 4,
+    "time_pct_remaining": 55.1
+  }
+}

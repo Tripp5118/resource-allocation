@@ -1,0 +1,17 @@
+{
+  "iteration": 14,
+  "beta": 3.0,
+  "option": 1,
+  "reasoning_c1": "HV is actively improving with a velocity ratio of 1.000, and MI is declining but still indicates some unexplored territory, justifying moderate exploration.",
+  "reasoning_c2": "Option 1 balances moderate exploitation with some exploration, aligning with the need to improve HV while addressing unexplored areas, as MI is still significant.",
+  "signals": {
+    "velocity_ratio": 1.0,
+    "recent_hv_rate": 0.01772,
+    "baseline_hv_rate": 0.01772,
+    "mi_current": 0.06893,
+    "mi_vs_start": 0.488,
+    "resource_fraction_remaining": 0.735,
+    "iters_remaining": 36,
+    "time_pct_remaining": 73.5
+  }
+}

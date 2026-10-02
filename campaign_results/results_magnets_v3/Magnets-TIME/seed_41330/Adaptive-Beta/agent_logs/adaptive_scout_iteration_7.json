@@ -1,0 +1,17 @@
+{
+  "iteration": 7,
+  "beta": 2.0,
+  "option": 2,
+  "reasoning_c1": "Early in the campaign with 12% resources consumed, HV is actively improving (HV velocity ratio = 0.649), and MI is elevated (1.6306), suggesting \u03b2 \u2248 2 is appropriate.",
+  "reasoning_c2": "Option 2 provides a balanced tradeoff with a reasonable qEHVI score and a high MI score, aligning with the elevated MI and the \u03b2 \u2248 2 strategy for exploration while still improving the Pareto front.",
+  "signals": {
+    "velocity_ratio": 0.649,
+    "recent_hv_rate": 0.01256,
+    "baseline_hv_rate": 0.01935,
+    "mi_current": 1.63056,
+    "mi_vs_start": 3.106,
+    "resource_fraction_remaining": 0.878,
+    "iters_remaining": 43,
+    "time_pct_remaining": 87.8
+  }
+}

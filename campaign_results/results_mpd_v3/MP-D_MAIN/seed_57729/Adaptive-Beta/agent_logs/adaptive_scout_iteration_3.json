@@ -1,0 +1,14 @@
+{
+  "iteration": 3,
+  "beta": 2.0,
+  "option": 1,
+  "reasoning_c1": "Early in the campaign with only 4% resources consumed and HV actively improving, a conservative \u03b2 of 2.0 is appropriate.",
+  "reasoning_c2": "With only 4% resources consumed and a conservative \u03b2 of 2.0, Option 1 balances exploitation and exploration by slightly favoring qEHVI while still gaining some MI, aligning well with the early campaign strategy.",
+  "signals": {
+    "mi_current": 0.47171,
+    "mi_vs_start": 0.677,
+    "resource_fraction_remaining": 0.963,
+    "iters_remaining": 52,
+    "time_pct_remaining": 96.3
+  }
+}

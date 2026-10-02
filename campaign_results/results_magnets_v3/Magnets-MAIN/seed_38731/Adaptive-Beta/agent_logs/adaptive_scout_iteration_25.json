@@ -1,0 +1,17 @@
+{
+  "iteration": 25,
+  "beta": 5.0,
+  "option": 1,
+  "reasoning_c1": "HV is accelerating with a high velocity ratio of 3.171, and MI remains elevated at 0.2258, indicating unexplored territory, justifying moderate exploration with \u03b2=5.0.",
+  "reasoning_c2": "Option 1 balances moderate exploration and exploitation, aligning with the \u03b2=5.0 strategy by providing a good MI score of 0.3082 while maintaining a relatively high qEHVI score of 2.8835, suitable for the current high velocity ratio and unexplored territory.",
+  "signals": {
+    "velocity_ratio": 3.171,
+    "recent_hv_rate": 0.03819,
+    "baseline_hv_rate": 0.01204,
+    "mi_current": 0.22584,
+    "mi_vs_start": 0.362,
+    "resource_fraction_remaining": 0.51,
+    "iters_remaining": 25,
+    "time_pct_remaining": 51.0
+  }
+}

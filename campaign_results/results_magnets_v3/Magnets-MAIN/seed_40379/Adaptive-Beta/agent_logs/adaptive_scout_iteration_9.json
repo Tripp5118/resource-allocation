@@ -1,0 +1,17 @@
+{
+  "iteration": 9,
+  "beta": 2.0,
+  "option": 2,
+  "reasoning_c1": "Early in the campaign with HV actively improving and declining MI, indicating well-characterized design space.",
+  "reasoning_c2": "Option 2 balances qEHVI and MI, aligning with the reasoning that the design space is well-characterized, allowing for some exploration while still focusing on Pareto improvement.",
+  "signals": {
+    "velocity_ratio": 0.964,
+    "recent_hv_rate": 0.0182,
+    "baseline_hv_rate": 0.01887,
+    "mi_current": 0.02681,
+    "mi_vs_start": 0.023,
+    "resource_fraction_remaining": 0.837,
+    "iters_remaining": 41,
+    "time_pct_remaining": 83.7
+  }
+}

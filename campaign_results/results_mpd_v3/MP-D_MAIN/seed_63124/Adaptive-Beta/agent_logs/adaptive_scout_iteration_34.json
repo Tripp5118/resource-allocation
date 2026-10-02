@@ -1,0 +1,17 @@
+{
+  "iteration": 34,
+  "beta": 2.0,
+  "option": 2,
+  "reasoning_c1": "HV velocity has materially slowed, and MI is declining, indicating exploration is saturated; thus, a conservative \u03b2 is appropriate.",
+  "reasoning_c2": "Option 2 balances the need for continued exploration with two qUCB points while still maintaining a reasonable level of exploitation with three qEHVI points, aligning with the conservative \u03b2=2.0 strategy given the saturation in exploration.",
+  "signals": {
+    "velocity_ratio": 0.283,
+    "recent_hv_rate": 0.36717,
+    "baseline_hv_rate": 1.29925,
+    "mi_current": 0.08396,
+    "mi_vs_start": 0.15,
+    "resource_fraction_remaining": 0.389,
+    "iters_remaining": 21,
+    "time_pct_remaining": 38.9
+  }
+}

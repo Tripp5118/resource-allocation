@@ -1,0 +1,12 @@
+{
+  "iteration": 1,
+  "beta": 2.0,
+  "option": 1,
+  "reasoning_c1": "Early in the campaign with 0% resources consumed, default conservative exploration is appropriate.",
+  "reasoning_c2": "Option 1 provides a balanced tradeoff with a slight emphasis on exploration, aligning with the conservative exploration strategy appropriate early in the campaign.",
+  "signals": {
+    "resource_fraction_remaining": 1.0,
+    "iters_remaining": 0,
+    "time_pct_remaining": 100.0
+  }
+}

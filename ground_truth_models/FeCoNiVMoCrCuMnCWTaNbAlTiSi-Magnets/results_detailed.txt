@@ -1,0 +1,137 @@
+DETAILED RESULTS WITH PER-OUTPUT METRICS
+================================================================================
+
+Model: Linear
+Optimization Time: 0.0 seconds
+Retraining Time: 0.0 seconds
+Best Params: {}
+
+TRAINING METRICS:
+  Mean R²: 0.5283
+  Mean MSE: 0.128553
+  Mean MAE: 0.199682
+  Per-Output Metrics:
+    Mc (T):
+      R²: 0.9220
+      MSE: 0.021569
+      MAE: 0.108538
+    Log Hc (Log A/M):
+      R²: 0.3755
+      MSE: 0.538034
+      MAE: 0.471236
+    Log Tc (Log K):
+      R²: 0.7347
+      MSE: 0.003495
+      MAE: 0.035007
+    Log Resistivity (Log micro ohm cm):
+      R²: 0.5273
+      MSE: 0.032620
+      MAE: 0.134448
+    Log Elongation (Log %):
+      R²: 0.3395
+      MSE: 0.151569
+      MAE: 0.323154
+    Log Hv (Log HV):
+      R²: 0.2711
+      MSE: 0.024029
+      MAE: 0.125708
+
+TEST METRICS:
+  Mean R²: 0.4525
+  Mean MSE: 0.146511
+  Mean MAE: 0.208016
+  Per-Output Metrics:
+    Mc (T):
+      R²: 0.9208
+      MSE: 0.020175
+      MAE: 0.107072
+    Log Hc (Log A/M):
+      R²: 0.2979
+      MSE: 0.652652
+      MAE: 0.501806
+    Log Tc (Log K):
+      R²: 0.7009
+      MSE: 0.003938
+      MAE: 0.040032
+    Log Resistivity (Log micro ohm cm):
+      R²: 0.3822
+      MSE: 0.042267
+      MAE: 0.153597
+    Log Elongation (Log %):
+      R²: 0.3037
+      MSE: 0.135709
+      MAE: 0.317126
+    Log Hv (Log HV):
+      R²: 0.1092
+      MSE: 0.024326
+      MAE: 0.128466
+
+--------------------------------------------------------------------------------
+
+Model: RFR
+Optimization Time: 5.372 seconds
+Retraining Time: 0.163 seconds
+Best Params: {'n_estimators': 134, 'max_depth': 113, 'min_samples_split': 7, 'min_samples_leaf': 1}
+
+TRAINING METRICS:
+  Mean R²: 0.9306
+  Mean MSE: 0.016001
+  Mean MAE: 0.053458
+  Per-Output Metrics:
+    Mc (T):
+      R²: 0.9848
+      MSE: 0.004208
+      MAE: 0.035797
+    Log Hc (Log A/M):
+      R²: 0.9227
+      MSE: 0.066595
+      MAE: 0.144474
+    Log Tc (Log K):
+      R²: 0.9786
+      MSE: 0.000282
+      MAE: 0.005322
+    Log Resistivity (Log micro ohm cm):
+      R²: 0.8814
+      MSE: 0.008182
+      MAE: 0.052473
+    Log Elongation (Log %):
+      R²: 0.9456
+      MSE: 0.012478
+      MAE: 0.051462
+    Log Hv (Log HV):
+      R²: 0.8707
+      MSE: 0.004263
+      MAE: 0.031223
+
+TEST METRICS:
+  Mean R²: 0.8789
+  Mean MSE: 0.023206
+  Mean MAE: 0.072287
+  Per-Output Metrics:
+    Mc (T):
+      R²: 0.9717
+      MSE: 0.007218
+      MAE: 0.050763
+    Log Hc (Log A/M):
+      R²: 0.9116
+      MSE: 0.082189
+      MAE: 0.177212
+    Log Tc (Log K):
+      R²: 0.9797
+      MSE: 0.000267
+      MAE: 0.006578
+    Log Resistivity (Log micro ohm cm):
+      R²: 0.7817
+      MSE: 0.014938
+      MAE: 0.078584
+    Log Elongation (Log %):
+      R²: 0.8539
+      MSE: 0.028471
+      MAE: 0.080028
+    Log Hv (Log HV):
+      R²: 0.7747
+      MSE: 0.006153
+      MAE: 0.040560
+
+--------------------------------------------------------------------------------
+

@@ -1,0 +1,12 @@
+{
+  "iteration": 1,
+  "beta": 2.0,
+  "option": 2,
+  "reasoning_c1": "Early in the campaign with no history, so a conservative beta of 2 is appropriate to stay near well-known regions.",
+  "reasoning_c2": "Option 2 balances exploration and exploitation with a reasonable qEHVI score and the highest MI score, aligning with the conservative beta of 2 to explore unexplored regions while still improving the Pareto front.",
+  "signals": {
+    "resource_fraction_remaining": 1.0,
+    "iters_remaining": 0,
+    "time_pct_remaining": 100.0
+  }
+}

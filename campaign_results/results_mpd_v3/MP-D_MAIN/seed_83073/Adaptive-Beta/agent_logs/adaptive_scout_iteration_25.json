@@ -1,0 +1,17 @@
+{
+  "iteration": 25,
+  "beta": 5.0,
+  "option": 2,
+  "reasoning_c1": "HV progress has materially slowed (HV velocity ratio 0.178), but MI remains elevated (101.8% of iteration-1 value), indicating unexplored territory justifying moderate exploration.",
+  "reasoning_c2": "Option 2 balances moderate exploration and exploitation, aligning with the elevated MI and slowed HV progress, by allocating resources to both qEHVI and qUCB, thus exploring unexplored regions while still improving the Pareto front.",
+  "signals": {
+    "velocity_ratio": 0.178,
+    "recent_hv_rate": 0.2826,
+    "baseline_hv_rate": 1.58641,
+    "mi_current": 0.17493,
+    "mi_vs_start": 1.018,
+    "resource_fraction_remaining": 0.556,
+    "iters_remaining": 30,
+    "time_pct_remaining": 55.6
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "iteration": 46,
+  "beta": 5.0,
+  "option": 1,
+  "reasoning_c1": "With HV velocity materially slowed and MI elevated, aggressive scouting with \u03b2=5.0 is justified to explore remaining unexplored territory.",
+  "reasoning_c2": "Option 1 provides a balanced tradeoff with a significant MI gain of 0.7906, aligning with the aggressive scouting strategy at \u03b2=5.0, while still maintaining a reasonable qEHVI improvement.",
+  "signals": {
+    "velocity_ratio": 0.087,
+    "recent_hv_rate": 0.00015,
+    "baseline_hv_rate": 0.0017,
+    "mi_current": 0.29274,
+    "mi_vs_start": 3.333,
+    "resource_fraction_remaining": 0.082,
+    "iters_remaining": 4,
+    "time_pct_remaining": 8.2
+  }
+}

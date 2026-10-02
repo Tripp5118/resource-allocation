@@ -1,0 +1,17 @@
+{
+  "iteration": 39,
+  "beta": 2.0,
+  "option": 2,
+  "reasoning_c1": "With HV still improving and MI low, a conservative \u03b2=2.0 is appropriate to focus on refining known regions.",
+  "reasoning_c2": "Option 2 balances qEHVI and MI, aligning with the conservative \u03b2=2.0 by refining known regions while still exploring unexplored areas with a high MI score.",
+  "signals": {
+    "velocity_ratio": 1.015,
+    "recent_hv_rate": 0.37697,
+    "baseline_hv_rate": 0.37155,
+    "mi_current": 0.01117,
+    "mi_vs_start": 0.016,
+    "resource_fraction_remaining": 0.296,
+    "iters_remaining": 16,
+    "time_pct_remaining": 29.6
+  }
+}

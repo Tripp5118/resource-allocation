@@ -1,0 +1,17 @@
+{
+  "iteration": 4,
+  "beta": 2.0,
+  "option": 1,
+  "reasoning_c1": "HV velocity is on pace and MI is elevated, indicating exploration is still productive without needing more aggressive scouting.",
+  "reasoning_c2": "Option 1 balances exploration and exploitation, maintaining productive exploration with elevated MI while still achieving a reasonable qEHVI improvement.",
+  "signals": {
+    "velocity_ratio": 1.0,
+    "recent_hv_rate": 66.41405,
+    "baseline_hv_rate": 66.41405,
+    "mi_current": 0.4424,
+    "mi_vs_start": 1.198,
+    "resource_fraction_remaining": 0.944,
+    "iters_remaining": 51,
+    "time_pct_remaining": 94.4
+  }
+}

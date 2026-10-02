@@ -1,0 +1,17 @@
+{
+  "iteration": 25,
+  "beta": 2.0,
+  "option": 2,
+  "reasoning_c1": "With HV stalled and MI declining, a conservative \u03b2=2.0 is appropriate to maintain focus on known productive regions as the campaign nears completion.",
+  "reasoning_c2": "Option 2 balances exploitation and exploration, aligning with the conservative \u03b2=2.0 by maintaining a strong qEHVI score while achieving the highest MI, which is beneficial as the campaign nears completion.",
+  "signals": {
+    "velocity_ratio": 0.722,
+    "recent_hv_rate": 0.00273,
+    "baseline_hv_rate": 0.00378,
+    "mi_current": 0.20563,
+    "mi_vs_start": 0.256,
+    "resource_fraction_remaining": 0.02,
+    "iters_remaining": 1,
+    "time_pct_remaining": 49.0
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "iteration": 23,
+  "beta": 8.0,
+  "option": 5,
+  "reasoning_c1": "With 96% resources consumed, HV stagnation, and elevated MI, aggressive exploration with \u03b2=8.0 is justified to discover new productive regions.",
+  "reasoning_c2": "With 96% resources consumed and HV stagnation, maximizing exploration with Option 5 (0 qEHVI + 5 qUCB) aligns with the aggressive \u03b2=8.0 strategy to gain significant MI and potentially discover new productive regions.",
+  "signals": {
+    "velocity_ratio": 0.067,
+    "recent_hv_rate": 0.23907,
+    "baseline_hv_rate": 3.58192,
+    "mi_current": 0.28521,
+    "mi_vs_start": 10.606,
+    "resource_fraction_remaining": 0.037,
+    "iters_remaining": 2,
+    "time_pct_remaining": 3.7
+  }
+}

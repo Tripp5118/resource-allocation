@@ -1,0 +1,17 @@
+{
+  "iteration": 15,
+  "beta": 2.0,
+  "option": 1,
+  "reasoning_c1": "With HV velocity materially slowed and MI declining, a conservative \u03b2 of 2.0 is appropriate to focus on refining known regions as the campaign nears completion.",
+  "reasoning_c2": "Option 1 provides a balanced tradeoff with a focus on exploitation while still gaining some exploration benefit, aligning with the conservative \u03b2 of 2.0 to refine known regions as the campaign nears completion.",
+  "signals": {
+    "velocity_ratio": 0.136,
+    "recent_hv_rate": 0.57917,
+    "baseline_hv_rate": 4.27142,
+    "mi_current": 0.1323,
+    "mi_vs_start": 0.165,
+    "resource_fraction_remaining": 0.185,
+    "iters_remaining": 10,
+    "time_pct_remaining": 74.1
+  }
+}

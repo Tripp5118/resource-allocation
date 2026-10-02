@@ -1,0 +1,14 @@
+{
+  "iteration": 3,
+  "beta": 2.0,
+  "option": 1,
+  "reasoning_c1": "Early in the campaign with only 4% resources consumed and declining MI, a conservative \u03b2=2.0 is appropriate to continue exploring near known regions while HV is actively improving.",
+  "reasoning_c2": "Option 1 balances exploration and exploitation by allocating one point to qUCB, which aligns with the conservative \u03b2=2.0 strategy to explore near known regions while still achieving a high qEHVI score.",
+  "signals": {
+    "mi_current": 0.16144,
+    "mi_vs_start": 0.334,
+    "resource_fraction_remaining": 0.959,
+    "iters_remaining": 47,
+    "time_pct_remaining": 95.9
+  }
+}

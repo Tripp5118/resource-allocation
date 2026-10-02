@@ -1,0 +1,14 @@
+{
+  "iteration": 3,
+  "beta": 2.0,
+  "option": 1,
+  "reasoning_c1": "Early in the campaign with high MI, prefer \u03b2 near 2 to avoid arbitrary exploration.",
+  "reasoning_c2": "Option 1 balances qEHVI and MI, maintaining good exploitation while slightly increasing exploration, aligning with the early campaign strategy of avoiding arbitrary exploration with \u03b2=2.0.",
+  "signals": {
+    "mi_current": 0.87942,
+    "mi_vs_start": 3.001,
+    "resource_fraction_remaining": 0.959,
+    "iters_remaining": 47,
+    "time_pct_remaining": 95.9
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "iteration": 25,
+  "beta": 2.0,
+  "option": 2,
+  "reasoning_c1": "The HV velocity has materially slowed, MI is declining, and the campaign is nearly halfway complete, indicating a conservative \u03b2 is appropriate.",
+  "reasoning_c2": "Option 2 provides a balanced trade-off with a moderate qEHVI score and a reasonable MI gain, aligning with the conservative \u03b2=2.0 approach as the campaign is nearly halfway complete and HV velocity is slowing.",
+  "signals": {
+    "velocity_ratio": 0.423,
+    "recent_hv_rate": 0.00302,
+    "baseline_hv_rate": 0.00715,
+    "mi_current": 0.0078,
+    "mi_vs_start": 0.029,
+    "resource_fraction_remaining": 0.51,
+    "iters_remaining": 25,
+    "time_pct_remaining": 51.0
+  }
+}

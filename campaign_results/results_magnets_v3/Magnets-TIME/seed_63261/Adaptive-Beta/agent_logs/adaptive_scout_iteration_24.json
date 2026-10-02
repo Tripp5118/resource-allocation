@@ -1,0 +1,17 @@
+{
+  "iteration": 24,
+  "beta": 2.0,
+  "option": 0,
+  "reasoning_c1": "With 98% resources consumed and MI declining, a conservative \u03b2=2.0 is suitable as exploration is saturated and HV has materially stalled.",
+  "reasoning_c2": "With 98% resources consumed and minimal time remaining, maximizing direct Pareto HV improvement with Option 0 is optimal, as exploration is unlikely to yield significant benefits.",
+  "signals": {
+    "velocity_ratio": 0.088,
+    "recent_hv_rate": 0.00106,
+    "baseline_hv_rate": 0.01203,
+    "mi_current": 0.11696,
+    "mi_vs_start": 0.206,
+    "resource_fraction_remaining": 0.02,
+    "iters_remaining": 1,
+    "time_pct_remaining": 2.0
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "iteration": 44,
+  "beta": 3.0,
+  "option": 1,
+  "reasoning_c1": "With HV velocity materially slowed and MI declining, moderate exploration is appropriate to balance exploitation and exploration in the final campaign stages.",
+  "reasoning_c2": "Option 1 offers a moderate exploration with a balanced tradeoff, aligning with the need for moderate exploration while still maintaining a good level of exploitation as the campaign nears its end.",
+  "signals": {
+    "velocity_ratio": 0.617,
+    "recent_hv_rate": 0.0022,
+    "baseline_hv_rate": 0.00356,
+    "mi_current": 0.04178,
+    "mi_vs_start": 0.268,
+    "resource_fraction_remaining": 0.122,
+    "iters_remaining": 6,
+    "time_pct_remaining": 12.2
+  }
+}

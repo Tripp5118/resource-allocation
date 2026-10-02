@@ -1,0 +1,17 @@
+{
+  "iteration": 49,
+  "beta": 5.0,
+  "option": 2,
+  "reasoning_c1": "Despite HV stalling, the elevated MI indicates unexplored territory remains, justifying continued moderate exploration.",
+  "reasoning_c2": "Option 2 provides a balanced trade-off with a significant MI score, indicating substantial information gain, while still maintaining a reasonable qEHVI, aligning with the strategy to explore unexplored areas due to the elevated MI.",
+  "signals": {
+    "velocity_ratio": 0.098,
+    "recent_hv_rate": 0.04114,
+    "baseline_hv_rate": 0.41778,
+    "mi_current": 0.93423,
+    "mi_vs_start": 15.077,
+    "resource_fraction_remaining": 0.111,
+    "iters_remaining": 6,
+    "time_pct_remaining": 11.1
+  }
+}

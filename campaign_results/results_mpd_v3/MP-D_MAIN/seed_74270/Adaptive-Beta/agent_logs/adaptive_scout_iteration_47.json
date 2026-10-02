@@ -1,0 +1,17 @@
+{
+  "iteration": 47,
+  "beta": 5.0,
+  "option": 1,
+  "reasoning_c1": "With HV stagnation and elevated MI, moderate exploration is justified to discover new productive regions.",
+  "reasoning_c2": "Option 1 balances moderate exploration with exploitation, aligning with the need to explore new regions due to HV stagnation and elevated MI.",
+  "signals": {
+    "velocity_ratio": 0.309,
+    "recent_hv_rate": 0.1333,
+    "baseline_hv_rate": 0.4314,
+    "mi_current": 1.81341,
+    "mi_vs_start": 2.973,
+    "resource_fraction_remaining": 0.148,
+    "iters_remaining": 8,
+    "time_pct_remaining": 14.8
+  }
+}

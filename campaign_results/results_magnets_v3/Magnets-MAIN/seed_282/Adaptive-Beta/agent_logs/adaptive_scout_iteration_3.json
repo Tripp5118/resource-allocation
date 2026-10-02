@@ -1,0 +1,14 @@
+{
+  "iteration": 3,
+  "beta": 2.0,
+  "option": 2,
+  "reasoning_c1": "Early campaign stage with elevated MI suggests unexplored territory, but high \u03b2 is not justified; prefer conservative \u03b2=2.0.",
+  "reasoning_c2": "Option 2 balances exploration and exploitation, aligning with the conservative \u03b2=2.0 choice by providing a moderate qEHVI score while gaining significant MI, suitable for early-stage exploration.",
+  "signals": {
+    "mi_current": 0.50181,
+    "mi_vs_start": 1.884,
+    "resource_fraction_remaining": 0.959,
+    "iters_remaining": 47,
+    "time_pct_remaining": 95.9
+  }
+}

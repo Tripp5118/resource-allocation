@@ -1,0 +1,46 @@
+cff-version: 1.2.0
+title: >-
+  Agentic Resource Allocation for Batch Multi-Objective Bayesian
+  Optimization in Autonomous Materials Discovery
+message: If you use this software, please cite it as below.
+type: software
+license: MIT
+version: 1.0.0
+
+authors:
+  - given-names: Robert
+    family-names: Robinson
+    email: trippr5118@tamu.edu
+    affiliation: Texas A&M University
+  - given-names: Shakti P.
+    family-names: Padhy
+  - given-names: Sushant
+    family-names: Sinha
+  - given-names: Sk Md Ahnaf Akif
+    family-names: Alvi
+  - given-names: Juan
+    family-names: Flores Coronel
+  - given-names: Brent
+    family-names: Vela
+  - given-names: Trevor
+    family-names: Hastings
+  - given-names: Douglas
+    family-names: Allaire
+  - given-names: Raymundo
+    family-names: Arróyave
+
+# TODO after Zenodo deposit: add the DOI here and in README.md.
+# doi: 10.5281/zenodo.XXXXXXX
+
+abstract: >-
+  Code and experiment configuration for a study of how a large language model
+  allocates a fixed experimental budget between exploration and exploitation
+  inside a multi-objective Bayesian optimization loop, evaluated on two
+  high-entropy alloy design problems against non-adaptive baselines.
+
+keywords:
+  - Bayesian optimization
+  - multi-objective optimization
+  - large language models
+  - materials design
+  - high-entropy alloys

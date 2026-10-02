@@ -1,0 +1,17 @@
+{
+  "iteration": 32,
+  "beta": 3.0,
+  "option": 1,
+  "reasoning_c1": "HV velocity has materially slowed, MI is declining, and recent qUCB exploration has not yielded significant gains, suggesting moderate exploration is appropriate.",
+  "reasoning_c2": "Option 1 balances moderate exploration with some exploitation, aligning with the slowed HV velocity and declining MI, while recent qUCB exploration has not yielded significant gains.",
+  "signals": {
+    "velocity_ratio": 0.059,
+    "recent_hv_rate": 0.07667,
+    "baseline_hv_rate": 1.30282,
+    "mi_current": 0.09644,
+    "mi_vs_start": 0.202,
+    "resource_fraction_remaining": 0.426,
+    "iters_remaining": 23,
+    "time_pct_remaining": 42.6
+  }
+}

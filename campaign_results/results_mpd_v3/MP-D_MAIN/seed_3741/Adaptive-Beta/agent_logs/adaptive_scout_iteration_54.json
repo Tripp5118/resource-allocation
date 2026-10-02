@@ -1,0 +1,17 @@
+{
+  "iteration": 54,
+  "beta": 5.0,
+  "option": 2,
+  "reasoning_c1": "HV has materially stalled and MI is still elevated, indicating unexplored productive regions.",
+  "reasoning_c2": "Option 2 provides a balanced trade-off with a reasonable qEHVI improvement and a significant MI gain, aligning with the elevated MI and unexplored productive regions indicated by the beta reasoning.",
+  "signals": {
+    "velocity_ratio": 0.054,
+    "recent_hv_rate": 0.01784,
+    "baseline_hv_rate": 0.32905,
+    "mi_current": 0.08818,
+    "mi_vs_start": 0.128,
+    "resource_fraction_remaining": 0.019,
+    "iters_remaining": 1,
+    "time_pct_remaining": 1.9
+  }
+}

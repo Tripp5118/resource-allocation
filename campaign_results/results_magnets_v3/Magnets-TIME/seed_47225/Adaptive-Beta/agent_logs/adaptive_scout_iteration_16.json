@@ -1,0 +1,17 @@
+{
+  "iteration": 16,
+  "beta": 5.0,
+  "option": 1,
+  "reasoning_c1": "HV has materially stalled, MI is still elevated, and resources are 82% consumed, justifying aggressive scouting.",
+  "reasoning_c2": "Option 1 balances the need for exploitation and exploration, providing a good tradeoff with a reasonable qEHVI score while still gaining significant MI, aligning with the aggressive scouting strategy justified by the elevated MI and high resource consumption.",
+  "signals": {
+    "velocity_ratio": 0.161,
+    "recent_hv_rate": 0.00106,
+    "baseline_hv_rate": 0.00658,
+    "mi_current": 0.11306,
+    "mi_vs_start": 0.148,
+    "resource_fraction_remaining": 0.184,
+    "iters_remaining": 9,
+    "time_pct_remaining": 18.4
+  }
+}

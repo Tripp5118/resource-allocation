@@ -1,0 +1,17 @@
+{
+  "iteration": 49,
+  "beta": 2.0,
+  "option": 0,
+  "reasoning_c1": "With 98% resources consumed and declining MI, exploration is saturated; maintain conservative \u03b2 to focus on known regions.",
+  "reasoning_c2": "With 98% resources consumed and a focus on exploitation, Option 0 maximizes qEHVI improvement, aligning with the conservative \u03b2=2.0 strategy to focus on known regions.",
+  "signals": {
+    "velocity_ratio": 0.48,
+    "recent_hv_rate": 0.00078,
+    "baseline_hv_rate": 0.00163,
+    "mi_current": 0.03389,
+    "mi_vs_start": 0.066,
+    "resource_fraction_remaining": 0.02,
+    "iters_remaining": 1,
+    "time_pct_remaining": 2.0
+  }
+}

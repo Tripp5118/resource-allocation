@@ -1,0 +1,14 @@
+{
+  "iteration": 3,
+  "beta": 2.0,
+  "option": 2,
+  "reasoning_c1": "HV is actively improving and MI is elevated, indicating exploration is not yet saturated.",
+  "reasoning_c2": "Option 2 balances exploration and exploitation, maintaining a reasonable qEHVI score while still gaining MI, aligning with the need for continued exploration as indicated by the elevated MI.",
+  "signals": {
+    "mi_current": 0.29637,
+    "mi_vs_start": 1.048,
+    "resource_fraction_remaining": 0.963,
+    "iters_remaining": 52,
+    "time_pct_remaining": 96.3
+  }
+}

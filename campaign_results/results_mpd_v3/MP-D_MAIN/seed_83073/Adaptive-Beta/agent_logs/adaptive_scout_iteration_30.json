@@ -1,0 +1,17 @@
+{
+  "iteration": 30,
+  "beta": 5.0,
+  "option": 1,
+  "reasoning_c1": "HV has materially stalled with a declining MI, indicating moderate exploration is still justified to potentially discover new productive regions.",
+  "reasoning_c2": "Option 1 provides a balanced tradeoff with moderate exploration through 1 qUCB point, aligning with the need for exploration as indicated by the declining MI, while still maintaining a reasonable qEHVI score for exploitation.",
+  "signals": {
+    "velocity_ratio": 0.15,
+    "recent_hv_rate": 0.13511,
+    "baseline_hv_rate": 0.90042,
+    "mi_current": 0.05593,
+    "mi_vs_start": 0.325,
+    "resource_fraction_remaining": 0.463,
+    "iters_remaining": 25,
+    "time_pct_remaining": 46.3
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "iteration": 2,
+  "beta": 2.0,
+  "option": 1,
+  "reasoning_c1": "Early in the campaign with only 2% resources consumed, uncertainty estimates are unreliable; prefer \u03b2 near 2 as HV is actively improving and MI is elevated.",
+  "reasoning_c2": "Option 1 balances exploration and exploitation by allocating one point to qUCB, increasing MI significantly while maintaining a high qEHVI score, aligning with the strategy of exploiting HV improvements early in the campaign with \u03b2=2.0.",
+  "signals": {
+    "mi_current": 0.37744,
+    "mi_vs_start": 1.0,
+    "resource_fraction_remaining": 0.98,
+    "iters_remaining": 48,
+    "time_pct_remaining": 98.0
+  }
+}

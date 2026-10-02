@@ -1,0 +1,17 @@
+{
+  "iteration": 27,
+  "beta": 5.0,
+  "option": 5,
+  "reasoning_c1": "HV progress has materially slowed with a high MI signal, indicating unexplored productive regions remain.",
+  "reasoning_c2": "With a high MI signal indicating unexplored productive regions, Option 5 maximizes exploration by allocating all points to qUCB, aligning with the need to explore these regions.",
+  "signals": {
+    "velocity_ratio": 0.429,
+    "recent_hv_rate": 0.54709,
+    "baseline_hv_rate": 1.27389,
+    "mi_current": 0.86756,
+    "mi_vs_start": 5.5,
+    "resource_fraction_remaining": 0.519,
+    "iters_remaining": 28,
+    "time_pct_remaining": 51.9
+  }
+}

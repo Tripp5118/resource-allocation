@@ -1,0 +1,17 @@
+{
+  "iteration": 45,
+  "beta": 5.0,
+  "option": 3,
+  "reasoning_c1": "HV has materially stalled with MI still elevated, indicating unexplored productive regions remain.",
+  "reasoning_c2": "Option 3 balances exploration and exploitation, with a significant MI gain indicating potential in unexplored regions, aligning with the elevated MI and stalled HV.",
+  "signals": {
+    "velocity_ratio": 0.286,
+    "recent_hv_rate": 0.14367,
+    "baseline_hv_rate": 0.50256,
+    "mi_current": 0.19508,
+    "mi_vs_start": 0.505,
+    "resource_fraction_remaining": 0.185,
+    "iters_remaining": 10,
+    "time_pct_remaining": 18.5
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "iteration": 21,
+  "beta": 2.0,
+  "option": 1,
+  "reasoning_c1": "With HV velocity materially slowed and MI declining, a conservative \u03b2=2.0 is appropriate to focus on refining known regions as the campaign nears completion.",
+  "reasoning_c2": "Option 1 balances exploitation and exploration by allocating one point to qUCB, which slightly increases MI while maintaining a reasonable qEHVI score. This aligns with the conservative \u03b2=2.0 strategy to refine known regions as the campaign nears completion.",
+  "signals": {
+    "velocity_ratio": 0.535,
+    "recent_hv_rate": 0.64355,
+    "baseline_hv_rate": 1.20332,
+    "mi_current": 0.05552,
+    "mi_vs_start": 0.076,
+    "resource_fraction_remaining": 0.074,
+    "iters_remaining": 4,
+    "time_pct_remaining": 7.4
+  }
+}

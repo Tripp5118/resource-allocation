@@ -1,0 +1,14 @@
+{
+  "iteration": 3,
+  "beta": 2.0,
+  "option": 3,
+  "reasoning_c1": "Early in the campaign with only 4% resources consumed and high MI indicates unexplored territory, so a conservative \u03b2 of 2 is appropriate.",
+  "reasoning_c2": "Option 3 provides a good balance between exploration and exploitation, with a significant MI gain indicating unexplored regions, aligning well with the conservative \u03b2 of 2 early in the campaign.",
+  "signals": {
+    "mi_current": 0.64822,
+    "mi_vs_start": 4.158,
+    "resource_fraction_remaining": 0.959,
+    "iters_remaining": 47,
+    "time_pct_remaining": 95.9
+  }
+}

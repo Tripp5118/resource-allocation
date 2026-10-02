@@ -1,0 +1,17 @@
+{
+  "iteration": 24,
+  "beta": 2.0,
+  "option": 2,
+  "reasoning_c1": "With 98% resources consumed, HV stalled, and MI declining, a conservative \u03b2=2.0 is appropriate to avoid arbitrary exploration.",
+  "reasoning_c2": "Option 2 balances qEHVI and MI, offering significant Pareto improvement while still gaining information about unexplored regions, aligning with the conservative \u03b2=2.0 approach.",
+  "signals": {
+    "velocity_ratio": 0.076,
+    "recent_hv_rate": 0.00034,
+    "baseline_hv_rate": 0.00445,
+    "mi_current": 0.09432,
+    "mi_vs_start": 0.23,
+    "resource_fraction_remaining": 0.02,
+    "iters_remaining": 1,
+    "time_pct_remaining": 2.0
+  }
+}

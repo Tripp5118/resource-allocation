@@ -1,0 +1,17 @@
+{
+  "iteration": 4,
+  "beta": 2.0,
+  "option": 1,
+  "reasoning_c1": "With HV velocity on pace and declining MI indicating well-characterized space, a conservative \u03b2 of 2.0 is appropriate to maintain focus on known regions.",
+  "reasoning_c2": "Option 1 balances qEHVI and MI, maintaining focus on known regions with a conservative \u03b2 of 2.0, while still allowing some exploration to refine the Pareto front.",
+  "signals": {
+    "velocity_ratio": 1.0,
+    "recent_hv_rate": 86.12184,
+    "baseline_hv_rate": 86.12184,
+    "mi_current": 0.56204,
+    "mi_vs_start": 0.658,
+    "resource_fraction_remaining": 0.944,
+    "iters_remaining": 51,
+    "time_pct_remaining": 94.4
+  }
+}

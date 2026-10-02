@@ -1,0 +1,169 @@
+
+──────────────────────────────────────────────────────────────────────────────────────────
+  PRE-EVENT AUC-HV COMPARISONS (Mann-Whitney U, unpaired)
+  AUC computed as sum of oracle-normalized HV from iter 0 to first_event_iter-1
+  Tests whether strategies differ in convergence BEFORE any event is applied.
+──────────────────────────────────────────────────────────────────────────────────────────
+
+  MP-D_BUDGET  (pre-event = iters 0–14)
+  Strategy              Pre-event AUC mean±SEM        
+  Adaptive-β            11.6112 ± 0.07170  (n=25)
+  Rule-Swap             11.7331 ± 0.08055  (n=25)
+  qEHVI                 11.8051 ± 0.07872  (n=25)
+  Fixed Mixed           11.0443 ± 0.06655  (n=25)
+
+  Pair                                           p-value       Sig     Dom. rate
+  Adaptive-β vs Rule-Swap                        p = 0.237      ns      0.36
+  Adaptive-β vs qEHVI                            p = 0.052      ns      0.36
+  Adaptive-β vs Fixed Mixed                      p = 0.000      ***     0.92
+  Rule-Swap vs qEHVI                             p = 0.509      ns      0.20
+  Rule-Swap vs Fixed Mixed                       p = 0.000      ***     0.88
+  qEHVI vs Fixed Mixed                           p = 0.000      ***     1.00
+
+  MP-D_TIME  (pre-event = iters 0–14)
+  Strategy              Pre-event AUC mean±SEM        
+  Adaptive-β            11.5872 ± 0.07926  (n=25)
+  Rule-Swap             11.7098 ± 0.05888  (n=25)
+  qEHVI                 11.7345 ± 0.07533  (n=25)
+  Fixed Mixed           11.0884 ± 0.09094  (n=25)
+
+  Pair                                           p-value       Sig     Dom. rate
+  Adaptive-β vs Rule-Swap                        p = 0.157      ns      0.24
+  Adaptive-β vs qEHVI                            p = 0.099      ns      0.16
+  Adaptive-β vs Fixed Mixed                      p = 0.000      ***     0.88
+  Rule-Swap vs qEHVI                             p = 0.756      ns      0.32
+  Rule-Swap vs Fixed Mixed                       p = 0.000      ***     0.96
+  qEHVI vs Fixed Mixed                           p = 0.000      ***     0.92
+
+  MP-D_DUAL  (pre-event = iters 0–4)
+  Strategy              Pre-event AUC mean±SEM        
+  Adaptive-β            2.4086 ± 0.05228  (n=25)
+  Rule-Swap             2.4082 ± 0.06312  (n=25)
+  qEHVI                 2.4188 ± 0.06373  (n=25)
+  Fixed Mixed           2.2510 ± 0.05418  (n=25)
+
+  Pair                                           p-value       Sig     Dom. rate
+  Adaptive-β vs Rule-Swap                        p = 1.000      ns      0.48
+  Adaptive-β vs qEHVI                            p = 0.907      ns      0.44
+  Adaptive-β vs Fixed Mixed                      p = 0.084      ns      0.76
+  Rule-Swap vs qEHVI                             p = 0.839      ns      0.08
+  Rule-Swap vs Fixed Mixed                       p = 0.063      ns      0.76
+  qEHVI vs Fixed Mixed                           p = 0.044      *       0.80
+
+  Magnets-BUDGET  (pre-event = iters 0–17)
+  Strategy              Pre-event AUC mean±SEM        
+  Adaptive-β            11.4453 ± 0.08563  (n=25)
+  Rule-Swap             11.4829 ± 0.14266  (n=25)
+  qEHVI                 11.6323 ± 0.12585  (n=25)
+  Fixed Mixed           11.3452 ± 0.09170  (n=25)
+
+  Pair                                           p-value       Sig     Dom. rate
+  Adaptive-β vs Rule-Swap                        p = 0.985      ns      0.52
+  Adaptive-β vs qEHVI                            p = 0.187      ns      0.40
+  Adaptive-β vs Fixed Mixed                      p = 0.313      ns      0.64
+  Rule-Swap vs qEHVI                             p = 0.244      ns      0.40
+  Rule-Swap vs Fixed Mixed                       p = 0.304      ns      0.56
+  qEHVI vs Fixed Mixed                           p = 0.033      *       0.68
+
+  Magnets-TIME  (pre-event = iters 0–12)
+  Strategy              Pre-event AUC mean±SEM        
+  Adaptive-β            7.6049 ± 0.06790  (n=25)
+  Rule-Swap             7.7009 ± 0.06670  (n=25)
+  qEHVI                 7.6673 ± 0.07546  (n=25)
+  Fixed Mixed           7.5243 ± 0.10135  (n=25)
+
+  Pair                                           p-value       Sig     Dom. rate
+  Adaptive-β vs Rule-Swap                        p = 0.383      ns      0.44
+  Adaptive-β vs qEHVI                            p = 0.938      ns      0.48
+  Adaptive-β vs Fixed Mixed                      p = 0.742      ns      0.64
+  Rule-Swap vs qEHVI                             p = 0.628      ns      0.60
+  Rule-Swap vs Fixed Mixed                       p = 0.277      ns      0.64
+  qEHVI vs Fixed Mixed                           p = 0.548      ns      0.56
+
+  Magnets-DUAL  (pre-event = iters 0–12)
+  Strategy              Pre-event AUC mean±SEM        
+  Adaptive-β            7.5859 ± 0.08536  (n=25)
+  Rule-Swap             7.7246 ± 0.07450  (n=25)
+  qEHVI                 7.7863 ± 0.08246  (n=25)
+  Fixed Mixed           7.5817 ± 0.09867  (n=25)
+
+  Pair                                           p-value       Sig     Dom. rate
+  Adaptive-β vs Rule-Swap                        p = 0.168      ns      0.44
+  Adaptive-β vs qEHVI                            p = 0.168      ns      0.32
+  Adaptive-β vs Fixed Mixed                      p = 0.892      ns      0.52
+  Rule-Swap vs qEHVI                             p = 0.816      ns      0.36
+  Rule-Swap vs Fixed Mixed                       p = 0.130      ns      0.56
+  qEHVI vs Fixed Mixed                           p = 0.135      ns      0.60
+
+──────────────────────────────────────────────────────────────────────────────────────────
+  N_EXP BEHAVIORAL STATISTICS — Pre/Post Event (Paired Wilcoxon, within-experiment)
+  pre  = iterations 1 to first_event_iter-1  (all iterations before any event)
+  post = iterations last_event_iter+1 to end (all iterations after last event)
+  Strategies: Adaptive-β and Rule-Swap only (qEHVI and Fixed Mixed have no n_exp decisions)
+──────────────────────────────────────────────────────────────────────────────────────────
+
+  MP-D_BUDGET  (event iters: 15–15)
+  Strategy          Pre mean±SEM            Post mean±SEM           Δn_exp mean±SEM         Wilcoxon p    Sig
+  Adaptive-β        1.503±0.037          1.356±0.059          -0.147±0.072          p = 0.022       *
+  Rule-Swap         1.271±0.047          0.592±0.057          -0.679±0.084          p = 0.000       ***
+
+  MP-D_TIME  (event iters: 15–15)
+  Strategy          Pre mean±SEM            Post mean±SEM           Δn_exp mean±SEM         Wilcoxon p    Sig
+  Adaptive-β        1.477±0.048          1.004±0.091          -0.473±0.096          p = 0.000       ***
+  Rule-Swap         1.311±0.036          0.576±0.047          -0.735±0.065          p = 0.000       ***
+
+  MP-D_DUAL  (event iters: 5–7)
+  Strategy          Pre mean±SEM            Post mean±SEM           Δn_exp mean±SEM         Wilcoxon p    Sig
+  Adaptive-β        1.470±0.068          1.147±0.119          -0.323±0.113          p = 0.005       **
+  Rule-Swap         0.500±0.076          0.000±0.000          -0.500±0.076          p = 0.000       ***
+
+  Magnets-BUDGET  (event iters: 18–18)
+  Strategy          Pre mean±SEM            Post mean±SEM           Δn_exp mean±SEM         Wilcoxon p    Sig
+  Adaptive-β        1.626±0.041          1.560±0.076          -0.066±0.083          p = 0.183       ns
+  Rule-Swap         1.120±0.045          0.380±0.048          -0.740±0.057          p = 0.000       ***
+
+  Magnets-TIME  (event iters: 13–13)
+  Strategy          Pre mean±SEM            Post mean±SEM           Δn_exp mean±SEM         Wilcoxon p    Sig
+  Adaptive-β        1.580±0.040          1.500±0.074          -0.080±0.078          p = 0.266       ns
+  Rule-Swap         1.023±0.034          0.750±0.057          -0.273±0.067          p = 0.001       **
+
+  Magnets-DUAL  (event iters: 13–18)
+  Strategy          Pre mean±SEM            Post mean±SEM           Δn_exp mean±SEM         Wilcoxon p    Sig
+  Adaptive-β        1.623±0.051          1.600±0.063          -0.023±0.076          p = 0.867       ns
+  Rule-Swap         1.190±0.049          0.385±0.040          -0.805±0.069          p = 0.000       ***
+
+  N_EXP POST-EVENT vs MAIN AT SAME ITERATIONS (Mann-Whitney U, unpaired)
+  Exp / Strategy                       Event-exp post mean±SEM       MAIN same-iters mean±SEM      Δn_exp      MWU p         Sig
+  MP-D_BUDGET / Adaptive-β             1.356±0.059                    1.350±0.031                    +0.006        p = 0.626       ns
+  MP-D_BUDGET / Rule-Swap              0.592±0.057                    1.367±0.039                    -0.775        p = 0.000       ***
+  MP-D_TIME / Adaptive-β               1.004±0.091                    1.350±0.031                    -0.346        p = 0.000       ***
+  MP-D_TIME / Rule-Swap                0.576±0.047                    1.367±0.039                    -0.791        p = 0.000       ***
+  MP-D_DUAL / Adaptive-β               1.147±0.119                    1.359±0.027                    -0.212        p = 0.048       *
+  MP-D_DUAL / Rule-Swap                0.000±0.000                    1.420±0.029                    -1.420        p = 0.000       ***
+  Magnets-BUDGET / Adaptive-β          1.560±0.076                    1.521±0.037                    +0.039        p = 0.984       ns
+  Magnets-BUDGET / Rule-Swap           0.380±0.048                    1.260±0.046                    -0.880        p = 0.000       ***
+  Magnets-TIME / Adaptive-β            1.500±0.074                    1.544±0.036                    -0.044        p = 0.268       ns
+  Magnets-TIME / Rule-Swap             0.750±0.057                    1.249±0.037                    -0.499        p = 0.000       ***
+  Magnets-DUAL / Adaptive-β            1.600±0.063                    1.521±0.037                    +0.079        p = 0.366       ns
+  Magnets-DUAL / Rule-Swap             0.385±0.040                    1.260±0.046                    -0.875        p = 0.000       ***
+
+──────────────────────────────────────────────────────────────────────────────────────────
+  PER-ITERATION MI BY PHASE — MAIN EXPERIMENTS
+  information_gain column; values are mean per-iteration MI ± SEM across seeds
+  MP-D:    early=iters 1-10, mid=11-30, late=31-55
+  Magnets: early=iters 1-10, mid=11-30, late=31-50
+──────────────────────────────────────────────────────────────────────────────────────────
+
+  MP-D_MAIN
+  Strategy          Early mean±SEM          Mid mean±SEM            Late mean±SEM           Late−Mid
+  Adaptive-β        0.6267±0.0288            0.3768±0.0171            0.2294±0.0082            -0.1474
+  Rule-Swap         0.5214±0.0276            0.3496±0.0170            0.1997±0.0108            -0.1499
+  qEHVI             0.5250±0.0311            0.2693±0.0154            0.1438±0.0081            -0.1255
+  Fixed Mixed       0.4703±0.0173            0.2964±0.0141            0.1941±0.0083            -0.1023
+
+  Magnets-MAIN
+  Strategy          Early mean±SEM          Mid mean±SEM            Late mean±SEM           Late−Mid
+  Adaptive-β        0.8000±0.0272            0.3982±0.0143            0.1832±0.0083            -0.2150
+  Rule-Swap         0.6986±0.0286            0.3295±0.0128            0.1584±0.0080            -0.1711
+  qEHVI             0.6375±0.0285            0.2277±0.0085            0.1119±0.0062            -0.1158
+  Fixed Mixed       0.7019±0.0347            0.2966±0.0103            0.1196±0.0070            -0.1770

@@ -1,0 +1,14 @@
+{
+  "iteration": 2,
+  "beta": 2.0,
+  "option": 1,
+  "reasoning_c1": "Early in the campaign with only 2% resources consumed and high MI signal, a conservative \u03b2=2.0 is appropriate to ensure qUCB candidates stay near well-characterized regions while HV is actively improving.",
+  "reasoning_c2": "Option 1 balances exploration and exploitation by allocating one point to qUCB, providing a good MI score while maintaining a relatively high qEHVI, aligning with the conservative \u03b2=2.0 strategy early in the campaign.",
+  "signals": {
+    "mi_current": 0.33368,
+    "mi_vs_start": 1.0,
+    "resource_fraction_remaining": 0.981,
+    "iters_remaining": 53,
+    "time_pct_remaining": 98.1
+  }
+}

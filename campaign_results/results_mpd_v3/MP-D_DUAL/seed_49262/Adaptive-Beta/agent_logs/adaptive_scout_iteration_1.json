@@ -1,0 +1,12 @@
+{
+  "iteration": 1,
+  "beta": 2.0,
+  "option": 2,
+  "reasoning_c1": "Early in the campaign with 0% resources consumed, default to conservative \u03b2=2 as uncertainty estimates are unreliable and no specific signals justify deviation.",
+  "reasoning_c2": "Option 2 balances exploration and exploitation early in the campaign, with a reasonable qEHVI score and a significant MI gain, aligning with the conservative \u03b2=2 approach to improve understanding of unexplored regions.",
+  "signals": {
+    "resource_fraction_remaining": 1.0,
+    "iters_remaining": 0,
+    "time_pct_remaining": 100.0
+  }
+}

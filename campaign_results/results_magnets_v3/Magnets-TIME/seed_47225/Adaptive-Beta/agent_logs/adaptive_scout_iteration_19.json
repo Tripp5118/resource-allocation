@@ -1,0 +1,17 @@
+{
+  "iteration": 19,
+  "beta": 5.0,
+  "option": 1,
+  "reasoning_c1": "With HV progress stalling and MI still elevated, a \u03b2 of 5.0 balances exploration and exploitation effectively at this late campaign stage.",
+  "reasoning_c2": "Option 1 provides a balanced tradeoff with a relatively high qEHVI score and a significant MI gain, aligning well with the \u03b2 of 5.0 to maintain effective exploration and exploitation at this late stage.",
+  "signals": {
+    "velocity_ratio": 1.007,
+    "recent_hv_rate": 0.00641,
+    "baseline_hv_rate": 0.00636,
+    "mi_current": 0.17612,
+    "mi_vs_start": 0.231,
+    "resource_fraction_remaining": 0.122,
+    "iters_remaining": 6,
+    "time_pct_remaining": 12.2
+  }
+}

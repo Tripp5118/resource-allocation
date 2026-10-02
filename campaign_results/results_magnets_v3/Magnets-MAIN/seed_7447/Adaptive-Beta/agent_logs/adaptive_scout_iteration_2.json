@@ -1,0 +1,14 @@
+{
+  "iteration": 2,
+  "beta": 2.0,
+  "option": 1,
+  "reasoning_c1": "At 2% resources consumed, early in the campaign with elevated MI, a conservative \u03b2 of 2.0 is appropriate to stay near known regions while HV is actively improving.",
+  "reasoning_c2": "Option 1 balances exploration and exploitation well with a slight increase in MI compared to Option 0, aligning with the conservative \u03b2 of 2.0 to cautiously explore while maintaining strong qEHVI.",
+  "signals": {
+    "mi_current": 0.08052,
+    "mi_vs_start": 1.0,
+    "resource_fraction_remaining": 0.98,
+    "iters_remaining": 48,
+    "time_pct_remaining": 98.0
+  }
+}

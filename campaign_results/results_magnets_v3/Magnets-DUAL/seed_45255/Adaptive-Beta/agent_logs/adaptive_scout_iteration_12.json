@@ -1,0 +1,17 @@
+{
+  "iteration": 12,
+  "beta": 3.0,
+  "option": 2,
+  "reasoning_c1": "With HV velocity ratio > 1.0 indicating active improvement and MI at 45.1% of iteration-1 value, moderate exploration is appropriate to continue progress while exploring remaining territory.",
+  "reasoning_c2": "Option 2 balances moderate exploration and exploitation, aligning with the need for continued progress while exploring, given the HV velocity ratio and MI status.",
+  "signals": {
+    "velocity_ratio": 1.132,
+    "recent_hv_rate": 0.02128,
+    "baseline_hv_rate": 0.0188,
+    "mi_current": 0.33281,
+    "mi_vs_start": 0.451,
+    "resource_fraction_remaining": 0.776,
+    "iters_remaining": 38,
+    "time_pct_remaining": 77.6
+  }
+}

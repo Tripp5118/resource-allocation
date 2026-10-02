@@ -1,0 +1,17 @@
+{
+  "iteration": 7,
+  "beta": 2.0,
+  "option": 1,
+  "reasoning_c1": "HV is actively improving and MI is declining, indicating exploration is saturated and a conservative \u03b2 is appropriate.",
+  "reasoning_c2": "Option 1 balances qEHVI and MI, aligning with the conservative \u03b2 of 2.0 by maintaining some exploration while focusing on exploitation, as exploration appears saturated.",
+  "signals": {
+    "velocity_ratio": 0.253,
+    "recent_hv_rate": 9.18978,
+    "baseline_hv_rate": 36.27085,
+    "mi_current": 0.04534,
+    "mi_vs_start": 0.06,
+    "resource_fraction_remaining": 0.889,
+    "iters_remaining": 48,
+    "time_pct_remaining": 88.9
+  }
+}

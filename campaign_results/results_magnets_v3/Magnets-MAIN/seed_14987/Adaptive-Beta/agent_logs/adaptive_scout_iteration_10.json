@@ -1,0 +1,17 @@
+{
+  "iteration": 10,
+  "beta": 3.0,
+  "option": 3,
+  "reasoning_c1": "HV progress has materially slowed (HV velocity ratio 0.375), but MI is elevated (112.6% of iteration-1 value), indicating remaining unexplored territory.",
+  "reasoning_c2": "Option 3 balances the need for exploitation and exploration, with a significant MI gain indicating potential in unexplored regions, aligning with the elevated MI and slowed HV progress.",
+  "signals": {
+    "velocity_ratio": 0.375,
+    "recent_hv_rate": 0.00637,
+    "baseline_hv_rate": 0.01698,
+    "mi_current": 0.75781,
+    "mi_vs_start": 1.126,
+    "resource_fraction_remaining": 0.816,
+    "iters_remaining": 40,
+    "time_pct_remaining": 81.6
+  }
+}

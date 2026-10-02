@@ -1,0 +1,17 @@
+{
+  "iteration": 20,
+  "beta": 5.0,
+  "option": 2,
+  "reasoning_c1": "Elevated MI and recent history with \u03b2=5.0 have shown productive exploration, while HV velocity ratio >1.0 suggests continued potential for improvement.",
+  "reasoning_c2": "Option 2 balances exploration and exploitation, aligning with the elevated MI and \u03b2=5.0 strategy, while still providing a reasonable qEHVI improvement.",
+  "signals": {
+    "velocity_ratio": 1.18,
+    "recent_hv_rate": 0.02601,
+    "baseline_hv_rate": 0.02203,
+    "mi_current": 0.74445,
+    "mi_vs_start": 1.451,
+    "resource_fraction_remaining": 0.612,
+    "iters_remaining": 30,
+    "time_pct_remaining": 61.2
+  }
+}

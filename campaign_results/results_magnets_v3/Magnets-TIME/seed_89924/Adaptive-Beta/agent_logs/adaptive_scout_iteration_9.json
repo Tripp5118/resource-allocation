@@ -1,0 +1,17 @@
+{
+  "iteration": 9,
+  "beta": 2.0,
+  "option": 2,
+  "reasoning_c1": "Early in the campaign with elevated MI and active HV improvement, a conservative \u03b2 of 2.0 is appropriate.",
+  "reasoning_c2": "Option 2 provides a balanced tradeoff between qEHVI and MI, aligning with the conservative \u03b2 of 2.0 by maintaining reasonable HV improvement while gaining valuable information about unexplored regions.",
+  "signals": {
+    "velocity_ratio": 0.144,
+    "recent_hv_rate": 0.00874,
+    "baseline_hv_rate": 0.06066,
+    "mi_current": 0.51668,
+    "mi_vs_start": 1.297,
+    "resource_fraction_remaining": 0.837,
+    "iters_remaining": 41,
+    "time_pct_remaining": 83.7
+  }
+}

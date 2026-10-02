@@ -1,0 +1,12 @@
+{
+  "iteration": 1,
+  "beta": 2.0,
+  "option": 1,
+  "reasoning_c1": "Early in the campaign with no history, default to conservative \u03b2=2 to ensure qUCB candidates stay near known regions.",
+  "reasoning_c2": "Option 1 balances exploration and exploitation by allocating one point to qUCB, providing a good MI score while maintaining a high qEHVI, aligning with the conservative \u03b2=2 approach early in the campaign.",
+  "signals": {
+    "resource_fraction_remaining": 1.0,
+    "iters_remaining": 0,
+    "time_pct_remaining": 100.0
+  }
+}

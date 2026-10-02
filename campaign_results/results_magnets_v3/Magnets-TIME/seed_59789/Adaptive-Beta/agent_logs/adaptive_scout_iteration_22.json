@@ -1,0 +1,17 @@
+{
+  "iteration": 22,
+  "beta": 5.0,
+  "option": 1,
+  "reasoning_c1": "With MI declining and HV velocity ratio indicating material slowdown, a moderate \u03b2 of 5.0 balances exploration and exploitation in the final campaign stages.",
+  "reasoning_c2": "Option 1 provides a balanced tradeoff between qEHVI and MI, aligning with the moderate \u03b2 of 5.0 to maintain a balance between exploitation and exploration as resources are nearly consumed.",
+  "signals": {
+    "velocity_ratio": 0.029,
+    "recent_hv_rate": 0.00036,
+    "baseline_hv_rate": 0.01241,
+    "mi_current": 0.1003,
+    "mi_vs_start": 0.515,
+    "resource_fraction_remaining": 0.061,
+    "iters_remaining": 3,
+    "time_pct_remaining": 6.1
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "iteration": 23,
+  "beta": 5.0,
+  "option": 4,
+  "reasoning_c1": "HV progress has materially slowed and MI remains elevated, indicating unexplored territory.",
+  "reasoning_c2": "Option 4 provides a good balance by significantly increasing MI, indicating exploration of unexplored territory, while still maintaining some qEHVI for Pareto improvement, aligning with the elevated MI and slowed HV progress.",
+  "signals": {
+    "velocity_ratio": 0.09,
+    "recent_hv_rate": 0.00134,
+    "baseline_hv_rate": 0.01487,
+    "mi_current": 0.18442,
+    "mi_vs_start": 0.989,
+    "resource_fraction_remaining": 0.551,
+    "iters_remaining": 27,
+    "time_pct_remaining": 55.1
+  }
+}

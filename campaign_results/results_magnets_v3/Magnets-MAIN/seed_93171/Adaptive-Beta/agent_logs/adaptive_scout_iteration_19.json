@@ -1,0 +1,17 @@
+{
+  "iteration": 19,
+  "beta": 5.0,
+  "option": 1,
+  "reasoning_c1": "HV has materially stalled with MI still elevated, justifying continued aggressive scouting.",
+  "reasoning_c2": "Option 1 balances qEHVI and MI, maintaining aggressive scouting with a high MI score while still achieving a reasonable qEHVI improvement, aligning with the need for continued exploration given the stalled HV and elevated MI.",
+  "signals": {
+    "velocity_ratio": 0.397,
+    "recent_hv_rate": 0.0036,
+    "baseline_hv_rate": 0.00907,
+    "mi_current": 0.22157,
+    "mi_vs_start": 0.459,
+    "resource_fraction_remaining": 0.633,
+    "iters_remaining": 31,
+    "time_pct_remaining": 63.3
+  }
+}

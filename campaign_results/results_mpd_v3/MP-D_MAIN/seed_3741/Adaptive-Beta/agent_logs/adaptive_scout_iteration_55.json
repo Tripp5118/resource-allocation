@@ -1,0 +1,17 @@
+{
+  "iteration": 55,
+  "beta": 5.0,
+  "option": 0,
+  "reasoning_c1": "HV has stalled and MI is low, indicating exploration is saturated; maintain \u03b2=5.0 to avoid arbitrary exploration.",
+  "reasoning_c2": "With HV stalled and MI low, indicating saturated exploration, Option 0 maximizes qEHVI without unnecessary exploration, aligning with the decision to maintain \u03b2=5.0 to avoid arbitrary exploration.",
+  "signals": {
+    "velocity_ratio": 0.0,
+    "recent_hv_rate": 0.0,
+    "baseline_hv_rate": 0.32474,
+    "mi_current": 0.02387,
+    "mi_vs_start": 0.035,
+    "resource_fraction_remaining": 0.0,
+    "iters_remaining": 0,
+    "time_pct_remaining": 0.0
+  }
+}

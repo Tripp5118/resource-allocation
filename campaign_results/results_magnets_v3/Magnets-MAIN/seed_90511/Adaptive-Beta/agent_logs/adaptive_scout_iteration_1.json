@@ -1,0 +1,12 @@
+{
+  "iteration": 1,
+  "beta": 2.0,
+  "option": 1,
+  "reasoning_c1": "Early in the campaign with 0% resources consumed, so a conservative \u03b2 of 2 is appropriate to avoid arbitrary exploration due to unreliable uncertainty estimates.",
+  "reasoning_c2": "Option 1 balances exploration and exploitation by allocating one point to qUCB, which provides a good MI score while maintaining a relatively high qEHVI score, aligning with the conservative \u03b2 of 2.0 for early campaign exploration.",
+  "signals": {
+    "resource_fraction_remaining": 1.0,
+    "iters_remaining": 0,
+    "time_pct_remaining": 100.0
+  }
+}

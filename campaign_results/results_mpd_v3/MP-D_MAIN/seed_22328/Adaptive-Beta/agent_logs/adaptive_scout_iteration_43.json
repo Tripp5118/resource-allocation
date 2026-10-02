@@ -1,0 +1,17 @@
+{
+  "iteration": 43,
+  "beta": 2.0,
+  "option": 1,
+  "reasoning_c1": "HV is still improving and MI is low, indicating the design space is well-characterized; continue with conservative exploration.",
+  "reasoning_c2": "Option 1 balances conservative exploration with some exploitation, aligning with the low MI and improving HV, while still characterizing the design space effectively.",
+  "signals": {
+    "velocity_ratio": 0.66,
+    "recent_hv_rate": 0.36187,
+    "baseline_hv_rate": 0.54805,
+    "mi_current": 0.0299,
+    "mi_vs_start": 0.077,
+    "resource_fraction_remaining": 0.222,
+    "iters_remaining": 12,
+    "time_pct_remaining": 22.2
+  }
+}

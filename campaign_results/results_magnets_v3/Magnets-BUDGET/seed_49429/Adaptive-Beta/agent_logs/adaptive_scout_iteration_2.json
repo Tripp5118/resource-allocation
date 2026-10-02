@@ -1,0 +1,14 @@
+{
+  "iteration": 2,
+  "beta": 2.0,
+  "option": 1,
+  "reasoning_c1": "Early in the campaign with only 2% resources consumed, elevated MI, and no HV slowdown signal; prefer conservative exploration with \u03b2=2.0.",
+  "reasoning_c2": "Option 1 balances exploration and exploitation by allocating one point to qUCB, which aligns with the conservative exploration strategy at \u03b2=2.0, while still maintaining a relatively high qEHVI score.",
+  "signals": {
+    "mi_current": 1.07498,
+    "mi_vs_start": 1.0,
+    "resource_fraction_remaining": 0.98,
+    "iters_remaining": 48,
+    "time_pct_remaining": 98.0
+  }
+}

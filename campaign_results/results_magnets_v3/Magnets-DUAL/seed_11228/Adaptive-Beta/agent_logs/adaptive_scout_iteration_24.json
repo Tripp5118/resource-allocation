@@ -1,0 +1,17 @@
+{
+  "iteration": 24,
+  "beta": 5.0,
+  "option": 1,
+  "reasoning_c1": "With 96% resources consumed and elevated MI at 159.2% of iteration-1 value, a \u03b2 of 5.0 is appropriate for moderate exploration to leverage remaining unexplored territory.",
+  "reasoning_c2": "Option 1 balances moderate exploration and exploitation, aligning with the selected \u03b2 of 5.0 and the need to leverage remaining unexplored territory while maintaining a reasonable qEHVI score.",
+  "signals": {
+    "velocity_ratio": 0.937,
+    "recent_hv_rate": 0.00607,
+    "baseline_hv_rate": 0.00647,
+    "mi_current": 0.28598,
+    "mi_vs_start": 1.592,
+    "resource_fraction_remaining": 0.041,
+    "iters_remaining": 2,
+    "time_pct_remaining": 51.0
+  }
+}

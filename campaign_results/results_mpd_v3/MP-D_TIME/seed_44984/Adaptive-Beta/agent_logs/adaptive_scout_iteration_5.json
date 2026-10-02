@@ -1,0 +1,17 @@
+{
+  "iteration": 5,
+  "beta": 2.0,
+  "option": 1,
+  "reasoning_c1": "HV is actively improving (HV velocity ratio 0.788) and MI is elevated, indicating unexplored territory remains; early campaign stage suggests conservative exploration.",
+  "reasoning_c2": "Option 1 balances exploration and exploitation, leveraging the elevated MI to explore unexplored regions while maintaining a reasonable qEHVI for Pareto improvement, aligning with the conservative exploration strategy at this early campaign stage.",
+  "signals": {
+    "velocity_ratio": 0.788,
+    "recent_hv_rate": 34.84659,
+    "baseline_hv_rate": 44.21649,
+    "mi_current": 0.88131,
+    "mi_vs_start": 2.662,
+    "resource_fraction_remaining": 0.926,
+    "iters_remaining": 50,
+    "time_pct_remaining": 92.6
+  }
+}

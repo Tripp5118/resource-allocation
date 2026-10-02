@@ -1,0 +1,17 @@
+{
+  "iteration": 39,
+  "beta": 5.0,
+  "option": 1,
+  "reasoning_c1": "HV progress has materially slowed, MI is declining but still indicates some remaining unexplored territory, justifying moderate exploration.",
+  "reasoning_c2": "Option 1 balances moderate exploration with exploitation, aligning with the need to explore some remaining unexplored territory while still improving the Pareto front, as indicated by the declining but present MI.",
+  "signals": {
+    "velocity_ratio": 0.075,
+    "recent_hv_rate": 0.00029,
+    "baseline_hv_rate": 0.0039,
+    "mi_current": 0.04612,
+    "mi_vs_start": 0.11,
+    "resource_fraction_remaining": 0.224,
+    "iters_remaining": 11,
+    "time_pct_remaining": 22.4
+  }
+}

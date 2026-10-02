@@ -1,0 +1,17 @@
+{
+  "iteration": 21,
+  "beta": 5.0,
+  "option": 2,
+  "reasoning_c1": "HV progress has materially slowed with elevated MI, indicating unexplored territory remains; aggressive scouting is justified.",
+  "reasoning_c2": "Option 2 balances the need for exploration with a reasonable qEHVI score, aligning with the aggressive scouting justified by the elevated MI and unexplored territory.",
+  "signals": {
+    "velocity_ratio": 0.279,
+    "recent_hv_rate": 0.49164,
+    "baseline_hv_rate": 1.7636,
+    "mi_current": 0.88641,
+    "mi_vs_start": 2.537,
+    "resource_fraction_remaining": 0.074,
+    "iters_remaining": 4,
+    "time_pct_remaining": 63.0
+  }
+}

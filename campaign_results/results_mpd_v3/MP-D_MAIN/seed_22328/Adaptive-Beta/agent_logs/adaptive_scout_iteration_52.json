@@ -1,0 +1,17 @@
+{
+  "iteration": 52,
+  "beta": 3.0,
+  "option": 1,
+  "reasoning_c1": "With HV velocity materially slowed and MI declining, moderate exploration with \u03b2=3.0 is appropriate to potentially discover new productive regions without excessive risk.",
+  "reasoning_c2": "Option 1 balances moderate exploration with \u03b2=3.0 by allocating one point to qUCB, maintaining a reasonable qEHVI improvement while still gaining information about unexplored regions, aligning with the need to potentially discover new productive areas without excessive risk.",
+  "signals": {
+    "velocity_ratio": 0.327,
+    "recent_hv_rate": 0.13366,
+    "baseline_hv_rate": 0.40858,
+    "mi_current": 0.02861,
+    "mi_vs_start": 0.074,
+    "resource_fraction_remaining": 0.056,
+    "iters_remaining": 3,
+    "time_pct_remaining": 5.6
+  }
+}

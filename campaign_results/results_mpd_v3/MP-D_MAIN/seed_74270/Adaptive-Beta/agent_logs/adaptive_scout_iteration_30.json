@@ -1,0 +1,17 @@
+{
+  "iteration": 30,
+  "beta": 5.0,
+  "option": 1,
+  "reasoning_c1": "HV progress has materially stalled with a high MI signal, indicating unexplored productive regions remain, justifying moderate exploration.",
+  "reasoning_c2": "Option 1 balances moderate exploration with exploitation, aligning with the high MI signal and stalled HV progress, suggesting unexplored productive regions remain.",
+  "signals": {
+    "velocity_ratio": 0.127,
+    "recent_hv_rate": 0.11889,
+    "baseline_hv_rate": 0.93426,
+    "mi_current": 1.83618,
+    "mi_vs_start": 3.011,
+    "resource_fraction_remaining": 0.463,
+    "iters_remaining": 25,
+    "time_pct_remaining": 46.3
+  }
+}

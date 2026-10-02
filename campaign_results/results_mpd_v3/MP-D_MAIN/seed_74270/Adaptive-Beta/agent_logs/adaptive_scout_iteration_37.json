@@ -1,0 +1,17 @@
+{
+  "iteration": 37,
+  "beta": 2.0,
+  "option": 1,
+  "reasoning_c1": "HV progress has materially stalled and MI is low, indicating exploration is saturated and a conservative approach is appropriate.",
+  "reasoning_c2": "Option 1 balances exploitation and exploration, providing a conservative approach with moderate qEHVI improvement while maintaining reasonable MI, aligning with the stalled HV progress and low MI context.",
+  "signals": {
+    "velocity_ratio": 0.632,
+    "recent_hv_rate": 0.45378,
+    "baseline_hv_rate": 0.71819,
+    "mi_current": 0.03218,
+    "mi_vs_start": 0.053,
+    "resource_fraction_remaining": 0.333,
+    "iters_remaining": 18,
+    "time_pct_remaining": 33.3
+  }
+}

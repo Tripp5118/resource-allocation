@@ -1,0 +1,28 @@
+{
+  "scheduled_events": [
+    {
+      "iteration": 5,
+      "type": "time_change",
+      "description": "Time reduced at iteration 5 to 15 time units total"
+    },
+    {
+      "iteration": 7,
+      "type": "budget_change",
+      "description": "Budget cut at iteration 7: only 3 iterations remain ($1500)"
+    }
+  ],
+  "triggered_events": [
+    {
+      "iteration": 5,
+      "event_type": "time_change",
+      "description": "Time reduced at iteration 5 to 15 time units total",
+      "timestamp": 5
+    },
+    {
+      "iteration": 7,
+      "event_type": "budget_change",
+      "description": "Budget cut at iteration 7: only 3 iterations remain ($1500)",
+      "timestamp": 7
+    }
+  ]
+}

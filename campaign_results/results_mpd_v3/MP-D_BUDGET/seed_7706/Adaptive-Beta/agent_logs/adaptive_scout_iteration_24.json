@@ -1,0 +1,17 @@
+{
+  "iteration": 24,
+  "beta": 2.0,
+  "option": 1,
+  "reasoning_c1": "With 98% resources consumed and declining MI, a conservative \u03b2=2.0 is appropriate to focus on refining the known Pareto front, as exploration is saturated and HV is still improving.",
+  "reasoning_c2": "Option 1 balances qEHVI and MI, aligning with the conservative \u03b2=2.0 strategy to refine the Pareto front while allowing minimal exploration, given the high resource consumption and ongoing HV improvement.",
+  "signals": {
+    "velocity_ratio": 0.095,
+    "recent_hv_rate": 0.3041,
+    "baseline_hv_rate": 3.19805,
+    "mi_current": 0.16124,
+    "mi_vs_start": 0.366,
+    "resource_fraction_remaining": 0.019,
+    "iters_remaining": 1,
+    "time_pct_remaining": 57.4
+  }
+}

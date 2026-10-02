@@ -1,0 +1,17 @@
+{
+  "iteration": 22,
+  "beta": 5.0,
+  "option": 2,
+  "reasoning_c1": "Elevated MI and recent HV acceleration indicate unexplored productive regions, justifying moderate exploration with \u03b2=5.0.",
+  "reasoning_c2": "Option 2 balances exploration and exploitation with a moderate qEHVI score and the highest MI score, aligning with the strategy to explore productive regions indicated by elevated MI and recent HV acceleration.",
+  "signals": {
+    "velocity_ratio": 1.068,
+    "recent_hv_rate": 0.00888,
+    "baseline_hv_rate": 0.00832,
+    "mi_current": 0.51353,
+    "mi_vs_start": 1.472,
+    "resource_fraction_remaining": 0.082,
+    "iters_remaining": 4,
+    "time_pct_remaining": 55.1
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "iteration": 13,
+  "beta": 3.0,
+  "option": 1,
+  "reasoning_c1": "HV velocity has materially slowed, but MI is declining, suggesting moderate exploration is still appropriate to discover new productive regions.",
+  "reasoning_c2": "Option 1 balances exploration and exploitation, aligning with the moderate exploration strategy suggested by the declining MI and slowed HV velocity, while still maintaining a reasonable qEHVI score.",
+  "signals": {
+    "velocity_ratio": 0.126,
+    "recent_hv_rate": 1.49224,
+    "baseline_hv_rate": 11.86658,
+    "mi_current": 0.11376,
+    "mi_vs_start": 0.133,
+    "resource_fraction_remaining": 0.778,
+    "iters_remaining": 42,
+    "time_pct_remaining": 77.8
+  }
+}

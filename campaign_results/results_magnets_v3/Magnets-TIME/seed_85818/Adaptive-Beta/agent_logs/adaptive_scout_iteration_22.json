@@ -1,0 +1,17 @@
+{
+  "iteration": 22,
+  "beta": 5.0,
+  "option": 5,
+  "reasoning_c1": "HV has materially stalled with a high MI signal, justifying aggressive scouting with \u03b2=5.0.",
+  "reasoning_c2": "With HV stalling and a high MI signal, Option 5 maximizes exploration by allocating all points to qUCB, aligning with the aggressive scouting strategy justified by \u03b2=5.0.",
+  "signals": {
+    "velocity_ratio": 0.814,
+    "recent_hv_rate": 0.00419,
+    "baseline_hv_rate": 0.00515,
+    "mi_current": 0.19215,
+    "mi_vs_start": 0.689,
+    "resource_fraction_remaining": 0.061,
+    "iters_remaining": 3,
+    "time_pct_remaining": 6.1
+  }
+}

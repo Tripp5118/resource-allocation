@@ -1,0 +1,17 @@
+{
+  "iteration": 21,
+  "beta": 3.0,
+  "option": 2,
+  "reasoning_c1": "With 90% resources consumed and MI declining to 42% of iteration-1 value, moderate exploration is appropriate to balance exploration and exploitation as the campaign nears completion.",
+  "reasoning_c2": "Option 2 provides a moderate balance between qEHVI and MI, aligning with the need for moderate exploration as the campaign nears completion with 90% resources consumed.",
+  "signals": {
+    "velocity_ratio": 0.856,
+    "recent_hv_rate": 0.00566,
+    "baseline_hv_rate": 0.00661,
+    "mi_current": 0.27276,
+    "mi_vs_start": 0.42,
+    "resource_fraction_remaining": 0.102,
+    "iters_remaining": 5,
+    "time_pct_remaining": 59.2
+  }
+}

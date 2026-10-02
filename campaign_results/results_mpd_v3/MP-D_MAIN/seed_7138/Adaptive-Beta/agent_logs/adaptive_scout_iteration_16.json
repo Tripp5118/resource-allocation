@@ -1,0 +1,17 @@
+{
+  "iteration": 16,
+  "beta": 2.0,
+  "option": 0,
+  "reasoning_c1": "HV velocity has materially slowed and MI is declining, indicating exploration is saturated; a conservative \u03b2 is appropriate.",
+  "reasoning_c2": "Given the conservative \u03b2 of 2.0 and the saturation in exploration, maximizing qEHVI with Option 0 optimally leverages the remaining resources for direct Pareto HV improvement.",
+  "signals": {
+    "velocity_ratio": 0.132,
+    "recent_hv_rate": 0.35315,
+    "baseline_hv_rate": 2.67325,
+    "mi_current": 0.11505,
+    "mi_vs_start": 0.214,
+    "resource_fraction_remaining": 0.722,
+    "iters_remaining": 39,
+    "time_pct_remaining": 72.2
+  }
+}
