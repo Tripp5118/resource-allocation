@@ -168,8 +168,7 @@ No GPU, no trained models, no API calls.
 ## Citing
 
 Archived on Zenodo: [doi:10.5281/zenodo.23111031](https://doi.org/10.5281/zenodo.23111031)
-(all versions). The paper uses release v1.0.0,
-[doi:10.5281/zenodo.23111032](https://doi.org/10.5281/zenodo.23111032).
+(resolves to the latest version). The paper uses release v1.0.1.
 Citation metadata is in `CITATION.cff`.
 
 ## License

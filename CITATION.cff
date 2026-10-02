@@ -5,7 +5,7 @@ title: >-
 message: If you use this software, please cite it as below.
 type: software
 license: MIT
-version: 1.0.0
+version: 1.0.1
 
 authors:
   - given-names: Robert
@@ -34,9 +34,6 @@ identifiers:
   - type: doi
     value: 10.5281/zenodo.23111031
     description: Concept DOI, resolves to the latest version
-  - type: doi
-    value: 10.5281/zenodo.23111032
-    description: Version v1.0.0, the release behind the paper
 repository-code: https://github.com/Tripp5118/resource-allocation
 
 abstract: >-
